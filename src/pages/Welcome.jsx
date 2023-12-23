@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
+import { useDispatch } from "react-redux";
 import { LOGIN_INCORRECT } from "../constants/messages";
+import { setConnection } from "../slices/socket";
 
 const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!) {
@@ -19,6 +21,7 @@ const LOGIN_MUTATION = gql`
 
 export default function Welcome(props) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     let [loginPayload, setLoginPayload] = useState({});
     const [login, { data, loading, error }] = useMutation(LOGIN_MUTATION);
 
@@ -33,7 +36,9 @@ export default function Welcome(props) {
         login({ variables: { ...loginPayload } })
             .then(response => {
                 if (response?.data?.login) {
+                    let { accessToken } = response.data.login.token;
                     localStorage.setItem("currentUser", JSON.stringify(response.data.login));
+                    dispatch(setConnection({ accessToken }));
                     navigate("/home");
                 } else {
                     alert(LOGIN_INCORRECT);
