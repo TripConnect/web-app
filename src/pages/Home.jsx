@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { gql, useLazyQuery } from '@apollo/client';
+import { useNavigate } from "react-router-dom";
 
 const SEARCH_USER_QUERY = gql`
   query Users($searchTerm: String!) {
@@ -30,7 +30,6 @@ export default function Home() {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchUser, { loading, error, data }] = useLazyQuery(SEARCH_USER_QUERY);
     const [searchedUsers, setSearchedUsers] = useState([]);
-    const navigate = useNavigate();
 
     const handleSearchTerm = (e) => {
         setSearchTerm(e.target.value);
@@ -46,16 +45,14 @@ export default function Home() {
                 }
             });
     }
-
+    console.log({ searchedUsers })
     return (
         <div>
             <input type="search" name="searchTerm" placeholder="search..." onChange={handleSearchTerm} />
             <button type="button" onClick={handleSearch}>Search</button>
-            <div>{currentUser.user_id}</div>
-
             {
                 searchedUsers ?
-                    searchedUsers.map(({ id, displayName }) => <UserItem id={id} displayName={displayName} />) :
+                    searchedUsers.map(({ id, displayName }) => id != currentUser.id && <UserItem id={id} displayName={displayName} />) :
                     <div>Not found</div>
             }
         </div>
