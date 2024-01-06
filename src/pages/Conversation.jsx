@@ -36,10 +36,14 @@ const LOAD_CONVERSATION_QUERY = gql`
     }
 `;
 
-function Message({ content, isSelf }) {
+function Message({ content, createdAt, isSelf }) {
     return (
         <div style={{ alignSelf: isSelf ? "flex-end" : "flex-start" }}>
-            {content}
+            <span>
+                {content}
+                <i style={{ fontSize: "0.7rem" }}> ({createdAt})</i>
+            </span>
+
         </div >
     );
 }
@@ -48,7 +52,7 @@ export default function Conversation() {
     const dispatch = useDispatch();
     const location = useLocation();
     let { conversationId } = location.state;
-    const conversationState = useSelector((state) => state?.socket?.conversations);
+    const socketState = useSelector((state) => state?.socket);
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
     const [currentPage, setCurrentPage] = useState(-1);
@@ -71,8 +75,6 @@ export default function Conversation() {
         setMessage("");
     }
 
-    console.log({ conversationState });
-
     return (
         <div>
             <b>
@@ -83,12 +85,16 @@ export default function Conversation() {
                 }
             </b>
             <div style={{
+                margin: "auto",
+                width: "30vw",
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
             }}>
                 {
-                    conversationState[conversationId] && conversationState[conversationId].map(m => <Message content={m.messageContent} isSelf={m.userId === currentUser.id} />)
+                    socketState?.conversations?.hasOwnProperty(conversationId) && Array.from(socketState.conversations[conversationId])
+                        .sort((a, b) => b.createdAt.date - a.createdAt.date)
+                        .map(m => <Message content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.id} />)
                 }
             </div>
             <div>

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { io } from 'socket.io-client';
-import cloneDeep from 'lodash/cloneDeep';
+import get from 'lodash/get';
 
 
 const initialState = {
@@ -33,21 +33,21 @@ export const socketSlice = createSlice({
             console.log({ action, state });
             let { conversationId, messageContent } = action.payload;
             state.connection.emit("message", { conversationId, messageContent });
-            return { ...state };
+            return {
+                connection: state.connection,
+                conversations: { ...state.conversations },
+            };
         },
         addMessage: (state, action) => {
-            let newState = {
-                ...state,
-                conversations: cloneDeep(state.conversations),
-            }
             let { conversationId, userId, messageContent, createdAt } = action.payload;
-            if (!newState.conversations.hasOwnProperty(conversationId)) {
-                newState.conversations[conversationId] = [];
-            }
-            newState.conversations[conversationId].push({
-                conversationId, messageContent, createdAt, userId
-            });
-            return newState;
+            return {
+                connection: state.connection,
+                conversations: {
+                    ...state.conversations,
+                    [conversationId]: get(state.conversations, conversationId, [])
+                        .concat({ conversationId, userId, messageContent, createdAt })
+                }
+            };
         },
     },
 })
