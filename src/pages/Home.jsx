@@ -45,7 +45,7 @@ export default function Home() {
                 }
             });
     }
-    console.log({ searchedUsers })
+
     return (
         <div>
             <input type="search" name="searchTerm" placeholder="search..." onChange={handleSearchTerm} />

@@ -10,6 +10,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import Welcome from './pages/Welcome';
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import Conversation from "./pages/Conversation";
 
 import SocketIOListener from './services/socket';
 import { store } from './store';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<Welcome />} />
             <Route path="/home" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/conversation" element={<Conversation />} />
           </Routes>
         </Router>
       </ApolloProvider>

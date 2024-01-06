@@ -22,7 +22,7 @@ export default function Profile(props) {
                 if (response?.data?.createConversation) {
                     console.log(response?.data?.createConversation, "chat");
                     let { id: conversationId } = response.data.createConversation;
-                    // navigate("/chat", { state: { conversationId } });
+                    navigate("/conversation", { state: { conversationId } });
                 }
             }).catch(e => {
                 console.log(e);

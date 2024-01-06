@@ -26,7 +26,6 @@ export default function Welcome(props) {
     const [login, { data, loading, error }] = useMutation(LOGIN_MUTATION);
 
     const handleSubmit = (e) => {
-        console.log({ loginPayload });
         e.preventDefault();
         if (!loginPayload.username || !loginPayload.password) {
             alert(LOGIN_INCORRECT);
