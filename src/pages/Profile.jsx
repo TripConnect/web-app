@@ -20,7 +20,6 @@ export default function Profile(props) {
         createConversation({ variables: { type: 'PRIVATE', members: [userId, currentUser.id].join(",") } })
             .then(response => {
                 if (response?.data?.createConversation) {
-                    console.log(response?.data?.createConversation, "chat");
                     let { id: conversationId } = response.data.createConversation;
                     navigate("/conversation", { state: { conversationId } });
                 }

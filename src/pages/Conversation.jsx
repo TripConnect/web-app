@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, sendMessage } from "../slices/socket";
+import { addMessage, sendMessage } from "../slices/chat";
 
 const INIT_CONVERSATION_QUERY = gql`
     query Conversation($id: String!, $page: Int!, $limit: Int!) {
@@ -36,9 +36,9 @@ const LOAD_CONVERSATION_QUERY = gql`
     }
 `;
 
-function Message({ content, createdAt, isSelf }) {
+function Message({ id, content, createdAt, isSelf }) {
     return (
-        <div style={{ alignSelf: isSelf ? "flex-end" : "flex-start" }}>
+        <div key={id} style={{ alignSelf: isSelf ? "flex-end" : "flex-start" }}>
             <span>
                 {content}
                 <i style={{ fontSize: "0.7rem" }}> ({createdAt})</i>
@@ -52,7 +52,7 @@ export default function Conversation() {
     const dispatch = useDispatch();
     const location = useLocation();
     let { conversationId } = location.state;
-    const socketState = useSelector((state) => state?.socket);
+    const conversationMessages = useSelector((state) => state.chat.conversations?.[conversationId]);
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
     const [currentPage, setCurrentPage] = useState(-1);
@@ -64,6 +64,7 @@ export default function Conversation() {
 
     if (initLoading) return <div>Loading...</div>;
     if (initError) return <div>Something went wrong</div>;
+    if (!conversationMessages) return <div>Cannot load messages</div>;
 
     const handleChangeMessage = e => {
         let { value } = e.target;
@@ -92,9 +93,10 @@ export default function Conversation() {
                 alignItems: 'flex-start',
             }}>
                 {
-                    socketState?.conversations?.hasOwnProperty(conversationId) && Array.from(socketState.conversations[conversationId])
+                    // conversationsState?.hasOwnProperty(conversationId) && Array.from(conversationsState[conversationId])
+                    Array.from(conversationMessages)
                         .sort((a, b) => b.createdAt.date - a.createdAt.date)
-                        .map(m => <Message content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.id} />)
+                        .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.id} />)
                 }
             </div>
             <div>

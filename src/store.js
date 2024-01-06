@@ -1,9 +1,11 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import socketReducer from './slices/socket';
+import chatReducer from './slices/chat';
+import userReducer from './slices/user';
 
 
 const rootReducer = combineReducers({
-    socket: socketReducer,
+    chat: chatReducer,
+    user: userReducer,
 });
 
 export const store = configureStore({

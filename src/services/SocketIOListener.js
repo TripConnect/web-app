@@ -1,7 +1,9 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { addMessage } from '../slices/socket';
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
+import { useSelector, useDispatch } from 'react-redux';
+import { addMessage, addMessages } from '../slices/chat';
+
 
 const INIT_CONVERSATION_QUERY = gql`
     query Conversations {
@@ -22,25 +24,31 @@ const INIT_CONVERSATION_QUERY = gql`
 `;
 
 export default function SocketIOListener() {
-    const socket = useSelector((state) => state?.socket?.connection);
+    const accessToken = useSelector((state) => state.user.accessToken);
     const dispatch = useDispatch()
+    const [socket, setSocket] = useState(null);
 
     const { loading: initLoading, error: initError, data: initData } = useQuery(INIT_CONVERSATION_QUERY);
     useEffect(() => {
         if (!initLoading && !initError && initData) {
             for (let conversation of initData.conversations) {
-                for (let message of conversation.messages) {
-                    console.log({ message });
-                    dispatch(addMessage({
-                        conversationId: conversation.id,
-                        userId: message.fromUser.id,
-                        messageContent: message.messageContent,
-                        createdAt: message.createdAt
-                    }));
-                }
+                dispatch(addMessages({ conversationId: conversation.id, messages: conversation.messages }));
             }
         }
     }, [initData]);
+
+    if (!accessToken) return <></>;
+    if (!socket) {
+        setSocket(io(
+            process.env.REACT_APP_BASE_URL + "/chat",
+            {
+                transports: ['websocket'], // you need to explicitly tell it to use websockets
+                auth: {
+                    token: accessToken,
+                }
+            },
+        ));
+    }
 
     if (socket) {
         socket.on('connect', () => {

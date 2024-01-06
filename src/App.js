@@ -12,7 +12,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Conversation from "./pages/Conversation";
 
-import SocketIOListener from './services/socket';
+import SocketIOListener from './services/SocketIOListener';
 import { store } from './store';
 
 const client = new ApolloClient({

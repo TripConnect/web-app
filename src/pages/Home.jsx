@@ -40,7 +40,6 @@ export default function Home() {
         searchUser({ variables: { searchTerm } })
             .then(response => {
                 if (response?.data?.users) {
-                    console.log(response?.data?.users);
                     setSearchedUsers(response.data.users);
                 }
             });
@@ -52,7 +51,7 @@ export default function Home() {
             <button type="button" onClick={handleSearch}>Search</button>
             {
                 searchedUsers ?
-                    searchedUsers.map(({ id, displayName }) => id != currentUser.id && <UserItem id={id} displayName={displayName} />) :
+                    searchedUsers.map(({ id, displayName }) => id != currentUser.id && <UserItem key={id} id={id} displayName={displayName} />) :
                     <div>Not found</div>
             }
         </div>
