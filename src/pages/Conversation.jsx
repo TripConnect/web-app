@@ -38,9 +38,17 @@ const LOAD_CONVERSATION_QUERY = gql`
 
 function Message({ id, content, createdAt, isSelf }) {
     return (
-        <div key={id} style={{ alignSelf: isSelf ? "flex-end" : "flex-start" }}>
-            <p style={{ margin: "0.1vw 0", border: "solid 0.5px black", borderRadius: "1rem", padding: "0.1vw 0.2vw" }}>{content}</p>
-        </div >
+        <div key={id} style={{
+            minWidth: "3%",
+            boxSizing: "border-box",
+            alignSelf: isSelf ? "flex-end" : "flex-start",
+            background: isSelf ? "lightblue" : "lightpink",
+            borderRadius: "1rem",
+            margin: "0.1vw 0",
+            padding: "0.15vw 0.2vw",
+        }}>
+            <span>{content}</span>
+        </div>
     );
 }
 
