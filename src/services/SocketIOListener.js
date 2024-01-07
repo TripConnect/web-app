@@ -1,12 +1,13 @@
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useSelector, useDispatch } from 'react-redux';
-import { addMessage, addMessages } from '../slices/chat';
+import { addMessage, initMessages, resetMessages } from '../slices/chat';
+import { setConnection } from '../slices/connection';
 
 
 const INIT_CONVERSATION_QUERY = gql`
-    query Conversations {
+    query Conversations { 
         conversations {
             createdAt
             lastMessageAt
@@ -25,44 +26,40 @@ const INIT_CONVERSATION_QUERY = gql`
 
 export default function SocketIOListener() {
     const accessToken = useSelector((state) => state.user.accessToken);
-    const conversations = useSelector((state) => state.chat.conversations);
+    const socketIOSonnection = useSelector((state) => state.connection.connections.socketio);
     const dispatch = useDispatch();
-    const [socket, setSocket] = useState(null);
 
     const { loading: initLoading, error: initError, data: initData } = useQuery(INIT_CONVERSATION_QUERY);
     useEffect(() => {
-        if (Object.keys(conversations).length) return;
+        dispatch(resetMessages());
         if (!initLoading && !initError && initData) {
-            for (let conversation of initData.conversations) {
-                dispatch(addMessages({ conversationId: conversation.id, messages: conversation.messages }));
-            }
+            dispatch(initMessages({ conversations: initData.conversations }));
         }
     }, [initData]);
 
-    if (accessToken && !socket) {
-        setSocket(io(
-            process.env.REACT_APP_BASE_URL + "/chat",
+    if (accessToken && !socketIOSonnection) {
+        console.log("Initial socketIO connection");
+        console.log({ accessToken, socketIOSonnection });
+        let connection = io(
+            `${process.env.REACT_APP_BASE_URL}/chat`,
             {
                 transports: ['websocket'], // you need to explicitly tell it to use websockets
                 auth: {
                     token: accessToken,
                 }
             },
-        ));
-    }
-
-    if (socket) {
-        socket.on('connect', () => {
+        );
+        connection.on('connect', () => {
             console.log('connected');
         });
-        socket.on('connect_error', err => {
+        connection.on('connect_error', err => {
             console.log(err.message);
         });
-        socket.on('message', (payload) => {
+        connection.on('message', (payload) => {
             let { conversationId, userId, messageContent, createdAt } = payload;
             dispatch(addMessage({ conversationId, userId, messageContent, createdAt }));
-            console.log("new message incoming: " + payload);
         });
+        dispatch(setConnection({ name: "socketio", connection }));
     }
 
     return (<></>);

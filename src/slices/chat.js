@@ -2,21 +2,18 @@ import { createSlice } from '@reduxjs/toolkit'
 import { io } from 'socket.io-client';
 import get from 'lodash/get';
 
-
+// NOTE: createdAt is timestamp number
 const initialState = {
     conversations: {},
 };
 
-export const socketSlice = createSlice({
-    name: 'socketSlice',
+export const chatSlice = createSlice({
+    name: 'chatSlice',
     initialState,
     reducers: {
-        sendMessage: (state, action) => {
-            console.log({ action, state });
-            let { conversationId, messageContent } = action.payload;
-            state.connection.emit("message", { conversationId, messageContent });
+        resetMessages: (state, action) => {
             return {
-                conversations: { ...state.conversations },
+                conversations: {},
             };
         },
         addMessage: (state, action) => {
@@ -24,24 +21,27 @@ export const socketSlice = createSlice({
             return {
                 conversations: {
                     ...state.conversations,
-                    [conversationId]: get(state.conversations, conversationId, [])
-                        .concat({ userId, messageContent, createdAt })
+                    [conversationId]: [...get(state.conversations, conversationId, []), { userId, messageContent, createdAt: Date.parse(createdAt) }],
                 }
             };
         },
-        addMessages: (state, action) => {
-            let { conversationId, messages } = action.payload;
-            return {
-                conversations: {
-                    ...state.conversations,
-                    [conversationId]: get(state.conversations, conversationId, [])
-                        .concat(messages),
-                }
+        initMessages: (state, action) => {
+            let { conversations } = action.payload;
+            let newState = { conversations: {} };
+            for (let conversation of conversations) {
+                let { id: conversationId, messages } = conversation;
+                newState.conversations[conversationId] = [
+                    ...get(state.conversations, conversationId, []),
+                    ...messages.map(({ fromUser, messageContent, createdAt }) => {
+                        return { userId: fromUser.id, messageContent, createdAt: Date.parse(createdAt) };
+                    })
+                ];
             }
+            return newState;
         }
     },
 })
 
-export const { setConnection, sendMessage, addMessage, addMessages } = socketSlice.actions;
+export const { resetMessages, addMessage, initMessages } = chatSlice.actions;
 
-export default socketSlice.reducer;
+export default chatSlice.reducer;

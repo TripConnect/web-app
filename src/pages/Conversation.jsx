@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, sendMessage } from "../slices/chat";
+import { sendChatMessage } from "../slices/connection";
 
 const INIT_CONVERSATION_QUERY = gql`
     query Conversation($id: String!, $page: Int!, $limit: Int!) {
@@ -39,11 +39,7 @@ const LOAD_CONVERSATION_QUERY = gql`
 function Message({ id, content, createdAt, isSelf }) {
     return (
         <div key={id} style={{ alignSelf: isSelf ? "flex-end" : "flex-start" }}>
-            <span>
-                {content}
-                <i style={{ fontSize: "0.7rem" }}> ({createdAt})</i>
-            </span>
-
+            <p style={{ margin: "0.1vw 0", border: "solid 0.5px black", borderRadius: "1rem", padding: "0.1vw 0.2vw" }}>{content}</p>
         </div >
     );
 }
@@ -72,13 +68,13 @@ export default function Conversation() {
     }
 
     const handleSendMessage = e => {
-        dispatch(sendMessage({ conversationId, messageContent }));
+        dispatch(sendChatMessage({ conversationId, messageContent }));
         setMessage("");
     }
-    console.log({ currentUserId });
 
+    console.log({ conversationMessages, currentUserId });
     return (
-        <div>
+        <div style={{ width: "50vw", margin: "auto", }}>
             <b>
                 {
                     initData?.conversation?.type === "PRIVATE" ?
@@ -87,8 +83,6 @@ export default function Conversation() {
                 }
             </b>
             <div style={{
-                margin: "auto",
-                width: "50vw",
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
@@ -97,7 +91,7 @@ export default function Conversation() {
             }}>
                 {
                     Array.from(conversationMessages)
-                        .sort((a, b) => b.createdAt.date - a.createdAt.date)
+                        .sort((a, b) => a.createdAt - b.createdAt)
                         .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUserId} />)
                 }
             </div>

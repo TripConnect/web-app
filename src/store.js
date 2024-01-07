@@ -4,17 +4,20 @@ import storage from 'redux-persist/lib/storage';
 
 import chatReducer from './slices/chat';
 import userReducer from './slices/user';
+import connectionReducer from './slices/connection';
 
 // Define your root reducer
 const rootReducer = combineReducers({
     chat: chatReducer,
     user: userReducer,
+    connection: connectionReducer,
 });
 
 // Configure redux-persist
 const persistConfig = {
     key: 'root',
     storage,
+    blacklist: ["connection", "chat"],
 };
 
 // Wrap the rootReducer with persistReducer
