@@ -53,7 +53,7 @@ export default function Conversation() {
     const location = useLocation();
     let { conversationId } = location.state;
     const conversationMessages = useSelector((state) => state.chat.conversations?.[conversationId]);
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const currentUserId = useSelector((state) => state.user.userId);
 
     const [currentPage, setCurrentPage] = useState(-1);
     const [messageContent, setMessage] = useState("");
@@ -75,28 +75,30 @@ export default function Conversation() {
         dispatch(sendMessage({ conversationId, messageContent }));
         setMessage("");
     }
+    console.log({ currentUserId });
 
     return (
         <div>
             <b>
                 {
                     initData?.conversation?.type === "PRIVATE" ?
-                        initData?.conversation?.members.find(m => m.id != currentUser.id).displayName :
+                        initData?.conversation?.members.find(m => m.id != currentUserId).displayName :
                         initData?.conversation?.name
                 }
             </b>
             <div style={{
                 margin: "auto",
-                width: "30vw",
+                width: "50vw",
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
+                outline: "solid 1px black",
+                padding: "0.5vw",
             }}>
                 {
-                    // conversationsState?.hasOwnProperty(conversationId) && Array.from(conversationsState[conversationId])
                     Array.from(conversationMessages)
                         .sort((a, b) => b.createdAt.date - a.createdAt.date)
-                        .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.id} />)
+                        .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUserId} />)
                 }
             </div>
             <div>

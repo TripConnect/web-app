@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
+import { useSelector } from "react-redux";
 
 const PRIVATE_CONVERSATION_MUTATION = gql`
   mutation CreateConversation($type: String!, $members: String!) {
@@ -14,10 +15,10 @@ export default function Profile(props) {
     let navigate = useNavigate();
     const [createConversation, { data, loading, error }] = useMutation(PRIVATE_CONVERSATION_MUTATION);
     let { id: userId, displayName } = location.state;
-    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const currentUserId = useSelector((state) => state.user.userId);
 
     const handleChat = (e) => {
-        createConversation({ variables: { type: 'PRIVATE', members: [userId, currentUser.id].join(",") } })
+        createConversation({ variables: { type: 'PRIVATE', members: [userId, currentUserId].join(",") } })
             .then(response => {
                 if (response?.data?.createConversation) {
                     let { id: conversationId } = response.data.createConversation;

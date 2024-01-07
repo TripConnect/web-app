@@ -25,11 +25,13 @@ const INIT_CONVERSATION_QUERY = gql`
 
 export default function SocketIOListener() {
     const accessToken = useSelector((state) => state.user.accessToken);
-    const dispatch = useDispatch()
+    const conversations = useSelector((state) => state.chat.conversations);
+    const dispatch = useDispatch();
     const [socket, setSocket] = useState(null);
 
     const { loading: initLoading, error: initError, data: initData } = useQuery(INIT_CONVERSATION_QUERY);
     useEffect(() => {
+        if (Object.keys(conversations).length) return;
         if (!initLoading && !initError && initData) {
             for (let conversation of initData.conversations) {
                 dispatch(addMessages({ conversationId: conversation.id, messages: conversation.messages }));
@@ -37,8 +39,7 @@ export default function SocketIOListener() {
         }
     }, [initData]);
 
-    if (!accessToken) return <></>;
-    if (!socket) {
+    if (accessToken && !socket) {
         setSocket(io(
             process.env.REACT_APP_BASE_URL + "/chat",
             {

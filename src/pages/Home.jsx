@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const SEARCH_USER_QUERY = gql`
   query Users($searchTerm: String!) {
@@ -26,7 +27,7 @@ function UserItem(props) {
 }
 
 export default function Home() {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const currentUserId = useSelector((state) => state.user.userId);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchUser, { loading, error, data }] = useLazyQuery(SEARCH_USER_QUERY);
     const [searchedUsers, setSearchedUsers] = useState([]);
@@ -51,7 +52,7 @@ export default function Home() {
             <button type="button" onClick={handleSearch}>Search</button>
             {
                 searchedUsers ?
-                    searchedUsers.map(({ id, displayName }) => id != currentUser.id && <UserItem key={id} id={id} displayName={displayName} />) :
+                    searchedUsers.map(({ id, displayName }) => id != currentUserId && <UserItem key={id} id={id} displayName={displayName} />) :
                     <div>Not found</div>
             }
         </div>

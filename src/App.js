@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { Provider } from 'react-redux';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { PersistGate } from 'redux-persist/integration/react';
 
 import Welcome from './pages/Welcome';
 import Home from "./pages/Home";
@@ -13,7 +14,7 @@ import Profile from "./pages/Profile";
 import Conversation from "./pages/Conversation";
 
 import SocketIOListener from './services/SocketIOListener';
-import { store } from './store';
+import { persistor, store } from './store';
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -23,17 +24,19 @@ const client = new ApolloClient({
 function App() {
   return (
     <Provider store={store}>
-      <ApolloProvider client={client}>
-        <SocketIOListener />
-        <Router>
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/conversation" element={<Conversation />} />
-          </Routes>
-        </Router>
-      </ApolloProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ApolloProvider client={client}>
+          <SocketIOListener />
+          <Router>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/conversation" element={<Conversation />} />
+            </Routes>
+          </Router>
+        </ApolloProvider>
+      </PersistGate>
     </Provider>
   );
 }

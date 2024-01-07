@@ -35,9 +35,9 @@ export default function Welcome(props) {
         login({ variables: { ...loginPayload } })
             .then(response => {
                 if (response?.data?.login) {
-                    let { accessToken } = response.data.login.token;
-                    localStorage.setItem("currentUser", JSON.stringify(response.data.login));
-                    dispatch(updateToken({ accessToken }));
+                    let { id: userId, token } = response.data.login;
+                    let { accessToken, refreshToken } = token;
+                    dispatch(updateToken({ accessToken, userId, refreshToken }));
                     navigate("/home");
                 } else {
                     alert(LOGIN_INCORRECT);
