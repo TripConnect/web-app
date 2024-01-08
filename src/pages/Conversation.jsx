@@ -80,22 +80,37 @@ export default function Conversation() {
         setMessage("");
     }
 
-    console.log({ conversationMessages, currentUserId });
+    console.log({ conversationMessages });
     return (
-        <div style={{ width: "50vw", margin: "auto", }}>
-            <b>
-                {
-                    initData?.conversation?.type === "PRIVATE" ?
-                        initData?.conversation?.members.find(m => m.id != currentUserId).displayName :
-                        initData?.conversation?.name
-                }
-            </b>
+        <div style={{
+            position: "relative",
+            height: "100vh",
+            width: "50vw",
+            margin: "auto",
+            display: "flex",
+            flexDirection: "column",
+            padding: "0.5% 25%",
+        }}>
+            <div style={{ position: "fixed", top: 0 }}>
+                <b>
+                    {
+                        initData?.conversation?.type === "PRIVATE" ?
+                            initData?.conversation?.members.find(m => m.id != currentUserId).displayName :
+                            initData?.conversation?.name
+                    }
+                </b>
+            </div>
             <div style={{
-                display: 'flex',
+                boxSizing: "border-box",
+                display: "flex",
+                margin: "5% 0",
+                height: "50%",
+                width: "100%",
+                overflow: "auto",
                 flexDirection: 'column',
                 alignItems: 'flex-start',
-                outline: "solid 1px black",
                 padding: "0.5vw",
+                border: "solid 1px black",
             }}>
                 {
                     Array.from(conversationMessages)
