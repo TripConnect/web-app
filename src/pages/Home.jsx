@@ -57,7 +57,6 @@ export default function Home() {
                     }}>
                         <TextField id="searchTerm" name="searchTerm" label="Search field" variant="outlined" onChange={handleSearchTermChange} size={"small"} value={searchTerm} style={{ marginRight: 5 }} />
                         <Button variant="contained" onClick={handleSearch}>Search</Button>
-
                     </section>
                 </Grid>
             </Grid>
