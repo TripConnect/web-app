@@ -2,6 +2,7 @@ import { useState } from "react";
 import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Button, Chip, Container, Grid, TextField } from '@mui/material';
 
 const SEARCH_USER_QUERY = gql`
   query Users($searchTerm: String!) {
@@ -20,9 +21,7 @@ function UserItem(props) {
     }
 
     return (
-        <div onClick={handleClick}>
-            <div>{displayName}</div>
-        </div>
+        <Chip variant="outlined" label={displayName} onClick={handleClick} />
     );
 }
 
@@ -32,7 +31,7 @@ export default function Home() {
     const [searchUser, { loading, error, data }] = useLazyQuery(SEARCH_USER_QUERY);
     const [searchedUsers, setSearchedUsers] = useState([]);
 
-    const handleSearchTerm = (e) => {
+    const handleSearchTermChange = (e) => {
         setSearchTerm(e.target.value);
     }
 
@@ -47,14 +46,33 @@ export default function Home() {
     }
 
     return (
-        <div>
-            <input type="search" name="searchTerm" placeholder="search..." onChange={handleSearchTerm} />
-            <button type="button" onClick={handleSearch}>Search</button>
-            {
-                searchedUsers ?
-                    searchedUsers.map(({ id, displayName }) => id != currentUserId && <UserItem key={id} id={id} displayName={displayName} />) :
-                    <div>Not found</div>
-            }
-        </div>
+        <Container>
+            <Grid container >
+                <Grid item xs={12}>
+                    <section style={{
+                        display: "flex",
+                        justifyContent: "start",
+                        alignItems: "baseline",
+                        marginTop: 20,
+                    }}>
+                        <TextField id="searchTerm" name="searchTerm" label="Search field" variant="outlined" onChange={handleSearchTermChange} size={"small"} value={searchTerm} style={{ marginRight: 5 }} />
+                        <Button variant="contained" onClick={handleSearch}>Search</Button>
+
+                    </section>
+                </Grid>
+            </Grid>
+
+            <Grid container>
+                <Grid item xs={12}>
+                    <div style={{
+                        marginTop: 10,
+                    }}>
+                        {
+                            searchedUsers.length > 0 && searchedUsers.map(({ id, displayName }) => id != currentUserId && <UserItem key={id} id={id} displayName={displayName} />)
+                        }
+                    </div>
+                </Grid>
+            </Grid>
+        </Container>
     );
 }

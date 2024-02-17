@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
 import { useDispatch } from "react-redux";
-import { LOGIN_INCORRECT } from "../constants/messages";
-import { updateToken } from "../slices/user";
+import { updateToken } from "slices/user";
+import { LOGIN_INCORRECT } from "constants/messages";
 
 const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!) {

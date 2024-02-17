@@ -2,9 +2,9 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import chatReducer from './slices/chat';
-import userReducer from './slices/user';
-import connectionReducer from './slices/connection';
+import chatReducer from 'slices/chat';
+import userReducer from 'slices/user';
+import connectionReducer from 'slices/connection';
 
 // Define your root reducer
 const rootReducer = combineReducers({

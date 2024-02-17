@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { sendChatMessage } from "../slices/connection";
+import { sendChatMessage } from "slices/connection";
 
 const INIT_CONVERSATION_QUERY = gql`
     query Conversation($id: String!, $page: Int!, $limit: Int!) {

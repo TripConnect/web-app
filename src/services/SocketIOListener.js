@@ -2,9 +2,8 @@ import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useSelector, useDispatch } from 'react-redux';
-import { addMessage, initMessages, resetMessages } from '../slices/chat';
-import { setConnection } from '../slices/connection';
-
+import { addMessage, initMessages, resetMessages } from 'slices/chat';
+import { setConnection } from 'slices/connection';
 
 const INIT_CONVERSATION_QUERY = gql`
     query Conversations { 
