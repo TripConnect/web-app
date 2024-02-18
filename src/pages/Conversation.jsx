@@ -44,10 +44,10 @@ function Message({ id, content, createdAt, isSelf }) {
             minWidth: "3%",
             boxSizing: "border-box",
             alignSelf: isSelf ? "flex-end" : "flex-start",
-            background: isSelf ? "lightblue" : "lightpink",
+            background: isSelf ? "lightblue" : "lightgray",
             borderRadius: "1rem",
             margin: "0.1vw 0",
-            padding: "0.15vw 0.2vw",
+            padding: "0.15rem 1rem",
         }}>
             <span>{content}</span>
         </div>
@@ -106,10 +106,12 @@ export default function Conversation() {
                         flexDirection: 'column',
                         margin: "5% 0",
                         width: "100%",
+                        height: "50vh",
                         overflow: "auto",
                         alignItems: 'flex-start',
                         padding: "0.5vw",
                         border: "solid 1px black",
+                        borderRadius: 5,
                     }}>
                         {
                             Array.from(conversationMessages)
@@ -121,7 +123,11 @@ export default function Conversation() {
             </Grid>
 
             <Grid container>
-                <Grid item xs={10}>
+                <Grid item xs={12} style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                }}>
                     <TextField
                         hiddenLabel
                         id="filled-hidden-label-small"
@@ -129,9 +135,9 @@ export default function Conversation() {
                         size="small"
                         value={messageContent}
                         onChange={handleChangeMessage}
-                        style={{ width: "80%" }}
+                        style={{ width: "85%" }}
                     />
-                    <Button variant="contained" endIcon={<SendIcon />} onClick={handleSendMessage} >Send</Button>
+                    <Button variant="contained" endIcon={<SendIcon />} onClick={handleSendMessage}>Send</Button>
                 </Grid>
             </Grid>
         </Container>
