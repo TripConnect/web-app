@@ -5,19 +5,19 @@ import { useSelector } from "react-redux";
 import { Button, Chip, Container, Grid, TextField } from '@mui/material';
 
 const SEARCH_USER_QUERY = gql`
-  query Users($searchTerm: String!) {
-    users(searchTerm: $searchTerm) {
-        id
-        displayName
+    query Users($searchTerm: String!) {
+        users(searchTerm: $searchTerm) {
+            id
+            displayName
+        }
     }
-  }
 `;
 
 function UserItem(props) {
     const { id, displayName } = props;
     const navigate = useNavigate();
     const handleClick = () => {
-        navigate(`/profile`, { state: { id, displayName } });
+        navigate(`/profile`);
     }
 
     return (
