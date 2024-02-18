@@ -61,7 +61,7 @@ export default function Conversation() {
     const location = useLocation();
     let { conversationId } = location.state;
     const conversationMessages = useSelector((state) => state.chat.conversations?.[conversationId]);
-    const currentUserId = useSelector((state) => state.user.userId);
+    const currentUser = useSelector((state) => state.user);
 
     const [currentPage, setCurrentPage] = useState(-1);
     const [messageContent, setMessage] = useState("");
@@ -87,60 +87,67 @@ export default function Conversation() {
     return (
         <Container>
             <Grid container>
-                <Grid item xs={12}>
+                <Grid item xs={4} style={{
+                    background: "#eee",
+                    padding: 10,
+                }}>
                     <Typography variant="h1" style={{
                         fontWeight: 500,
-                        fontSize: '2rem',
+                        fontSize: '1.75rem',
+                    }}>
+                        {currentUser.displayName}
+                    </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                    <Typography variant="h1" style={{
+                        fontWeight: 500,
+                        fontSize: '1.5rem',
+                        padding: 10,
                     }}>
                         {
                             initData?.conversation?.type === "PRIVATE" ?
-                                initData?.conversation?.members.find(m => m.id != currentUserId).displayName :
+                                initData?.conversation?.members.find(m => m.id != currentUser.userId).displayName :
                                 initData?.conversation?.name
                         }
                     </Typography>
-                </Grid>
-            </Grid>
 
-            <Grid container>
-                <Grid item xs={12}>
                     <div style={{
                         boxSizing: "border-box",
                         display: "flex",
                         flexDirection: 'column',
-                        margin: "5% 0",
                         width: "100%",
-                        height: "50vh",
+                        height: "80vh",
                         overflow: "auto",
                         alignItems: 'flex-start',
                         padding: "0.5vw",
-                        border: "solid 1px black",
-                        borderRadius: 5,
+                        borderTop: "1px solid black",
+                        borderBottom: "1px solid black",
                     }}>
                         {
                             Array.from(conversationMessages)
                                 .sort((a, b) => a.createdAt - b.createdAt)
-                                .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUserId} />)
+                                .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.userId} />)
                         }
                     </div>
-                </Grid>
-            </Grid>
 
-            <Grid container>
-                <Grid item xs={12} style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                }}>
-                    <TextField
-                        hiddenLabel
-                        id="filled-hidden-label-small"
-                        variant="filled"
-                        size="small"
-                        value={messageContent}
-                        onChange={handleChangeMessage}
-                        style={{ width: "85%" }}
-                    />
-                    <Button variant="contained" endIcon={<SendIcon />} onClick={handleSendMessage}>Send</Button>
+                    <div style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        background: "#eee",
+                        padding: 20,
+                    }}>
+                        <TextField
+                            label="Message"
+                            id="filled-hidden-label-small"
+                            variant="filled"
+                            size="small"
+                            value={messageContent}
+                            onChange={handleChangeMessage}
+                            style={{ width: "85%" }}
+                        />
+                        <Button variant="contained" endIcon={<SendIcon />} onClick={handleSendMessage}>Send</Button>
+                    </div>
                 </Grid>
             </Grid>
         </Container>

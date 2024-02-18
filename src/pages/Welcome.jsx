@@ -35,9 +35,9 @@ export default function Welcome(props) {
 
         login({ variables: { ...loginPayload } })
             .then(response => {
-                let { id: userId, token } = response.data.login;
+                let { id: userId, token, displayName } = response.data.login;
                 let { accessToken, refreshToken } = token;
-                dispatch(updateToken({ accessToken, userId, refreshToken }));
+                dispatch(updateToken({ userId, accessToken, refreshToken, displayName }));
                 navigate("/home");
 
             })

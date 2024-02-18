@@ -4,6 +4,7 @@ const initialState = {
     userId: null,
     accessToken: null,
     refreshToken: null,
+    displayName: null,
 };
 
 export const userSlice = createSlice({
