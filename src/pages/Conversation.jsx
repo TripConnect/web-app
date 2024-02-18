@@ -3,6 +3,8 @@ import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sendChatMessage } from "slices/connection";
+import { Button, Container, Grid, TextField } from "@mui/material";
+import SendIcon from '@mui/icons-material/Send';
 
 const INIT_CONVERSATION_QUERY = gql`
     query Conversation($id: String!, $page: Int!, $limit: Int!) {
@@ -80,48 +82,58 @@ export default function Conversation() {
         setMessage("");
     }
 
-    console.log({ conversationMessages });
     return (
-        <div style={{
-            position: "relative",
-            height: "100vh",
-            width: "50vw",
-            margin: "auto",
-            display: "flex",
-            flexDirection: "column",
-            padding: "0.5% 25%",
-        }}>
-            <div style={{ position: "fixed", top: 0 }}>
-                <b>
-                    {
-                        initData?.conversation?.type === "PRIVATE" ?
-                            initData?.conversation?.members.find(m => m.id != currentUserId).displayName :
-                            initData?.conversation?.name
-                    }
-                </b>
-            </div>
-            <div style={{
-                boxSizing: "border-box",
-                display: "flex",
-                margin: "5% 0",
-                height: "50%",
-                width: "100%",
-                overflow: "auto",
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: "0.5vw",
-                border: "solid 1px black",
-            }}>
-                {
-                    Array.from(conversationMessages)
-                        .sort((a, b) => a.createdAt - b.createdAt)
-                        .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUserId} />)
-                }
-            </div>
-            <div>
-                <input type="text" value={messageContent} onChange={handleChangeMessage} />
-                <button type="button" onClick={handleSendMessage} style={{ cursor: "pointer" }}>Send</button>
-            </div>
-        </div>
+        <Container>
+            <Grid container>
+                <Grid item xs={12}>
+                    <div style={{ position: "fixed", top: 0 }}>
+                        <b>
+                            {
+                                initData?.conversation?.type === "PRIVATE" ?
+                                    initData?.conversation?.members.find(m => m.id != currentUserId).displayName :
+                                    initData?.conversation?.name
+                            }
+                        </b>
+                    </div>
+                </Grid>
+            </Grid>
+
+            <Grid container>
+                <Grid item xs={12}>
+                    <div style={{
+                        boxSizing: "border-box",
+                        display: "flex",
+                        flexDirection: 'column',
+                        margin: "5% 0",
+                        width: "100%",
+                        overflow: "auto",
+                        alignItems: 'flex-start',
+                        padding: "0.5vw",
+                        border: "solid 1px black",
+                    }}>
+                        {
+                            Array.from(conversationMessages)
+                                .sort((a, b) => a.createdAt - b.createdAt)
+                                .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUserId} />)
+                        }
+                    </div>
+                </Grid>
+            </Grid>
+
+            <Grid container>
+                <Grid item xs={10}>
+                    <TextField
+                        hiddenLabel
+                        id="filled-hidden-label-small"
+                        variant="filled"
+                        size="small"
+                        value={messageContent}
+                        onChange={handleChangeMessage}
+                        style={{ width: "80%" }}
+                    />
+                    <Button variant="contained" endIcon={<SendIcon />} onClick={handleSendMessage} >Send</Button>
+                </Grid>
+            </Grid>
+        </Container>
     );
 }
