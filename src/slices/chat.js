@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { io } from 'socket.io-client';
 import get from 'lodash/get';
 
 // NOTE: createdAt is timestamp number

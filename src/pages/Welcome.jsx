@@ -4,7 +4,6 @@ import { gql, useMutation } from '@apollo/client';
 import { useDispatch } from "react-redux";
 import { updateToken } from "slices/user";
 import { LOGIN_INCORRECT, LOGIN_INVALID } from "constants/messages";
-import { makeStyles } from "@mui/styles";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 
 const LOGIN_MUTATION = gql`
@@ -21,39 +20,11 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        maxWidth: 400,
-        margin: 'auto',
-        padding: theme.spacing(3),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-    },
-    form: {
-        width: '100%',
-        marginTop: theme.spacing(2),
-    },
-    textField: {
-        marginBottom: theme.spacing(2), // Add margin to the bottom
-    },
-    submitButton: {
-        marginTop: theme.spacing(2),
-    },
-}));
-
 export default function Welcome(props) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     let [loginPayload, setLoginPayload] = useState({});
     const [login, { data, loading, error }] = useMutation(LOGIN_MUTATION);
-
-    const classes = useStyles();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -83,17 +54,32 @@ export default function Welcome(props) {
     }
 
     return (
-        <Paper className={classes.paper}>
+        <Paper style={{
+            maxWidth: 400,
+            margin: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+        }}>
             <Typography variant="h5" component="div" color="primary" gutterBottom>
                 Login
             </Typography>
-            <form className={classes.form} onSubmit={handleSubmit}>
+            <form
+                style={{
+                    width: '100%',
+                }} 
+                onSubmit={handleSubmit}
+            >
                 <TextField
                     name="username"
                     label="Username"
                     variant="outlined"
                     fullWidth
-                    className={classes.textField}
                     onChange={onLoginChange}
                     required
                     style={{ marginBottom: '0.5rem' }}
@@ -104,7 +90,6 @@ export default function Welcome(props) {
                     variant="outlined"
                     type="password"
                     fullWidth
-                    className={classes.textField}
                     onChange={onLoginChange}
                     style={{ marginBottom: '0.5rem' }}
                     required
@@ -114,7 +99,6 @@ export default function Welcome(props) {
                     variant="contained"
                     color="primary"
                     fullWidth
-                    className={classes.submitButton}
                     onClick={handleSubmit}
                 >
                     Log In

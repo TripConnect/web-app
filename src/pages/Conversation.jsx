@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendChatMessage } from "slices/connection";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import { makeStyles } from "@mui/styles";
 
 const INIT_CONVERSATION_QUERY = gql`
     query Conversation($id: String!, $page: Int!, $limit: Int!) {
@@ -43,10 +42,12 @@ function Message({ id, content, createdAt, isSelf }) {
     return (
         <div key={id} style={{
             minWidth: "3%",
+            maxWidth: "75%",
             boxSizing: "border-box",
             alignSelf: isSelf ? "flex-end" : "flex-start",
             background: isSelf ? "lightblue" : "lightgray",
             borderRadius: "1rem",
+            wordWrap: "break-word",
             margin: "0.1vw 0",
             padding: "0.15rem 1rem",
         }}>
@@ -54,13 +55,6 @@ function Message({ id, content, createdAt, isSelf }) {
         </div>
     );
 }
-
-const useStyles = makeStyles((theme) => ({
-    displayName: {
-        fontWeight: 500,
-        fontSize: '2rem !important',
-    },
-}));
 
 export default function Conversation() {
     const dispatch = useDispatch();
@@ -75,7 +69,6 @@ export default function Conversation() {
         variables: { id: conversationId, page: currentPage, limit: 100 },
     });
     const [loadConversation, { loading, error, data }] = useLazyQuery(LOAD_CONVERSATION_QUERY);
-    const classes = useStyles();
 
     if (initLoading) return <div>Loading...</div>;
     if (initError) return <div>Something went wrong</div>;
@@ -95,7 +88,10 @@ export default function Conversation() {
         <Container>
             <Grid container>
                 <Grid item xs={12}>
-                    <Typography variant="h1" className={classes.displayName}>
+                    <Typography variant="h1" style={{
+                        fontWeight: 500,
+                        fontSize: '2rem',
+                    }}>
                         {
                             initData?.conversation?.type === "PRIVATE" ?
                                 initData?.conversation?.members.find(m => m.id != currentUserId).displayName :
