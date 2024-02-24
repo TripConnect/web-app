@@ -74,7 +74,6 @@ export default function Conversation() {
     const [timeoutId, setTimeoutId] = useState(null);
     const [currentPage, setCurrentPage] = useState(-1);
     const [messageContent, setMessage] = useState("");
-    const [searchedUsers, setSearchedUsers] = useState([]);
 
     const { loading: initLoading, error: initError, data: initData } = useQuery(INIT_CONVERSATION_QUERY, {
         variables: { id: conversationId, page: currentPage, limit: 100 },
@@ -103,10 +102,7 @@ export default function Conversation() {
         }
         setTimeoutId(
             setTimeout(() => {
-                searchUser({ variables: { searchTerm: e.target.value } })
-                    .then(response => {
-                        setSearchedUsers(response.data.users);
-                    });
+                searchUser({ variables: { searchTerm: e.target.value } });
             }, 800)
         );
     }
@@ -119,7 +115,12 @@ export default function Conversation() {
                     background: "#eee",
                     padding: 10,
                 }}>
-                    <Typography variant="h1" style={{
+                     <Typography variant="h1" style={{
+                        fontWeight: 600,
+                        fontSize: '1.75rem',
+                        marginBottom: 10,
+                    }}>Messages</Typography>
+                    <Typography variant="h4" component={"div"} style={{
                         fontWeight: 500,
                         fontSize: '1.75rem',
                     }}>
@@ -130,14 +131,20 @@ export default function Conversation() {
                         id="find-user"
                         variant="filled"
                         size="small"
+                        style={{paddingBottom: 12}}
                         onKeyUp={handleSearchUserChange}
                     />
                     <div>
                         {
                             searchUserData?.users && searchUserData.users
-                                .map(searchedUser => currentUser.userId !== searchedUser.id && <div key={`sidebarSearchUser-${searchedUser.id}`}>
-                                    {searchedUser.displayName}
-                                </div>)
+                                .map((searchedUser, index) => currentUser.userId !== searchedUser.id && (
+                                    <>
+                                        <div key={`sidebarSearchUser-${searchedUser.id}`} style={{padding: 10, cursor: "pointer"}}>
+                                            {searchedUser.displayName}
+                                        </div>
+                                        {index < searchUserData.users.length - 1 && <hr />}
+                                    </>
+                                ))
                         }
                     </div>
                 </Grid>
@@ -171,7 +178,9 @@ export default function Conversation() {
                         {
                             Array.from(conversationMessages)
                                 .sort((a, b) => a.createdAt - b.createdAt)
-                                .map((m, index) => <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.userId} />)
+                                .map((m, index) => (
+                                    <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.userId} />
+                                ))
                         }
                     </div>
 
