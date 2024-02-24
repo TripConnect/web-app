@@ -38,6 +38,15 @@ const LOAD_CONVERSATION_QUERY = gql`
     }
 `;
 
+const SEARCH_USER_QUERY = gql`
+    query Users($searchTerm: String!) {
+        users(searchTerm: $searchTerm) {
+            id
+            displayName
+        }
+    }
+`;
+
 function Message({ id, content, createdAt, isSelf }) {
     return (
         <div key={id} style={{
@@ -62,13 +71,16 @@ export default function Conversation() {
     let { conversationId } = location.state;
     const conversationMessages = useSelector((state) => state.chat.conversations?.[conversationId]);
     const currentUser = useSelector((state) => state.user);
-
+    const [timeoutId, setTimeoutId] = useState(null);
     const [currentPage, setCurrentPage] = useState(-1);
     const [messageContent, setMessage] = useState("");
+    const [searchedUsers, setSearchedUsers] = useState([]);
+
     const { loading: initLoading, error: initError, data: initData } = useQuery(INIT_CONVERSATION_QUERY, {
         variables: { id: conversationId, page: currentPage, limit: 100 },
     });
     const [loadConversation, { loading, error, data }] = useLazyQuery(LOAD_CONVERSATION_QUERY);
+    const [searchUser, { loading: searchUSerloading, error: searchUserError, data: searchUserData }] = useLazyQuery(SEARCH_USER_QUERY);
 
     if (initLoading) return <div>Loading...</div>;
     if (initError) return <div>Something went wrong</div>;
@@ -84,9 +96,25 @@ export default function Conversation() {
         setMessage("");
     }
 
+    const handleSearchUserChange = e => {
+        clearTimeout(timeoutId);
+        if(e.target.value.length === 0) {
+            return;
+        }
+        setTimeoutId(
+            setTimeout(() => {
+                searchUser({ variables: { searchTerm: e.target.value } })
+                    .then(response => {
+                        setSearchedUsers(response.data.users);
+                    });
+            }, 800)
+        );
+    }
+
     return (
         <Container>
             <Grid container>
+                {/* Sidebar */}
                 <Grid item xs={4} style={{
                     background: "#eee",
                     padding: 10,
@@ -97,7 +125,24 @@ export default function Conversation() {
                     }}>
                         {currentUser.displayName}
                     </Typography>
+                    <TextField
+                        label="Find user"
+                        id="find-user"
+                        variant="filled"
+                        size="small"
+                        onKeyUp={handleSearchUserChange}
+                    />
+                    <div>
+                        {
+                            searchUserData?.users && searchUserData.users
+                                .map(searchedUser => currentUser.userId !== searchedUser.id && <div key={`sidebarSearchUser-${searchedUser.id}`}>
+                                    {searchedUser.displayName}
+                                </div>)
+                        }
+                    </div>
                 </Grid>
+
+                {/* Main */}
                 <Grid item xs={8}>
                     <Typography variant="h1" style={{
                         fontWeight: 500,
