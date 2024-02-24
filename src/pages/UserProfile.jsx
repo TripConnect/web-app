@@ -11,15 +11,15 @@ const PRIVATE_CONVERSATION_MUTATION = gql`
     }
 `;
 
-export default function Profile(props) {
+export default function UserProfile(props) {
     const location = useLocation();
     let navigate = useNavigate();
+    let { userId: profileUserId, displayName } = location.state;
     const [createConversation, { data, loading, error }] = useMutation(PRIVATE_CONVERSATION_MUTATION);
     const currentUser = useSelector((state) => state.user);
-    const currentUserId = useSelector((state) => state.user.userId);
 
     const handleChat = (e) => {
-        createConversation({ variables: { type: 'PRIVATE', members: [currentUser.userId, currentUserId].join(",") } })
+        createConversation({ variables: { type: 'PRIVATE', members: [currentUser.userId, profileUserId].join(",") } })
             .then(response => {
                 if (response?.data?.createConversation) {
                     let { id: conversationId } = response.data.createConversation;
@@ -38,9 +38,15 @@ export default function Profile(props) {
                         fontWeight: 500,
                         fontSize: '2rem',
                     }}>
-                        {currentUser.displayName}
+                        {displayName}
                     </Typography>
-                    <Button variant="contained" onClick={handleChat}>Chat</Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleChat}
+                        disabled={profileUserId === currentUser.userId}
+                    >
+                        Chat
+                    </Button>
                 </Grid>
             </Grid>
         </Container>

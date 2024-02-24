@@ -17,7 +17,7 @@ function UserItem(props) {
     const { id, displayName } = props;
     const navigate = useNavigate();
     const handleClick = () => {
-        navigate(`/profile`);
+        navigate(`/profile`, { state: { userId: id, displayName } });
     }
 
     return (

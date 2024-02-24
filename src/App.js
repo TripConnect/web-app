@@ -11,8 +11,9 @@ import { ThemeProvider } from '@mui/material/styles';
 
 import Welcome from 'pages/Welcome';
 import Home from "pages/Home";
-import Profile from "pages/Profile";
+import UserProfile from "pages/UserProfile";
 import Conversation from "pages/Conversation";
+import Signup from "pages/Signup";
 import SocketIOListener from 'services/SocketIOListener';
 import { persistor, store } from 'store';
 import theme from "theme";
@@ -32,8 +33,9 @@ function App() {
             <Router>
               <Routes>
                 <Route path="/" element={<Welcome />} />
+                <Route path="/signup" element={<Signup />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile" element={<UserProfile />} />
                 <Route path="/conversation" element={<Conversation />} />
               </Routes>
             </Router>

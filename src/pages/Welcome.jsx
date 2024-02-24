@@ -7,17 +7,17 @@ import { LOGIN_INCORRECT, LOGIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 
 const LOGIN_MUTATION = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-        id
-        username
-        displayName
-        token {
-            accessToken
-            refreshToken
+    mutation Login($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
+            id
+            username
+            displayName
+            token {
+                accessToken
+                refreshToken
+            }
         }
     }
-  }
 `;
 
 export default function Welcome(props) {
@@ -46,7 +46,12 @@ export default function Welcome(props) {
             });
     }
 
-    const onLoginChange = (e) => {
+    const handleRegister = (e) => {
+        navigate("/signup");
+    }
+
+
+    const handleLoginChange = (e) => {
         setLoginPayload({
             ...loginPayload,
             [e.target.name]: e.target.value,
@@ -57,6 +62,7 @@ export default function Welcome(props) {
         <Paper style={{
             maxWidth: 400,
             margin: 'auto',
+            padding: 30,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -80,7 +86,7 @@ export default function Welcome(props) {
                     label="Username"
                     variant="outlined"
                     fullWidth
-                    onChange={onLoginChange}
+                    onChange={handleLoginChange}
                     required
                     style={{ marginBottom: '0.5rem' }}
                 />
@@ -90,12 +96,12 @@ export default function Welcome(props) {
                     variant="outlined"
                     type="password"
                     fullWidth
-                    onChange={onLoginChange}
+                    onChange={handleLoginChange}
                     style={{ marginBottom: '0.5rem' }}
                     required
                 />
                 <Button
-                    type="submit"
+                    type="button"
                     variant="contained"
                     color="primary"
                     fullWidth
@@ -104,6 +110,13 @@ export default function Welcome(props) {
                     Log In
                 </Button>
             </form>
+            <div style={{
+                marginTop: 20,
+                width: "100%",
+                textAlign: "right",
+            }}>
+                <i>Now have account?</i> <span style={{cursor: "pointer", color: "darkblue"}} role="link" onClick={handleRegister}>signup</span>
+            </div>
         </Paper>
     )
 }
