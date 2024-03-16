@@ -2,26 +2,34 @@ import { useState } from "react";
 import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Button, Chip, Container, Grid, TextField } from '@mui/material';
+import { Avatar, Button, Chip, Container, Grid, TextField } from '@mui/material';
+import { Image } from "@mui/icons-material";
 
 const SEARCH_USER_QUERY = gql`
     query Users($searchTerm: String!) {
         users(searchTerm: $searchTerm) {
             id
             displayName
+            avatar
         }
     }
 `;
 
 function UserItem(props) {
-    const { id, displayName } = props;
+    const { id, displayName, avatar } = props;
     const navigate = useNavigate();
     const handleClick = () => {
         navigate(`/profile`, { state: { userId: id, displayName } });
     }
 
     return (
-        <Chip variant="outlined" label={displayName} onClick={handleClick} />
+        <div onClick={handleClick} style={{display: "flex", alignItems: 'center'}}>
+            <Avatar 
+                src={avatar ? process.env.REACT_APP_BASE_URL + avatar : process.env.REACT_APP_DEFAULT_AVATAR_URL} 
+                style={{marginRight: 10, objectFit: "cover", width: 50, height: 50}}
+            />
+            {displayName}
+        </div>
     );
 }
 
@@ -67,7 +75,7 @@ export default function Home() {
                         marginTop: 10,
                     }}>
                         {
-                            searchedUsers.length > 0 && searchedUsers.map(({ id, displayName }) => id != currentUserId && <UserItem key={id} id={id} displayName={displayName} />)
+                            searchedUsers.length > 0 && searchedUsers.map(user => user.id != currentUserId && <UserItem key={user.id} {...user} />)
                         }
                     </div>
                 </Grid>
