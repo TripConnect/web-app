@@ -28,7 +28,7 @@ const INIT_CONVERSATION_QUERY = gql`
 `;
 
 const LOAD_CONVERSATION_QUERY = gql`
-    query Conversation($id: String!, $page: Int!, $limit: Int!) {
+    query Conversation($id: String!, $page: Int, $limit: Int) {
         conversation(id: $id) {
             messages(page: $page, limit: $limit) {
                 messageContent
@@ -69,14 +69,15 @@ export default function Conversation() {
     const dispatch = useDispatch();
     const location = useLocation();
     let { conversationId } = location.state;
-    const conversationMessages = useSelector((state) => state.chat.conversations?.[conversationId]);
+    let [currentConversationId, setCurrentConversationId] = useState(conversationId);
+    const conversationMessages = useSelector((state) => state.chat.conversations?.[currentConversationId]);
     const currentUser = useSelector((state) => state.user);
     const [timeoutId, setTimeoutId] = useState(null);
     const [currentPage, setCurrentPage] = useState(-1);
     const [messageContent, setMessage] = useState("");
 
     const { loading: initLoading, error: initError, data: initData } = useQuery(INIT_CONVERSATION_QUERY, {
-        variables: { id: conversationId, page: currentPage, limit: 100 },
+        variables: { id: currentConversationId, page: currentPage, limit: 100 },
     });
     const [loadConversation, { loading, error, data }] = useLazyQuery(LOAD_CONVERSATION_QUERY);
     const [searchUser, { loading: searchUSerloading, error: searchUserError, data: searchUserData }] = useLazyQuery(SEARCH_USER_QUERY);
@@ -91,8 +92,12 @@ export default function Conversation() {
     }
 
     const handleSendMessage = e => {
-        dispatch(sendChatMessage({ conversationId, messageContent }));
+        dispatch(sendChatMessage({ currentConversationId, messageContent }));
         setMessage("");
+    }
+
+    const switchConversation = (conversationId) => {
+        setCurrentConversationId(conversationId);
     }
 
     const handleSearchUserChange = e => {
@@ -139,7 +144,11 @@ export default function Conversation() {
                             searchUserData?.users && searchUserData.users
                                 .map((searchedUser, index) => currentUser.userId !== searchedUser.id && (
                                     <>
-                                        <div key={`sidebarSearchUser-${searchedUser.id}`} style={{padding: 10, cursor: "pointer"}}>
+                                        <div 
+                                            key={`sidebarSearchUser-${searchedUser.id}`}
+                                            style={{padding: 10, cursor: "pointer"}}
+                                            // onClick={() => switchConversation(newConversationId)}
+                                        >
                                             {searchedUser.displayName}
                                         </div>
                                         {index < searchUserData.users.length - 1 && <hr />}
