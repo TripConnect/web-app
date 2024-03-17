@@ -131,8 +131,13 @@ export default function PrimaryHeader() {
       onClose={handleMenuClose}
     >
       {
-        currentUser.userID ? <>
-          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+        currentUser.userId ? <>
+          <MenuItem onClick={() => {
+            navigate(`/profile`, { state: { userId: currentUser.userId, displayName: currentUser.displayName } })
+            handleMenuClose();
+          }}>
+            Profile
+          </MenuItem>
           <MenuItem onClick={handleMenuClose}>Log out</MenuItem>
         </> :
           <MenuItem onClick={() => {
@@ -242,7 +247,7 @@ export default function PrimaryHeader() {
                       onClick={() => {
                         searchUsersRef.current.value = '';
                         setSearchUsersEl(false);
-                        navigate(`/profile`, { state: { userId: user.id, displayName: user.displayName } })
+                        navigate(`/profile`, { state: { userId: user.id, displayName: user.displayName } });
                       }}
                       style={{ display: "flex", alignItems: 'center', marginBottom: 10, cursor: 'pointer' }}
                     >
