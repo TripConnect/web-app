@@ -42,10 +42,9 @@ export default function UserProfile(props) {
                         {displayName}
                     </Typography>
                     {
-                        isUserLoggedIn && <Button
+                        isUserLoggedIn && profileUserId !== currentUser.userId && <Button
                             variant="contained"
                             onClick={handleChat}
-                            disabled={profileUserId === currentUser.userId}
                         >
                             Chat
                         </Button>
