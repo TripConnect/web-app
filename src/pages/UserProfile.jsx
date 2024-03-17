@@ -17,6 +17,7 @@ export default function UserProfile(props) {
     let { userId: profileUserId, displayName } = location.state;
     const [createConversation, { data, loading, error }] = useMutation(PRIVATE_CONVERSATION_MUTATION);
     const currentUser = useSelector((state) => state.user);
+    const isUserLoggedIn = Boolean(currentUser.userId);
 
     const handleChat = (e) => {
         createConversation({ variables: { type: 'PRIVATE', members: [currentUser.userId, profileUserId].join(",") } })
@@ -40,13 +41,15 @@ export default function UserProfile(props) {
                     }}>
                         {displayName}
                     </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={handleChat}
-                        disabled={profileUserId === currentUser.userId}
-                    >
-                        Chat
-                    </Button>
+                    {
+                        isUserLoggedIn && <Button
+                            variant="contained"
+                            onClick={handleChat}
+                            disabled={profileUserId === currentUser.userId}
+                        >
+                            Chat
+                        </Button>
+                    }
                 </Grid>
             </Grid>
         </Container>

@@ -12,6 +12,7 @@ const LOGIN_MUTATION = gql`
             id
             username
             displayName
+            avatar
             token {
                 accessToken
                 refreshToken
@@ -35,9 +36,9 @@ export default function Welcome(props) {
 
         login({ variables: { ...loginPayload } })
             .then(response => {
-                let { id: userId, token, displayName } = response.data.login;
+                let { id: userId, token, displayName, avatar } = response.data.login;
                 let { accessToken, refreshToken } = token;
-                dispatch(updateToken({ userId, accessToken, refreshToken, displayName }));
+                dispatch(updateToken({ userId, accessToken, refreshToken, displayName, avatar }));
                 navigate("/home");
 
             })

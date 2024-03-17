@@ -19,6 +19,7 @@ import SocketIOListener from 'services/SocketIOListener';
 import { persistor, store } from 'store';
 import theme from "theme";
 import UploadFile from "pages/UploadFile";
+import PrimaryHeader from "components/PrimaryHeader";
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -39,8 +40,10 @@ function App() {
           <ThemeProvider theme={theme}>
             <SocketIOListener />
             <Router>
+              <PrimaryHeader key="primary-header" />
               <Routes>
                 <Route path="/" element={<Welcome />} />
+                <Route path="/login" element={<Welcome />} />
                 <Route path="/upload" element={<UploadFile />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/home" element={<Home />} />

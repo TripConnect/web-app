@@ -38,7 +38,6 @@ export default function SocketIOListener() {
 
     if (accessToken && !socketIOSonnection) {
         console.log("Initial socketIO connection");
-        console.log({ accessToken, socketIOSonnection });
         let connection = io(
             `${process.env.REACT_APP_BASE_URL}/chat`,
             {
