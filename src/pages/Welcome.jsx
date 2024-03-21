@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { updateToken } from "slices/user";
 import { LOGIN_INCORRECT, LOGIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const LOGIN_MUTATION = gql`
     mutation Login($username: String!, $password: String!) {
@@ -22,6 +23,7 @@ const LOGIN_MUTATION = gql`
 `;
 
 export default function Welcome(props) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     let [loginPayload, setLoginPayload] = useState({});
@@ -74,7 +76,7 @@ export default function Welcome(props) {
             transform: "translate(-50%, -50%)",
         }}>
             <Typography variant="h5" component="div" color="primary" gutterBottom>
-                Login
+                {t('Login')}
             </Typography>
             <form
                 style={{
@@ -84,7 +86,7 @@ export default function Welcome(props) {
             >
                 <TextField
                     name="username"
-                    label="Username"
+                    label={t("Username")}
                     variant="outlined"
                     fullWidth
                     onChange={handleLoginChange}
@@ -93,7 +95,7 @@ export default function Welcome(props) {
                 />
                 <TextField
                     name="password"
-                    label="Password"
+                    label={t("Password")}
                     variant="outlined"
                     type="password"
                     fullWidth
@@ -108,7 +110,7 @@ export default function Welcome(props) {
                     fullWidth
                     onClick={handleSubmit}
                 >
-                    Log In
+                    {t("Log In")}
                 </Button>
             </form>
             <div style={{
@@ -116,7 +118,7 @@ export default function Welcome(props) {
                 width: "100%",
                 textAlign: "right",
             }}>
-                <i>Now have account?</i> <span style={{cursor: "pointer", color: "darkblue"}} role="link" onClick={handleRegister}>signup</span>
+                <i>{t("Now have account?")}</i> <span style={{cursor: "pointer", color: "darkblue"}} role="link" onClick={handleRegister}>{t("signup")}</span>
             </div>
         </Paper>
     )

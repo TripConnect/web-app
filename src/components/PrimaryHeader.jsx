@@ -15,11 +15,14 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { useSelector } from 'react-redux';
-import { Avatar, Paper } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { Avatar, Button, Paper } from '@mui/material';
 import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import { useTranslation } from 'react-i18next';
+import { switchLanguage } from 'slices/language';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -72,6 +75,7 @@ const SEARCH_USER_QUERY = gql`
 `;
 
 export default function PrimaryHeader() {
+  const currentLanguage = useSelector(state => state.language.currentLanguage);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [searchUsersEl, setSearchUsersEl] = React.useState(true);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -80,10 +84,11 @@ export default function PrimaryHeader() {
   const navigate = useNavigate();
   const searchUsersRef = useRef();
   const searchScheduler = useRef();
-
+  const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const shouldSearchUsersOpen = Boolean(searchUsersEl);
+  const { t, i18n } = useTranslation();
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -144,7 +149,7 @@ export default function PrimaryHeader() {
             navigate('/login');
             handleMenuClose();
           }}>
-            Login
+            {t('Login')}
           </MenuItem>
       }
     </Menu>
@@ -229,7 +234,7 @@ export default function PrimaryHeader() {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder="Search…"
+              placeholder={t("Search") + '...'}
               inputProps={{ 'aria-label': 'search', name: 'searchTerm', onKeyUp: handleSearchTermChange, ref: searchUsersRef }}
             />
             {
@@ -315,6 +320,30 @@ export default function PrimaryHeader() {
               <MoreIcon />
             </IconButton>
           </Box>
+
+          {/* language options start */}
+          <PopupState variant="popover" popupId="language-popup-menu">
+            {(popupState) => (
+              <React.Fragment>
+                <Button variant="contained" {...bindTrigger(popupState)}>
+                  {currentLanguage}
+                </Button>
+                <Menu {...bindMenu(popupState)}>
+                  <MenuItem onClick={async () => {
+                    await i18n.changeLanguage('en');
+                    dispatch(switchLanguage({ language: 'en' }));
+                    popupState.close();
+                  }}>English</MenuItem>
+                  <MenuItem onClick={async () => {
+                    await i18n.changeLanguage('vi');
+                    dispatch(switchLanguage({ language: 'vi' }));
+                    popupState.close();
+                  }}>Vietnamese</MenuItem>
+                </Menu>
+              </React.Fragment>
+            )}
+          </PopupState>
+          {/* language options end */}
         </Toolbar>
       </AppBar>
 

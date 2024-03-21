@@ -9,6 +9,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { PersistGate } from 'redux-persist/integration/react';
 import { ThemeProvider } from '@mui/material/styles';
+import i18next from "i18next";
 
 import Welcome from 'pages/Welcome';
 import Home from "pages/Home";
@@ -20,6 +21,10 @@ import { persistor, store } from 'store';
 import theme from "theme";
 import UploadFile from "pages/UploadFile";
 import PrimaryHeader from "components/PrimaryHeader";
+import { I18nextProvider } from "react-i18next";
+
+import enTranslation from 'locales/en/translation.json';
+import viTranslation from 'locales/vi/translation.json';
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -32,29 +37,40 @@ const client = new ApolloClient({
   }),
 });
 
+i18next.init({
+  interpolation: { escapeValue: false }, // React already does escaping
+  lng: 'en',
+  resources: {
+    en: { translation: enTranslation },
+    vi: { translation: viTranslation }
+  }
+});
+
 function App() {
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ApolloProvider client={client}>
-          <ThemeProvider theme={theme}>
-            <SocketIOListener />
-            <Router>
-              <PrimaryHeader key="primary-header" />
-              <Routes>
-                <Route path="/" element={<Welcome />} />
-                <Route path="/login" element={<Welcome />} />
-                <Route path="/upload" element={<UploadFile />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/profile" element={<UserProfile />} />
-                <Route path="/conversation" element={<Conversation />} />
-              </Routes>
-            </Router>
-          </ThemeProvider>,
-        </ApolloProvider>
-      </PersistGate>
-    </Provider>
+    <I18nextProvider i18n={i18next}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <ApolloProvider client={client}>
+            <ThemeProvider theme={theme}>
+              <SocketIOListener />
+              <Router>
+                <PrimaryHeader key="primary-header" />
+                <Routes>
+                  <Route path="/" element={<Welcome />} />
+                  <Route path="/login" element={<Welcome />} />
+                  <Route path="/upload" element={<UploadFile />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/profile" element={<UserProfile />} />
+                  <Route path="/conversation" element={<Conversation />} />
+                </Routes>
+              </Router>
+            </ThemeProvider>
+          </ApolloProvider>
+        </PersistGate>
+      </Provider>
+    </I18nextProvider>
   );
 }
 

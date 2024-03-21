@@ -5,12 +5,14 @@ import storage from 'redux-persist/lib/storage';
 import chatReducer from 'slices/chat';
 import userReducer from 'slices/user';
 import connectionReducer from 'slices/connection';
+import languageReducer from 'slices/language';
 
 // Define your root reducer
 const rootReducer = combineReducers({
     chat: chatReducer,
     user: userReducer,
     connection: connectionReducer,
+    language: languageReducer,
 });
 
 // Configure redux-persist
