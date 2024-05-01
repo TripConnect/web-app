@@ -143,7 +143,10 @@ export default function PrimaryHeader() {
           }}>
             Profile
           </MenuItem>
-          <MenuItem onClick={handleMenuClose}>Log out</MenuItem>
+          <MenuItem onClick={() => {
+            localStorage.clear();
+            handleMenuClose();
+          }}>Log out</MenuItem>
         </> :
           <MenuItem onClick={() => {
             navigate('/login');
