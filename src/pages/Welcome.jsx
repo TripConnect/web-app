@@ -3,17 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
 import { useDispatch } from "react-redux";
 import { updateToken } from "slices/user";
-import { LOGIN_INCORRECT, LOGIN_INVALID } from "constants/messages";
+import { SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const LOGIN_MUTATION = gql`
-    mutation Login($username: String!, $password: String!) {
-        login(username: $username, password: $password) {
-            id
-            username
-            displayName
-            avatar
+const SIGNIN_MUTATION = gql`
+    mutation Signin($username: String!, $password: String!) {
+        signin(username: $username, password: $password) {
+            userInfo {
+                id
+                username
+                displayName
+                avatar
+            }
             token {
                 accessToken
                 refreshToken
@@ -27,25 +29,27 @@ export default function Welcome(props) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     let [loginPayload, setLoginPayload] = useState({});
-    const [login, { data, loading, error }] = useMutation(LOGIN_MUTATION);
+    const [signin, { data, loading, error }] = useMutation(SIGNIN_MUTATION);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!loginPayload.username || !loginPayload.password) {
-            alert(LOGIN_INVALID);
+            alert(SIGNIN_INVALID);
             return
         }
 
-        login({ variables: { ...loginPayload } })
+        signin({ variables: { ...loginPayload } })
             .then(response => {
-                let { id: userId, token, displayName, avatar } = response.data.login;
+                let { userInfo, token } = response.data.signin;
+                let { id: userId, displayName, avatar } = userInfo;
                 let { accessToken, refreshToken } = token;
                 dispatch(updateToken({ userId, accessToken, refreshToken, displayName, avatar }));
                 navigate("/home");
 
             })
             .catch(error => {
-                alert(LOGIN_INCORRECT);
+                console.error(error);
+                alert(SIGNIN_INCORRECT);
             });
     }
 
