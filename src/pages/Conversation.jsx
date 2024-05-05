@@ -83,7 +83,10 @@ export default function Conversation() {
     const [searchUser, { loading: searchUSerloading, error: searchUserError, data: searchUserData }] = useLazyQuery(SEARCH_USER_QUERY);
 
     if (initLoading) return <div>Loading...</div>;
-    if (initError) return <div>Something went wrong</div>;
+    if (initError) {
+        console.error(initError);
+        return <div>Something went wrong</div>;
+    }
     if (!conversationMessages) return <div>Cannot load messages</div>;
 
     const handleChangeMessage = e => {
