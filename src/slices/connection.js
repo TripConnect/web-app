@@ -21,6 +21,7 @@ export const connectionSlice = createSlice({
         },
         sendChatMessage: (state, action) => {
             let { conversationId, messageContent } = action.payload;
+            console.log(action.payload);
             state.connections.socketio.emit("message", { conversationId, messageContent });
             return state;
         },

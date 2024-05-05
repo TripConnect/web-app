@@ -70,7 +70,6 @@ export default function Conversation() {
     const location = useLocation();
     let { conversationId } = location.state;
     let [currentConversationId, setCurrentConversationId] = useState(conversationId);
-    const conversationMessages = useSelector((state) => state.chat.conversations?.[currentConversationId]);
     const currentUser = useSelector((state) => state.user);
     const [timeoutId, setTimeoutId] = useState(null);
     const [currentPage, setCurrentPage] = useState(-1);
@@ -87,15 +86,13 @@ export default function Conversation() {
         console.error(initError);
         return <div>Something went wrong</div>;
     }
-    if (!conversationMessages) return <div>Cannot load messages</div>;
-
     const handleChangeMessage = e => {
         let { value } = e.target;
         setMessage(value);
     }
 
     const handleSendMessage = e => {
-        dispatch(sendChatMessage({ currentConversationId, messageContent }));
+        dispatch(sendChatMessage({ conversationId: currentConversationId, messageContent }));
         setMessage("");
     }
 
@@ -105,7 +102,7 @@ export default function Conversation() {
 
     const handleSearchUserChange = e => {
         clearTimeout(timeoutId);
-        if(e.target.value.length === 0) {
+        if (e.target.value.length === 0) {
             return;
         }
         setTimeoutId(
@@ -123,7 +120,7 @@ export default function Conversation() {
                     background: "#eee",
                     padding: 10,
                 }}>
-                     <Typography variant="h1" style={{
+                    <Typography variant="h1" style={{
                         fontWeight: 600,
                         fontSize: '1.75rem',
                         marginBottom: 10,
@@ -139,7 +136,7 @@ export default function Conversation() {
                         id="find-user"
                         variant="filled"
                         size="small"
-                        style={{paddingBottom: 12}}
+                        style={{ paddingBottom: 12 }}
                         onKeyUp={handleSearchUserChange}
                     />
                     <div>
@@ -147,10 +144,10 @@ export default function Conversation() {
                             searchUserData?.users && searchUserData.users
                                 .map((searchedUser, index) => currentUser.userId !== searchedUser.id && (
                                     <>
-                                        <div 
+                                        <div
                                             key={`sidebarSearchUser-${searchedUser.id}`}
-                                            style={{padding: 10, cursor: "pointer"}}
-                                            // onClick={() => switchConversation(newConversationId)}
+                                            style={{ padding: 10, cursor: "pointer" }}
+                                        // onClick={() => switchConversation(newConversationId)}
                                         >
                                             {searchedUser.displayName}
                                         </div>
@@ -188,10 +185,10 @@ export default function Conversation() {
                         borderBottom: "1px solid black",
                     }}>
                         {
-                            Array.from(conversationMessages)
-                                .sort((a, b) => a.createdAt - b.createdAt)
+                            Array.from(initData.conversation.messages)
+                                .sort((a, b) => parseInt(a.createdAt.seconds) - parseInt(b.createdAt.seconds))
                                 .map((m, index) => (
-                                    <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.userId === currentUser.userId} />
+                                    <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.fromUser.id === currentUser.userId} />
                                 ))
                         }
                     </div>
