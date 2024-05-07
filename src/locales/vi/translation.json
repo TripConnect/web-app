@@ -1,9 +1,8 @@
 {
-    "Login": "Đăng nhập",
-    "Log In": "Đăng nhập",
-    "Now have account?": "Bạn chưa có tài khoản?",
-    "signup": "đăng ký",
-    "Username": "Tên đăng nhập",
-    "Password": "Mật khẩu",
-    "Search": "Tìm kiếm"
+    "LOGIN": "Đăng nhập",
+    "NOW_HAVE_ACCOUNT_QUESTION": "Bạn chưa có tài khoản?",
+    "SIGNUP": "đăng ký",
+    "USERNAME": "Tên đăng nhập",
+    "PASSWORD": "Mật khẩu",
+    "SEARCH": "Tìm kiếm"
 }

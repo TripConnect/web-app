@@ -152,7 +152,7 @@ export default function PrimaryHeader() {
             navigate('/login');
             handleMenuClose();
           }}>
-            {t('Login')}
+            {t('LOGIN')}
           </MenuItem>
       }
     </Menu>
@@ -237,7 +237,7 @@ export default function PrimaryHeader() {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder={t("Search") + '...'}
+              placeholder={t("SEARCH") + '...'}
               inputProps={{ 'aria-label': 'search', name: 'searchTerm', onKeyUp: handleSearchTermChange, ref: searchUsersRef }}
             />
             {

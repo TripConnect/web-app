@@ -80,7 +80,7 @@ export default function Welcome(props) {
             transform: "translate(-50%, -50%)",
         }}>
             <Typography variant="h5" component="div" color="primary" gutterBottom>
-                {t('Login')}
+                {t('LOGIN')}
             </Typography>
             <form
                 style={{
@@ -90,7 +90,7 @@ export default function Welcome(props) {
             >
                 <TextField
                     name="username"
-                    label={t("Username")}
+                    label={t("USERNAME")}
                     variant="outlined"
                     fullWidth
                     onChange={handleLoginChange}
@@ -99,7 +99,7 @@ export default function Welcome(props) {
                 />
                 <TextField
                     name="password"
-                    label={t("Password")}
+                    label={t("PASSWORD")}
                     variant="outlined"
                     type="password"
                     fullWidth
@@ -114,7 +114,7 @@ export default function Welcome(props) {
                     fullWidth
                     onClick={handleSubmit}
                 >
-                    {t("Log In")}
+                    {t("LOGIN")}
                 </Button>
             </form>
             <div style={{
@@ -122,7 +122,7 @@ export default function Welcome(props) {
                 width: "100%",
                 textAlign: "right",
             }}>
-                <i>{t("Now have account?")}</i> <span style={{cursor: "pointer", color: "darkblue"}} role="link" onClick={handleRegister}>{t("signup")}</span>
+                <i>{t("NOW_HAVE_ACCOUNT_QUESTION")}</i> <span style={{cursor: "pointer", color: "darkblue"}} role="link" onClick={handleRegister}>{t("SIGNUP")}</span>
             </div>
         </Paper>
     )

@@ -1,9 +1,8 @@
 {
-    "Login": "Login",
-    "Log In": "Log In",
-    "Now have account?": "Now have account?",
-    "signup": "signup",
-    "Username": "Username",
-    "Password": "Password",
-    "Search": "Search"
+    "LOGIN": "Login",
+    "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
+    "SIGNUP": "signup",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "SEARCH": "Search"
 }
