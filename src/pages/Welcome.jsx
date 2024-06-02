@@ -6,6 +6,7 @@ import { updateToken } from "slices/user";
 import { SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { connectSocket } from "slices/socket";
 
 const SIGNIN_MUTATION = gql`
     mutation Signin($username: String!, $password: String!) {
@@ -85,7 +86,7 @@ export default function Welcome(props) {
             <form
                 style={{
                     width: '100%',
-                }} 
+                }}
                 onSubmit={handleSubmit}
             >
                 <TextField
@@ -96,6 +97,7 @@ export default function Welcome(props) {
                     onChange={handleLoginChange}
                     required
                     style={{ marginBottom: '0.5rem' }}
+                    autoComplete="off"
                 />
                 <TextField
                     name="password"
@@ -122,7 +124,7 @@ export default function Welcome(props) {
                 width: "100%",
                 textAlign: "right",
             }}>
-                <i>{t("NOW_HAVE_ACCOUNT_QUESTION")}</i> <span style={{cursor: "pointer", color: "darkblue"}} role="link" onClick={handleRegister}>{t("SIGNUP")}</span>
+                <i>{t("NOW_HAVE_ACCOUNT_QUESTION")}</i> <span style={{ cursor: "pointer", color: "darkblue" }} role="link" onClick={handleRegister}>{t("SIGNUP")}</span>
             </div>
         </Paper>
     )

@@ -23,8 +23,8 @@ export default function UserProfile(props) {
         createConversation({ variables: { type: 'PRIVATE', members: [currentUser.userId, profileUserId].join(",") } })
             .then(response => {
                 if (response?.data?.createConversation) {
-                    let { id: conversationId } = response.data.createConversation;
-                    navigate("/conversation", { state: { conversationId } });
+                    let { id } = response.data.createConversation;
+                    navigate("/conversation/" + id);
                 }
             }).catch(e => {
                 console.log(e);

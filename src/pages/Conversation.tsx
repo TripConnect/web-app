@@ -1,24 +1,19 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { sendChatMessage } from "slices/connection";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
+import { addChatHistory, initChatHistory } from "slices/chat";
+import { CHAT_MESSAGE_EVENT } from "constants/socket";
+import { ChatMessageModel } from 'types/chat';
+import { CHAT_HISTORY_PAGE_SIZE } from "constants/common";
 
-const INIT_CONVERSATION_QUERY = gql`
-    query Conversation($id: String!, $page: Int!, $limit: Int!) {
+const QUERY_CONVERSATION_SUMMARY = gql`
+    query Conversation($id: String!) {
         conversation(id: $id) {
             name
             type
-            messages(page: $page, limit: $limit) {
-                id
-                fromUser {
-                    id
-                }
-                messageContent
-                createdAt
-            }
             members {
                 id
                 displayName
@@ -27,11 +22,17 @@ const INIT_CONVERSATION_QUERY = gql`
     }
 `;
 
-const LOAD_CONVERSATION_QUERY = gql`
+const QUERY_CHAT_HISTORY = gql`
     query Conversation($id: String!, $page: Int, $limit: Int) {
         conversation(id: $id) {
             messages(page: $page, limit: $limit) {
+                id
                 messageContent
+                fromUser {
+                    id
+                    avatar
+                    displayName
+                }
                 createdAt
             }
         }
@@ -47,7 +48,7 @@ const SEARCH_USER_QUERY = gql`
     }
 `;
 
-function Message({ id, content, createdAt, isSelf }) {
+function Message({ id, content, createdAt, isSelf }: { id: string, content: string, createdAt: number, isSelf: boolean }) {
     return (
         <div key={id} style={{
             minWidth: "3%",
@@ -66,42 +67,62 @@ function Message({ id, content, createdAt, isSelf }) {
 }
 
 export default function Conversation() {
+    const { id: currentConversationId } = useParams<{id: string}>();
     const dispatch = useDispatch();
-    const location = useLocation();
-    let { conversationId } = location.state;
-    let [currentConversationId, setCurrentConversationId] = useState(conversationId);
-    const currentUser = useSelector((state) => state.user);
-    const [timeoutId, setTimeoutId] = useState(null);
+
+    const [timeoutId, setTimeoutId] = useState<any>(null);
     const [currentPage, setCurrentPage] = useState(-1);
-    const [messageContent, setMessage] = useState("");
+    const [chatMessage, setChatMessage] = useState("");
 
-    const { loading: initLoading, error: initError, data: initData } = useQuery(INIT_CONVERSATION_QUERY, {
-        variables: { id: currentConversationId, page: currentPage, limit: 100 },
-    });
-    const [loadConversation, { loading, error, data }] = useLazyQuery(LOAD_CONVERSATION_QUERY);
+    const chatSocket = useSelector((state: any) => state.socket.socket);
+    const currentUser = useSelector((state: any) => state.user);
+
     const [searchUser, { loading: searchUSerloading, error: searchUserError, data: searchUserData }] = useLazyQuery(SEARCH_USER_QUERY);
+    const [fetchChatSummary, { loading: fetchChatSummaryLoading, error: fetchChatSummaryError, data: fetchChatSummaryData }] = useLazyQuery(QUERY_CONVERSATION_SUMMARY);
+    const [fetchChatHistory, { loading: fetchChatHistoryLoading, error: fetchChatHistoryError, data: fetchChatHistoryData }] = useLazyQuery(QUERY_CHAT_HISTORY);
 
-    if (initLoading) return <div>Loading...</div>;
-    if (initError) {
-        console.error(initError);
-        return <div>Something went wrong</div>;
-    }
-    const handleChangeMessage = e => {
-        let { value } = e.target;
-        setMessage(value);
+
+    useEffect(() =>{
+        fetchChatHistory({
+            variables: {
+                id: currentConversationId,
+                page: currentPage,
+                limit: CHAT_HISTORY_PAGE_SIZE
+            }
+        }).then(data => {
+            let messages: ChatMessageModel[] = data.data.conversation.messages.map((m: any) => ({
+                conversationId: m.id,
+                fromUserId: m.fromUser.id,
+                messageContent: m.messageContent,
+                createdAt: m.createdAt,
+            }));
+            dispatch(initChatHistory({ messages }));
+        });
+    }, [currentPage]);
+
+    useEffect(() =>{
+        fetchChatSummary({
+            variables: {
+                id: currentConversationId
+            }
+        });
+    }, []);
+
+
+    const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setChatMessage(e.target.value);
     }
 
-    const handleSendMessage = e => {
-        dispatch(sendChatMessage({ conversationId: currentConversationId, messageContent }));
-        setMessage("");
+    const handleSendMessage = () => {
+        chatSocket.emit(CHAT_MESSAGE_EVENT, {
+            conversationId: currentConversationId,
+            content: chatMessage
+        });
+        setChatMessage("");
     }
 
-    const switchConversation = (conversationId) => {
-        setCurrentConversationId(conversationId);
-    }
-
-    const handleSearchUserChange = e => {
-        clearTimeout(timeoutId);
+    const handleSearchUserChange = (e: any) => {
+        clearTimeout(timeoutId as number);
         if (e.target.value.length === 0) {
             return;
         }
@@ -111,6 +132,7 @@ export default function Conversation() {
             }, 800)
         );
     }
+
 
     return (
         <Container>
@@ -142,12 +164,11 @@ export default function Conversation() {
                     <div>
                         {
                             searchUserData?.users && searchUserData.users
-                                .map((searchedUser, index) => currentUser.userId !== searchedUser.id && (
+                                .map((searchedUser: any, index: number) => currentUser.userId !== searchedUser.id && (
                                     <>
                                         <div
                                             key={`sidebarSearchUser-${searchedUser.id}`}
                                             style={{ padding: 10, cursor: "pointer" }}
-                                        // onClick={() => switchConversation(newConversationId)}
                                         >
                                             {searchedUser.displayName}
                                         </div>
@@ -165,11 +186,8 @@ export default function Conversation() {
                         fontSize: '1.5rem',
                         padding: 10,
                     }}>
-                        {
-                            initData?.conversation?.type === "PRIVATE" ?
-                                initData?.conversation?.members.find(m => m.id != currentUser.userId).displayName :
-                                initData?.conversation?.name
-                        }
+                        {fetchChatSummaryLoading && "Loading..."}
+                        {fetchChatSummaryData && (fetchChatSummaryData.conversation.type === "PRIVATE" ? fetchChatSummaryData.conversation.members.find((m: any) => m.id !== currentUser.userId).displayName : fetchChatSummaryData.conversation.name)}
                     </Typography>
 
                     <div style={{
@@ -184,13 +202,9 @@ export default function Conversation() {
                         borderTop: "1px solid black",
                         borderBottom: "1px solid black",
                     }}>
-                        {
-                            Array.from(initData.conversation.messages)
-                                .sort((a, b) => parseInt(a.createdAt.seconds) - parseInt(b.createdAt.seconds))
-                                .map((m, index) => (
-                                    <Message key={`message-${index}`} id={m.id} content={m.messageContent} createdAt={m.createdAt} isSelf={m.fromUser.id === currentUser.userId} />
-                                ))
-                        }
+                        {fetchChatHistoryLoading && "Loading..."}
+                        {fetchChatHistoryData && fetchChatHistoryData.conversation.messages
+                            .map((message: any) => <Message key={message.id} id={message.id} content={message.messageContent} createdAt={message.createdAt} isSelf={message.fromUser.id === currentUser.userId} />)}
                     </div>
 
                     <div style={{
@@ -205,7 +219,7 @@ export default function Conversation() {
                             id="filled-hidden-label-small"
                             variant="filled"
                             size="small"
-                            value={messageContent}
+                            value={chatMessage}
                             onChange={handleChangeMessage}
                             style={{ width: "85%" }}
                         />

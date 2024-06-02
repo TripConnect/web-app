@@ -241,7 +241,7 @@ export default function PrimaryHeader() {
               inputProps={{ 'aria-label': 'search', name: 'searchTerm', onKeyUp: handleSearchTermChange, ref: searchUsersRef }}
             />
             {
-              shouldSearchUsersOpen && userSearchedData?.users &&
+              (shouldSearchUsersOpen && userSearchedData?.users.length > 0) &&
               <Paper
                 style={{
                   padding: 8,

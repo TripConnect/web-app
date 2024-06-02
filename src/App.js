@@ -63,7 +63,7 @@ function App() {
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/home" element={<Home />} />
                   <Route path="/profile" element={<UserProfile />} />
-                  <Route path="/conversation" element={<Conversation />} />
+                  <Route path="/conversation/:id" element={<Conversation />} />
                 </Routes>
               </Router>
             </ThemeProvider>

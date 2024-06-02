@@ -3,15 +3,15 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
 import chatReducer from 'slices/chat';
+import socketReducer from 'slices/socket';
 import userReducer from 'slices/user';
-import connectionReducer from 'slices/connection';
 import languageReducer from 'slices/language';
 
 // Define your root reducer
 const rootReducer = combineReducers({
+    socket: socketReducer,
     chat: chatReducer,
     user: userReducer,
-    connection: connectionReducer,
     language: languageReducer,
 });
 
@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
     key: 'root',
     storage,
-    blacklist: ["connection", "chat"],
+    blacklist: ["socket", "chat"],
 };
 
 // Wrap the rootReducer with persistReducer
