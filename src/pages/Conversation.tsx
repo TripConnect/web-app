@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import { addChatHistory, initChatHistory } from "slices/chat";
 import { CHAT_MESSAGE_EVENT } from "constants/socket";
 import { ChatMessageModel } from 'types/chat';
-import { CHAT_HISTORY_PAGE_SIZE } from "constants/common";
+import { CHAT_HISTORY_PAGE_SIZE, INCOMING_CHAT_MESSAGE_CHANNEL } from "constants/common";
 
 const QUERY_CONVERSATION_SUMMARY = gql`
     query Conversation($id: String!) {
@@ -69,10 +68,12 @@ function Message({ id, content, createdAt, isSelf }: { id: string, content: stri
 export default function Conversation() {
     const { id: currentConversationId } = useParams<{id: string}>();
     const dispatch = useDispatch();
-
+    
     const [timeoutId, setTimeoutId] = useState<any>(null);
     const [currentPage, setCurrentPage] = useState(-1);
     const [chatMessage, setChatMessage] = useState("");
+    const [chatMessageHistory, setChatMessageHistory] = useState<ChatMessageModel[]>([]);
+    const [incomingChatMessageChannel, setIncomingChatMessageChannel] = useState(new BroadcastChannel(INCOMING_CHAT_MESSAGE_CHANNEL));
 
     const chatSocket = useSelector((state: any) => state.socket.socket);
     const currentUser = useSelector((state: any) => state.user);
@@ -82,7 +83,12 @@ export default function Conversation() {
     const [fetchChatHistory, { loading: fetchChatHistoryLoading, error: fetchChatHistoryError, data: fetchChatHistoryData }] = useLazyQuery(QUERY_CHAT_HISTORY);
 
 
-    useEffect(() =>{
+    incomingChatMessageChannel.addEventListener('message', (event: MessageEvent) => {
+        let incomingMessage: ChatMessageModel = event.data;
+        setChatMessageHistory([...chatMessageHistory, incomingMessage]);
+    });
+
+    useEffect(() => {
         fetchChatHistory({
             variables: {
                 id: currentConversationId,
@@ -91,12 +97,13 @@ export default function Conversation() {
             }
         }).then(data => {
             let messages: ChatMessageModel[] = data.data.conversation.messages.map((m: any) => ({
-                conversationId: m.id,
+                id: m.id,
+                conversationId: currentConversationId,
                 fromUserId: m.fromUser.id,
-                messageContent: m.messageContent,
+                content: m.messageContent,
                 createdAt: m.createdAt,
             }));
-            dispatch(initChatHistory({ messages }));
+            setChatMessageHistory(messages);
         });
     }, [currentPage]);
 
@@ -203,8 +210,8 @@ export default function Conversation() {
                         borderBottom: "1px solid black",
                     }}>
                         {fetchChatHistoryLoading && "Loading..."}
-                        {fetchChatHistoryData && fetchChatHistoryData.conversation.messages
-                            .map((message: any) => <Message key={message.id} id={message.id} content={message.messageContent} createdAt={message.createdAt} isSelf={message.fromUser.id === currentUser.userId} />)}
+                        {chatMessageHistory.length > 0 && chatMessageHistory
+                            .map((message: ChatMessageModel) => <Message key={message.id} id={message.id} content={message.content} createdAt={message.createdAt} isSelf={message.fromUserId === currentUser.userId} />)}
                     </div>
 
                     <div style={{

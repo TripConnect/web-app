@@ -1,9 +1,11 @@
+import { INCOMING_CHAT_MESSAGE_CHANNEL } from 'constants/common';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { incomingMessage } from 'slices/chat';
 import { connectSocket } from 'slices/socket';
 import { ChatMessageModel } from 'types/chat';
 
 export default function SocketIOListener() {
+    const [incomingChatMessageChannel, setIncomingChatMessageChannel] = useState(new BroadcastChannel(INCOMING_CHAT_MESSAGE_CHANNEL));
     const socket = useSelector((state: any) => state.socket.socket);
     const accessToken = useSelector((state: any) => state.user.accessToken);
     const dispatch = useDispatch();
@@ -14,7 +16,7 @@ export default function SocketIOListener() {
     }
 
     socket?.on('message', (payload: ChatMessageModel) => {
-        dispatch(incomingMessage({ message: payload }));
+        incomingChatMessageChannel.postMessage(payload);
     });
 
     return (<></>);

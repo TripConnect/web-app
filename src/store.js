@@ -2,7 +2,6 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import chatReducer from 'slices/chat';
 import socketReducer from 'slices/socket';
 import userReducer from 'slices/user';
 import languageReducer from 'slices/language';
@@ -10,7 +9,6 @@ import languageReducer from 'slices/language';
 // Define your root reducer
 const rootReducer = combineReducers({
     socket: socketReducer,
-    chat: chatReducer,
     user: userReducer,
     language: languageReducer,
 });
