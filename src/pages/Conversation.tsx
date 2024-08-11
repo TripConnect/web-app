@@ -106,13 +106,15 @@ export default function Conversation() {
         limit: CHAT_HISTORY_PAGE_SIZE
       }
     }).then(data => {
-      let messages: ChatMessageModel[] = data.data.conversation.messages.map((m: any) => ({
-        id: m.id,
-        conversationId: currentConversationId,
-        fromUserId: m.fromUser.id,
-        content: m.messageContent,
-        createdAt: m.createdAt,
-      }));
+      let messages: ChatMessageModel[] = data.data.conversation.messages
+        .map((m: any) => ({
+          id: m.id,
+          conversationId: currentConversationId,
+          fromUserId: m.fromUser.id,
+          content: m.messageContent,
+          createdAt: m.createdAt,
+        }))
+        .reverse();
       setChatMessageHistory(messages);
     });
   }, [currentPage]);
