@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Container, Grid, IconButton, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
@@ -75,6 +75,7 @@ export default function Conversation() {
   const [currentPage, setCurrentPage] = useState(-1);
   const [chatMessage, setChatMessage] = useState("");
   const [chatMessageHistory, setChatMessageHistory] = useState<ChatMessageModel[]>([]);
+  const conversationRef = useRef<HTMLDivElement>(null);
   const [incomingChatMessageChannel, setIncomingChatMessageChannel] = useState(new BroadcastChannel(INCOMING_CHAT_MESSAGE_CHANNEL));
 
   const chatSocket = useSelector((state: any) => state.socket.socket);
@@ -86,60 +87,67 @@ export default function Conversation() {
 
 
   incomingChatMessageChannel.addEventListener('message', (event: MessageEvent) => {
-      let incomingMessage: ChatMessageModel = event.data;
-      setChatMessageHistory([...chatMessageHistory, incomingMessage]);
+    let incomingMessage: ChatMessageModel = event.data;
+    setChatMessageHistory([...chatMessageHistory, incomingMessage]);
   });
 
+  useLayoutEffect(() => {
+    if (conversationRef.current) {
+      console.log('scrolling to bottom');
+      conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
+    }
+  }, [conversationRef.current]);
+
   useEffect(() => {
-      fetchChatHistory({
-          variables: {
-              id: currentConversationId,
-              page: currentPage,
-              limit: CHAT_HISTORY_PAGE_SIZE
-          }
-      }).then(data => {
-          let messages: ChatMessageModel[] = data.data.conversation.messages.map((m: any) => ({
-              id: m.id,
-              conversationId: currentConversationId,
-              fromUserId: m.fromUser.id,
-              content: m.messageContent,
-              createdAt: m.createdAt,
-          }));
-          setChatMessageHistory(messages);
-      });
+    fetchChatHistory({
+      variables: {
+        id: currentConversationId,
+        page: currentPage,
+        limit: CHAT_HISTORY_PAGE_SIZE
+      }
+    }).then(data => {
+      let messages: ChatMessageModel[] = data.data.conversation.messages.map((m: any) => ({
+        id: m.id,
+        conversationId: currentConversationId,
+        fromUserId: m.fromUser.id,
+        content: m.messageContent,
+        createdAt: m.createdAt,
+      }));
+      setChatMessageHistory(messages);
+    });
   }, [currentPage]);
 
   useEffect(() =>{
-      fetchChatSummary({
-          variables: {
-              id: currentConversationId
-          }
-      });
+    fetchChatSummary({
+      variables: {
+        id: currentConversationId
+      }
+    });
   }, []);
 
 
   const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setChatMessage(e.target.value);
+    setChatMessage(e.target.value);
   }
 
   const handleSendMessage = () => {
-      chatSocket.emit(CHAT_MESSAGE_EVENT, {
-          conversationId: currentConversationId,
-          content: chatMessage
-      });
-      setChatMessage("");
+    chatSocket.emit(CHAT_MESSAGE_EVENT, {
+      conversationId: currentConversationId,
+      content: chatMessage
+    });
+    setChatMessage("");
   }
 
   const handleSearchUserChange = (e: any) => {
-      clearTimeout(timeoutId as number);
-      if (e.target.value.length === 0) {
-          return;
-      }
-      setTimeoutId(
-          setTimeout(() => {
-              searchUser({ variables: { searchTerm: e.target.value } });
-          }, 800)
-      );
+    clearTimeout(timeoutId as number);
+    if (e.target.value.length === 0) {
+      return;
+    }
+    setTimeoutId(
+      setTimeout(() => {
+        searchUser({ variables: { searchTerm: e.target.value } });
+      }, 800)
+    );
   }
 
 
@@ -221,7 +229,7 @@ export default function Conversation() {
             </div>
           </Grid>
           <Grid item sm={12}>
-            <div style={{
+            <div ref={conversationRef} style={{
               boxSizing: "border-box",
               display: "flex",
               flexDirection: 'column',
@@ -231,14 +239,14 @@ export default function Conversation() {
               padding: "0.5vw",
               overflow: "auto",
             }}>
-                {fetchChatHistoryLoading && "Loading..."}
-                {chatMessageHistory.length > 0 && chatMessageHistory
-                  .map((message: ChatMessageModel) => <Message 
-                    key={message.id} 
-                    id={message.id} 
-                    content={message.content} 
-                    createdAt={message.createdAt} 
-                    isMine={message.fromUserId === currentUser.userId} />)}
+              {fetchChatHistoryLoading && "Loading..."}
+              {chatMessageHistory.length > 0 && chatMessageHistory
+                .map((message: ChatMessageModel) => <Message 
+                  key={message.id} 
+                  id={message.id} 
+                  content={message.content} 
+                  createdAt={message.createdAt} 
+                  isMine={message.fromUserId === currentUser.userId} />)}
             </div>
           </Grid>
           <Grid item sm={12}>
