@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
+import LanguageIcon from '@mui/icons-material/Language';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -228,7 +229,8 @@ export default function PrimaryHeader() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+            sx={{ display: { xs: 'none', sm: 'block', cursor: 'pointer' } }}
+            onClick={() => {navigate('/')}}
           >
             TCONNECT
           </Typography>
@@ -329,7 +331,7 @@ export default function PrimaryHeader() {
           <PopupState variant="popover" popupId="language-popup-menu">
             {(popupState) => (
               <React.Fragment>
-                <Button variant="contained" {...bindTrigger(popupState)}>
+                <Button variant="contained" {...bindTrigger(popupState)} startIcon={<LanguageIcon /> } style={{ width: 30 }}>
                   {currentLanguage}
                 </Button>
                 <Menu {...bindMenu(popupState)}>

@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
     userId: null,
     accessToken: null,
+    avatar: process.env.REACT_APP_DEFAULT_AVATAR_URL,
     refreshToken: null,
     displayName: null,
 };

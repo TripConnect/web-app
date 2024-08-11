@@ -4,5 +4,6 @@
     "SIGNUP": "đăng ký",
     "USERNAME": "Tên đăng nhập",
     "PASSWORD": "Mật khẩu",
-    "SEARCH": "Tìm kiếm"
+    "SEARCH": "Tìm kiếm",
+    "CHAT_MESSAGE_HINT": "Tin nhắn..."
 }

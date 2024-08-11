@@ -4,5 +4,6 @@
     "SIGNUP": "signup",
     "USERNAME": "Username",
     "PASSWORD": "Password",
-    "SEARCH": "Search"
+    "SEARCH": "Search",
+    "CHAT_MESSAGE_HINT": "Message..."
 }
