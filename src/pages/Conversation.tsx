@@ -24,7 +24,7 @@ const QUERY_CONVERSATION_SUMMARY = gql`
 const QUERY_CHAT_HISTORY = gql`
     query Conversation($id: String!, $page: Int, $limit: Int) {
         conversation(id: $id) {
-            messages(page: $page, limit: $limit) {
+            messages(messagePage: $page, messageLimit: $limit) {
                 id
                 messageContent
                 fromUser {

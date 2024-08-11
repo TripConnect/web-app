@@ -145,6 +145,7 @@ export default function PrimaryHeader() {
           </MenuItem>
           <MenuItem onClick={() => {
             localStorage.clear();
+            window.location.href = '/';
             handleMenuClose();
           }}>Log out</MenuItem>
         </> :
