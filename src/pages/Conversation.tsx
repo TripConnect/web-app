@@ -10,60 +10,78 @@ import { CHAT_HISTORY_PAGE_SIZE, INCOMING_CHAT_MESSAGE_CHANNEL } from "constants
 import { useTranslation } from "react-i18next";
 
 const QUERY_CONVERSATION_SUMMARY = gql`
-    query Conversation($id: String!) {
-        conversation(id: $id) {
-            name
-            type
-            members {
-                id
-                displayName
-            }
-        }
+  query Conversation($id: String!) {
+    conversation(id: $id) {
+      name
+      type
+      members {
+        id
+        displayName
+      }
     }
+  }
 `;
 
 const QUERY_CHAT_HISTORY = gql`
-    query Conversation($id: String!, $page: Int, $limit: Int) {
-        conversation(id: $id) {
-            messages(messagePage: $page, messageLimit: $limit) {
-                id
-                messageContent
-                fromUser {
-                    id
-                    avatar
-                    displayName
-                }
-                createdAt
-            }
+  query Conversation($id: String!, $page: Int, $limit: Int) {
+    conversation(id: $id) {
+      messages(messagePage: $page, messageLimit: $limit) {
+        id
+        messageContent
+        fromUser {
+          id
+          avatar
+          displayName
         }
+        createdAt
+      }
     }
+  }
 `;
 
 const SEARCH_USER_QUERY = gql`
-    query Users($searchTerm: String!) {
-        users(searchTerm: $searchTerm) {
-            id
-            displayName
-        }
+  query Users($searchTerm: String!) {
+    users(searchTerm: $searchTerm) {
+      id
+      displayName
     }
+  }
 `;
 
-function Message({ id, content, createdAt, isMine }: { id: string, content: string, createdAt: number, isMine: boolean }) {
-    return (
-        <div key={id} style={{
-            minWidth: "3%",
-            maxWidth: "75%",
-            boxSizing: "border-box",
-            alignSelf: isMine ? "flex-end" : "flex-start",
-            background: isMine ? "lightblue" : "lightgray",
-            borderRadius: "0.5rem",
-            wordWrap: "break-word",
-            margin: "0.1vw 0",
-            padding: "0.15rem 1rem",
-        }}>
-            <span>{content}</span>
-        </div>
-    );
+function Message({ id, content, createdAt, owner }: { id: string, content: string, createdAt: number, owner: User }) {
+  const currentUser = useSelector((state: any) => state.user);
+  let isMine = owner.id === currentUser.userId;
+  return (
+    <div key={id} style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minWidth: "3%",
+        maxWidth: "75%",
+        alignSelf: isMine ? "flex-end" : "flex-start",
+        boxSizing: "border-box",
+        margin: "0.2vw 0",
+    }}>
+      {
+        !isMine && <Avatar
+          alt={`-avatar`}
+          variant="circular"
+          src={owner.avatar}
+          sx={{ width: 30, height: 30, objectFit: 'cover', marginRight: 0.5 }} />
+      }
+      <span
+        style={{
+          wordWrap: "break-word",
+          padding: "0.15rem 1rem",
+          borderRadius: "0.5rem",
+          background: isMine ? "lightblue" : "lightgray",
+        }} 
+      >
+        {!isMine && <div style={{fontWeight: 500}}>{owner.displayName}</div>}
+        {content}
+      </span>
+    </div>
+  );
 }
 
 export default function Conversation() {
@@ -107,10 +125,14 @@ export default function Conversation() {
       }
     }).then(data => {
       let messages: ChatMessageModel[] = data.data.conversation.messages
-        .map((m: any) => ({
+        .map((m: any): ChatMessageModel => ({
           id: m.id,
-          conversationId: currentConversationId,
-          fromUserId: m.fromUser.id,
+          conversationId: currentConversationId as string,
+          owner: {
+            id: m.fromUser.id,
+            avatar: m.fromUser.avatar,
+            displayName: m.fromUser.displayName,
+          },
           content: m.messageContent,
           createdAt: m.createdAt,
         }))
@@ -211,7 +233,7 @@ export default function Conversation() {
                       .avatar :
                     currentUser.avatar)
                 }
-                sx={{ width: 60, height: 60, objectFit: 'cover' }}
+                sx={{ width: 45, height: 45, objectFit: 'cover' }}
               />
               <Typography variant="caption" style={{
                 marginLeft: 10,
@@ -245,12 +267,14 @@ export default function Conversation() {
             }}>
               {fetchChatHistoryLoading && "Loading..."}
               {chatMessageHistory.length > 0 && chatMessageHistory
-                .map((message: ChatMessageModel) => <Message 
-                  key={message.id} 
-                  id={message.id} 
-                  content={message.content} 
-                  createdAt={message.createdAt} 
-                  isMine={message.fromUserId === currentUser.userId} />)}
+                .map((message: ChatMessageModel) => <Message
+                  key={message.id}
+                  id={message.id}
+                  content={message.content}
+                  createdAt={message.createdAt}
+                  owner={message.owner} />
+                )
+              }
             </div>
           </Grid>
           <Grid item sm={12}>
@@ -269,7 +293,7 @@ export default function Conversation() {
                   fullWidth
                   value={chatMessage}
                   onChange={handleChangeMessage}
-                  style={{ marginRight: 8 }} 
+                  style={{ marginRight: 8 }}
                 />
                 <IconButton color="primary" onClick={handleSendMessage} disabled={chatMessage.length === 0}>
                   <SendIcon />

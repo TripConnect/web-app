@@ -1,7 +1,7 @@
 export type ChatMessageModel = {
     id: string,
     conversationId: string,
-    fromUserId: string,
+    owner: User,
     content: string,
     createdAt: number,
 }
