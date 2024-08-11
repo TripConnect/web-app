@@ -96,7 +96,7 @@ export default function Conversation() {
       console.log('scrolling to bottom');
       conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
     }
-  }, [conversationRef.current]);
+  }, []);
 
   useEffect(() => {
     fetchChatHistory({
@@ -229,15 +229,17 @@ export default function Conversation() {
             </div>
           </Grid>
           <Grid item sm={12}>
-            <div ref={conversationRef} style={{
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              width: "100%",
-              height: "75vh",
-              padding: "0.5vw",
-              overflow: "auto",
+            <div
+              ref={conversationRef} 
+              style={{
+                boxSizing: "border-box",
+                display: "flex",
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                width: "100%",
+                height: "75vh",
+                padding: "0.5vw",
+                overflow: "auto",
             }}>
               {fetchChatHistoryLoading && "Loading..."}
               {chatMessageHistory.length > 0 && chatMessageHistory
