@@ -23,9 +23,9 @@ const QUERY_CONVERSATION_SUMMARY = gql`
 `;
 
 const QUERY_CHAT_HISTORY = gql`
-  query Conversation($id: String!, $page: Int, $limit: Int) {
+  query Conversation($id: String!, $messagePage: Int, $messageLimit: Int) {
     conversation(id: $id) {
-      messages(messagePage: $page, messageLimit: $limit) {
+      messages(messagePage: $messagePage, messageLimit: $messageLimit) {
         id
         messageContent
         fromUser {
@@ -48,7 +48,7 @@ const SEARCH_USER_QUERY = gql`
   }
 `;
 
-function Message({ id, content, createdAt, owner }: { id: string, content: string, createdAt: number, owner: User }) {
+function ChatMessage({ id, content, createdAt, owner }: { id: string, content: string, createdAt: number, owner: User }) {
   const currentUser = useSelector((state: any) => state.user);
   let isMine = owner.id === currentUser.userId;
   return (
@@ -90,8 +90,9 @@ export default function Conversation() {
   
   const { t } = useTranslation();
   const [timeoutId, setTimeoutId] = useState<any>(null);
-  const [currentPage, setCurrentPage] = useState(-1);
-  const [chatMessage, setChatMessage] = useState("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isReachOldestPage, setIsReachOldestPage] = useState<boolean>(false);
+  const [chatMessage, setChatMessage] = useState<string>("");
   const [chatMessageHistory, setChatMessageHistory] = useState<ChatMessageModel[]>([]);
   const conversationRef = useRef<HTMLDivElement>(null);
   const [incomingChatMessageChannel, setIncomingChatMessageChannel] = useState(new BroadcastChannel(INCOMING_CHAT_MESSAGE_CHANNEL));
@@ -109,21 +110,35 @@ export default function Conversation() {
     setChatMessageHistory([...chatMessageHistory, incomingMessage]);
   });
 
-  useLayoutEffect(() => {
-    if (conversationRef.current) {
-      console.log('scrolling to bottom');
-      conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
-    }
+  useEffect(() => {
+    if(!conversationRef.current) return;
+    conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
+
+    const handleScroll = () => {
+      if (!conversationRef.current) return;
+      if(fetchChatHistoryLoading) return;
+      if(isReachOldestPage) return;
+
+      if (conversationRef.current.scrollTop === 0) {
+        setCurrentPage(currentPage + 1);
+      }
+    };
+    conversationRef.current?.addEventListener('scroll', handleScroll);
+
+    return () => {
+      if(conversationRef.current) conversationRef.current.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
     fetchChatHistory({
       variables: {
         id: currentConversationId,
-        page: currentPage,
-        limit: CHAT_HISTORY_PAGE_SIZE
+        messagePage: currentPage,
+        messageLimit: CHAT_HISTORY_PAGE_SIZE
       }
-    }).then(data => {
+    })
+    .then((data: any) => {
       let messages: ChatMessageModel[] = data.data.conversation.messages
         .map((m: any): ChatMessageModel => ({
           id: m.id,
@@ -137,7 +152,16 @@ export default function Conversation() {
           createdAt: m.createdAt,
         }))
         .reverse();
-      setChatMessageHistory(messages);
+
+      if(messages.length === 0) {
+        setIsReachOldestPage(true);
+        return;
+      }
+
+      setChatMessageHistory([...chatMessageHistory, ...messages]);
+    })
+    .catch((err) => {
+      console.error(err);
     });
   }, [currentPage]);
 
@@ -154,12 +178,20 @@ export default function Conversation() {
     setChatMessage(e.target.value);
   }
 
+  const refreshConversation = () => {
+    setIsReachOldestPage(false);
+    setChatMessageHistory([]);
+    setCurrentPage(1);
+    if(conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
+  }
+
   const handleSendMessage = () => {
     chatSocket.emit(CHAT_MESSAGE_EVENT, {
       conversationId: currentConversationId,
       content: chatMessage
     });
     setChatMessage("");
+    refreshConversation();
   }
 
   const handleSearchUserChange = (e: any) => {
@@ -254,6 +286,7 @@ export default function Conversation() {
           </Grid>
           <Grid item sm={12}>
             <div
+              key={currentConversationId}
               ref={conversationRef} 
               style={{
                 boxSizing: "border-box",
@@ -267,7 +300,7 @@ export default function Conversation() {
             }}>
               {fetchChatHistoryLoading && "Loading..."}
               {chatMessageHistory.length > 0 && chatMessageHistory
-                .map((message: ChatMessageModel) => <Message
+                .map((message: ChatMessageModel) => <ChatMessage
                   key={message.id}
                   id={message.id}
                   content={message.content}
