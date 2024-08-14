@@ -105,9 +105,8 @@ export default function Conversation() {
   const [fetchChatHistory, { loading: fetchChatHistoryLoading, error: fetchChatHistoryError, data: fetchChatHistoryData }] = useLazyQuery(QUERY_CHAT_HISTORY);
 
 
-  incomingChatMessageChannel.addEventListener('message', (event: MessageEvent) => {
-    let incomingMessage: ChatMessageModel = event.data;
-    setChatMessageHistory([...chatMessageHistory, incomingMessage]);
+  incomingChatMessageChannel.addEventListener('message', (event: MessageEvent<ChatMessageModel>) => {
+    refreshConversation();
   });
 
   useEffect(() =>{
@@ -133,6 +132,7 @@ export default function Conversation() {
   }, []);
 
   useEffect(() => {
+    console.log('Initializing chat history');
     fetchChatHistory({
       variables: {
         id: currentConversationId,
@@ -155,15 +155,7 @@ export default function Conversation() {
         }))
         .reverse();
 
-      console.log('Fetch complete history for page: ' + currentPage);
-
-      if(messages.length === 0) {
-        setIsReachOldestPage(true);
-        return;
-      }
-
-      if(currentPage === 1) setChatMessageHistory(messages);
-      else setChatMessageHistory([...chatMessageHistory, ...messages]);
+      setChatMessageHistory(messages);
     })
     .catch((err) => {
       console.error(err);
@@ -212,15 +204,12 @@ export default function Conversation() {
       });
   }
   
-
-  
-
-
   const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
   }
 
   const refreshConversation = () => {
+    console.log('refreshConversation');
     fetchChatHistoryByPage(1)
       .then((respMessages: ChatMessageModel[]) => {
         console.log(respMessages[respMessages.length - 1]);
