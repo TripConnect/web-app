@@ -115,22 +115,25 @@ export default function Conversation() {
     conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
 
     const handleScroll = () => {
+      console.log("handleScroll");
+      
       if (!conversationRef.current) return;
       if(fetchChatHistoryLoading) return;
       if(isReachOldestPage) return;
 
       if (conversationRef.current.scrollTop === 0) {
-        setCurrentPage(currentPage + 1);
+        let nextPage = currentPage + 1;
+        console.log('Prepare for fetch page ' + nextPage);
+        setCurrentPage(nextPage);
       }
     };
-    conversationRef.current?.addEventListener('scroll', handleScroll);
-
-    return () => {
-      if(conversationRef.current) conversationRef.current.removeEventListener('scroll', handleScroll);
-    };
+    conversationRef.current?.addEventListener('scrollend', handleScroll);
   }, []);
 
   useEffect(() => {
+    if(fetchChatHistoryLoading) return;
+    console.log('Fetch history for page: ' + currentPage);
+    
     fetchChatHistory({
       variables: {
         id: currentConversationId,
@@ -153,12 +156,15 @@ export default function Conversation() {
         }))
         .reverse();
 
+      console.log('Fetch complete history for page: ' + currentPage);
+
       if(messages.length === 0) {
         setIsReachOldestPage(true);
         return;
       }
 
-      setChatMessageHistory([...chatMessageHistory, ...messages]);
+      if(currentPage === 1) setChatMessageHistory(messages);
+      else setChatMessageHistory([...chatMessageHistory, ...messages]);
     })
     .catch((err) => {
       console.error(err);
@@ -180,18 +186,18 @@ export default function Conversation() {
 
   const refreshConversation = () => {
     setIsReachOldestPage(false);
-    setChatMessageHistory([]);
     setCurrentPage(1);
-    if(conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
   }
 
   const handleSendMessage = () => {
     chatSocket.emit(CHAT_MESSAGE_EVENT, {
       conversationId: currentConversationId,
       content: chatMessage
+    }, (response: {status: 'DONE' | 'FAILED'}) => {
+      console.log(response.status);
+      setChatMessage("");
+      refreshConversation();
     });
-    setChatMessage("");
-    refreshConversation();
   }
 
   const handleSearchUserChange = (e: any) => {

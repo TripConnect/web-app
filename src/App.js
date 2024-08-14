@@ -11,7 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { ThemeProvider } from '@mui/material/styles';
 import i18next from "i18next";
 
-import Welcome from 'pages/Welcome';
+import SignIn from 'pages/SignIn';
 import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
 import Conversation from "pages/Conversation";
@@ -57,8 +57,8 @@ function App() {
               <Router>
                 <PrimaryHeader key="primary-header" />
                 <Routes>
-                  <Route path="/" element={<Welcome />} />
-                  <Route path="/login" element={<Welcome />} />
+                  <Route path="/" element={<SignIn />} />
+                  <Route path="/login" element={<SignIn />} />
                   <Route path="/upload" element={<UploadFile />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/home" element={<Home />} />

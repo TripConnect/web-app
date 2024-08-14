@@ -6,7 +6,6 @@ import { updateToken } from "slices/user";
 import { SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { connectSocket } from "slices/socket";
 
 const SIGNIN_MUTATION = gql`
     mutation Signin($username: String!, $password: String!) {
@@ -25,21 +24,29 @@ const SIGNIN_MUTATION = gql`
     }
 `;
 
-export default function Welcome(props) {
+type SignInPayload = {
+    username: string;
+    password: string;
+}
+
+export default function SignIn() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    let [loginPayload, setLoginPayload] = useState({});
+    let [signInPayload, setSignInPayload] = useState<SignInPayload>({
+        username: 'sadgirl1999',
+        password: '123456789'
+    });
     const [signin, { data, loading, error }] = useMutation(SIGNIN_MUTATION);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        if (!loginPayload.username || !loginPayload.password) {
+        if (!signInPayload.username || !signInPayload.password) {
             alert(SIGNIN_INVALID);
             return
         }
 
-        signin({ variables: { ...loginPayload } })
+        signin({ variables: { ...signInPayload } })
             .then(response => {
                 let { userInfo, token } = response.data.signin;
                 let { id: userId, displayName, avatar } = userInfo;
@@ -54,15 +61,16 @@ export default function Welcome(props) {
             });
     }
 
-    const handleRegister = (e) => {
+    const handleRegister = () => {
         navigate("/signup");
     }
 
 
-    const handleLoginChange = (e) => {
-        setLoginPayload({
-            ...loginPayload,
-            [e.target.name]: e.target.value,
+    const handleLoginChange = (e: React.ChangeEvent) => {
+        let target = e.target as HTMLInputElement
+        setSignInPayload({
+            ...signInPayload,
+            [target.name]: target.value,
         })
     }
 
@@ -95,9 +103,10 @@ export default function Welcome(props) {
                     variant="outlined"
                     fullWidth
                     onChange={handleLoginChange}
-                    required
+                    value={signInPayload.username}
                     style={{ marginBottom: '0.5rem' }}
                     autoComplete="off"
+                    required
                 />
                 <TextField
                     name="password"
@@ -106,6 +115,7 @@ export default function Welcome(props) {
                     type="password"
                     fullWidth
                     onChange={handleLoginChange}
+                    value={signInPayload.password}
                     style={{ marginBottom: '0.5rem' }}
                     required
                 />
