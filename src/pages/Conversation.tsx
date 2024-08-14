@@ -222,11 +222,11 @@ export default function Conversation() {
 
   const refreshConversation = () => {
     fetchChatHistoryByPage(1)
-      .then((messages: ChatMessageModel[]) => {
-        console.log(messages[messages.length - 1]);
+      .then((respMessages: ChatMessageModel[]) => {
+        console.log(respMessages[respMessages.length - 1]);
         setCurrentPage(1);
         setIsReachOldestPage(false);
-        setChatMessageHistory(messages);
+        setChatMessageHistory(respMessages);
       });
   }
 

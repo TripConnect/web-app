@@ -35,6 +35,17 @@ const client = new ApolloClient({
       "Apollo-Require-Preflight": "true",
     },
   }),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'no-cache',
+    },
+    query: {
+      fetchPolicy: 'no-cache',
+    },
+    mutate: {
+      fetchPolicy: 'no-cache',
+    },
+  },
 });
 
 i18next.init({
