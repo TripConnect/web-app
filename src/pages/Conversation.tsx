@@ -110,39 +110,38 @@ export default function Conversation() {
     setChatMessageHistory([...chatMessageHistory, incomingMessage]);
   });
 
+  useEffect(() =>{
+    fetchChatSummary({
+      variables: {
+        id: currentConversationId
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if(!conversationRef.current) return;
     conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
 
     const handleScroll = () => {
       console.log("handleScroll");
-      
       if (!conversationRef.current) return;
-      if(fetchChatHistoryLoading) return;
-      if(isReachOldestPage) return;
-
       if (conversationRef.current.scrollTop === 0) {
-        let nextPage = currentPage + 1;
-        console.log('Prepare for fetch page ' + nextPage);
-        setCurrentPage(nextPage);
+        handleScrollToTop();
       }
     };
     conversationRef.current?.addEventListener('scrollend', handleScroll);
   }, []);
 
   useEffect(() => {
-    if(fetchChatHistoryLoading) return;
-    console.log('Fetch history for page: ' + currentPage);
-    
     fetchChatHistory({
       variables: {
         id: currentConversationId,
-        messagePage: currentPage,
+        messagePage: 1,
         messageLimit: CHAT_HISTORY_PAGE_SIZE
       }
     })
-    .then((data: any) => {
-      let messages: ChatMessageModel[] = data.data.conversation.messages
+    .then((resp: any) => {
+      let messages: ChatMessageModel[] = resp.data.conversation.messages
         .map((m: any): ChatMessageModel => ({
           id: m.id,
           conversationId: currentConversationId as string,
@@ -169,15 +168,52 @@ export default function Conversation() {
     .catch((err) => {
       console.error(err);
     });
-  }, [currentPage]);
+  }, []);
 
-  useEffect(() =>{
-    fetchChatSummary({
+  const fetchChatHistoryByPage = async (pageNum: number): Promise<ChatMessageModel[]> => {
+    let resp = await fetchChatHistory({
       variables: {
-        id: currentConversationId
+        id: currentConversationId,
+        messagePage: pageNum,
+        messageLimit: CHAT_HISTORY_PAGE_SIZE
       }
     });
-  }, []);
+    
+    let messages: ChatMessageModel[] = resp.data.conversation.messages
+      .map((m: any): ChatMessageModel => ({
+        id: m.id,
+        conversationId: currentConversationId as string,
+        owner: {
+          id: m.fromUser.id,
+          avatar: m.fromUser.avatar,
+          displayName: m.fromUser.displayName,
+        },
+        content: m.messageContent,
+        createdAt: m.createdAt,
+      }))
+      .reverse();
+
+    return messages;
+  }
+
+  const handleScrollToTop = () => {
+    if(isReachOldestPage) return;
+    if(fetchChatHistoryLoading) return;
+    let nextPage = currentPage + 1;
+    console.log('Fetch history for page: ' + nextPage);
+    fetchChatHistoryByPage(nextPage)
+      .then((messages: ChatMessageModel[]) => {
+        if(messages.length === 0) {
+          setIsReachOldestPage(true);
+          return;
+        }
+        setCurrentPage(nextPage);
+        setChatMessageHistory([...chatMessageHistory, ...messages]);
+      });
+  }
+  
+
+  
 
 
   const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,8 +221,13 @@ export default function Conversation() {
   }
 
   const refreshConversation = () => {
-    setIsReachOldestPage(false);
-    setCurrentPage(1);
+    fetchChatHistoryByPage(1)
+      .then((messages: ChatMessageModel[]) => {
+        console.log(messages[messages.length - 1]);
+        setCurrentPage(1);
+        setIsReachOldestPage(false);
+        setChatMessageHistory(messages);
+      });
   }
 
   const handleSendMessage = () => {
