@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Container, Grid, IconButton, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
@@ -48,7 +48,14 @@ const SEARCH_USER_QUERY = gql`
   }
 `;
 
-function ChatMessage({ id, content, createdAt, owner }: { id: string, content: string, createdAt: number, owner: User }) {
+interface ChatMessageProps {
+  id: string;
+  content: string;
+  createdAt: number;
+  owner: User;
+}
+
+const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessageProps) {
   const currentUser = useSelector((state: any) => state.user);
   let isMine = owner.id === currentUser.userId;
   return (
@@ -82,7 +89,7 @@ function ChatMessage({ id, content, createdAt, owner }: { id: string, content: s
       </span>
     </div>
   );
-}
+}, (prevProps: ChatMessageProps, nextProps: ChatMessageProps) => prevProps.id === nextProps.id);
 
 export default function Conversation() {
   const { id: currentConversationId } = useParams<{id: string}>();
@@ -168,22 +175,28 @@ export default function Conversation() {
 
     return messages;
   }
+  
   const handleScrollToTop = () => {
-    if(isReachOldestPage) return;
-    if(fetchChatHistoryLoading) return;
+    if (isReachOldestPage) return;
+    if (fetchChatHistoryLoading) return;
+  
     let nextPage = currentPage + 1;
     console.log('Fetch history for page: ' + nextPage);
+  
     fetchChatHistoryByPage(nextPage)
       .then((messages: ChatMessageModel[]) => {
-        if(messages.length === 0) {
+        if (messages.length === 0) {
           setIsReachOldestPage(true);
           return;
         }
-        console.log('---setChatMessageHistory' + chatMessageHistory.length);
-        setChatMessageHistory([...chatMessageHistory, ...messages]);
+        setChatMessageHistory(prevMessages => [...prevMessages, ...messages]);
         setCurrentPage(nextPage);
+      })
+      .catch(err => {
+        console.error(err);
       });
-  }
+  };
+  
 
   const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
@@ -197,6 +210,7 @@ export default function Conversation() {
         setIsReachOldestPage(false);
         console.log('setChatMessageHistory' + respMessages.length);
         setChatMessageHistory([...respMessages]);
+        if(conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
       });
   }
 
