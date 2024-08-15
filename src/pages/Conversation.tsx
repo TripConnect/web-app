@@ -133,33 +133,14 @@ export default function Conversation() {
 
   useEffect(() => {
     console.log('Initializing chat history');
-    fetchChatHistory({
-      variables: {
-        id: currentConversationId,
-        messagePage: 1,
-        messageLimit: CHAT_HISTORY_PAGE_SIZE
-      }
-    })
-    .then((resp: any) => {
-      let messages: ChatMessageModel[] = resp.data.conversation.messages
-        .map((m: any): ChatMessageModel => ({
-          id: m.id,
-          conversationId: currentConversationId as string,
-          owner: {
-            id: m.fromUser.id,
-            avatar: m.fromUser.avatar,
-            displayName: m.fromUser.displayName,
-          },
-          content: m.messageContent,
-          createdAt: m.createdAt,
-        }))
-        .reverse();
-
-      setChatMessageHistory(messages);
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+    fetchChatHistoryByPage(1)
+      .then((messages: ChatMessageModel[]) => {
+        console.log('setChatMessageHistory' + messages.length);
+        setChatMessageHistory([...messages]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
   const fetchChatHistoryByPage = async (pageNum: number): Promise<ChatMessageModel[]> => {
@@ -187,7 +168,6 @@ export default function Conversation() {
 
     return messages;
   }
-
   const handleScrollToTop = () => {
     if(isReachOldestPage) return;
     if(fetchChatHistoryLoading) return;
@@ -199,11 +179,12 @@ export default function Conversation() {
           setIsReachOldestPage(true);
           return;
         }
-        setCurrentPage(nextPage);
+        console.log('---setChatMessageHistory' + chatMessageHistory.length);
         setChatMessageHistory([...chatMessageHistory, ...messages]);
+        setCurrentPage(nextPage);
       });
   }
-  
+
   const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
   }
@@ -212,10 +193,10 @@ export default function Conversation() {
     console.log('refreshConversation');
     fetchChatHistoryByPage(1)
       .then((respMessages: ChatMessageModel[]) => {
-        console.log(respMessages[respMessages.length - 1]);
         setCurrentPage(1);
         setIsReachOldestPage(false);
-        setChatMessageHistory(respMessages);
+        console.log('setChatMessageHistory' + respMessages.length);
+        setChatMessageHistory([...respMessages]);
       });
   }
 
@@ -230,18 +211,17 @@ export default function Conversation() {
     });
   }
 
-  const handleSearchUserChange = (e: any) => {
-    clearTimeout(timeoutId as number);
-    if (e.target.value.length === 0) {
-      return;
-    }
-    setTimeoutId(
-      setTimeout(() => {
-        searchUser({ variables: { searchTerm: e.target.value } });
-      }, 800)
-    );
-  }
-
+  // const handleSearchUserChange = (e: any) => {
+  //   clearTimeout(timeoutId as number);
+  //   if (e.target.value.length === 0) {
+  //     return;
+  //   }
+  //   setTimeoutId(
+  //     setTimeout(() => {
+  //       searchUser({ variables: { searchTerm: e.target.value } });
+  //     }, 800)
+  //   );
+  // }
 
   return (
     <Grid container justifyContent='center'>
