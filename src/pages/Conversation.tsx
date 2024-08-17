@@ -59,7 +59,8 @@ const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessag
   const currentUser = useSelector((state: any) => state.user);
   let isMine = owner.id === currentUser.userId;
   return (
-    <div key={id} style={{
+    <div 
+      style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -68,7 +69,8 @@ const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessag
         alignSelf: isMine ? "flex-end" : "flex-start",
         boxSizing: "border-box",
         margin: "0.2vw 0",
-    }}>
+      }}
+    >
       {
         !isMine && <Avatar
           alt={`-avatar`}
@@ -330,7 +332,7 @@ export default function Conversation() {
               {fetchChatHistoryLoading && "Loading..."}
               {chatMessageHistory.length > 0 && chatMessageHistory
                 .map((message: ChatMessageModel) => <ChatMessage
-                  key={message.id}
+                  // key={message.id}
                   id={message.id}
                   content={message.content}
                   createdAt={message.createdAt}
