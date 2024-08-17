@@ -176,7 +176,7 @@ export default function Conversation() {
       .then((respMessages: ChatMessageModel[]) => {
         let isOldestPage = respMessages.length === 0;
         setIsReachOldestPage(isOldestPage);
-        if(!isOldestPage) setChatMessageHistory(prevMessages => [...respMessages, ...prevMessages]);
+        if(!isOldestPage) setChatMessageHistory(prevMessages => currentPage === 1 ? respMessages : [...respMessages, ...prevMessages]);
       })
       .catch(err => {
         console.error(err);
@@ -190,6 +190,7 @@ export default function Conversation() {
 
   const refreshConversation = () => {
     setCurrentPage(1);
+    if(conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
   }
 
   const handleSendMessage = () => {
@@ -198,7 +199,7 @@ export default function Conversation() {
       content: chatMessage
     }, (response: {status: 'DONE' | 'FAILED'}) => {
       console.log('Send chat message:' + response.status);
-      setChatMessage("");
+      setChatMessage('');
       refreshConversation();
     });
   }
