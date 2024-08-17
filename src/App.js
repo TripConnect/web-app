@@ -16,7 +16,6 @@ import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
 import Conversation from "pages/Conversation";
 import Signup from "pages/Signup";
-import SocketIOListener from 'services/SocketIOListener';
 import { persistor, store } from 'store';
 import theme from "theme";
 import UploadFile from "pages/UploadFile";
@@ -64,7 +63,6 @@ function App() {
         <PersistGate loading={null} persistor={persistor}>
           <ApolloProvider client={client}>
             <ThemeProvider theme={theme}>
-              <SocketIOListener />
               <Router>
                 <PrimaryHeader key="primary-header" />
                 <Routes>

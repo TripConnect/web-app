@@ -8,6 +8,8 @@ import { CHAT_MESSAGE_EVENT } from "constants/socket";
 import { ChatMessageModel } from 'types/chat';
 import { CHAT_HISTORY_PAGE_SIZE, INCOMING_CHAT_MESSAGE_CHANNEL } from "constants/common";
 import { useTranslation } from "react-i18next";
+import { RootState } from "store";
+import { io, Socket } from "socket.io-client";
 
 const QUERY_CONVERSATION_SUMMARY = gql`
   query Conversation($id: String!) {
@@ -104,19 +106,13 @@ export default function Conversation() {
   const [chatMessage, setChatMessage] = useState<string>("");
   const [chatMessageHistory, setChatMessageHistory] = useState<ChatMessageModel[]>([]);
   const conversationRef = useRef<HTMLDivElement>(null);
-  const [incomingChatMessageChannel, setIncomingChatMessageChannel] = useState(new BroadcastChannel(INCOMING_CHAT_MESSAGE_CHANNEL));
 
-  const chatSocket = useSelector((state: any) => state.socket.socket);
-  const currentUser = useSelector((state: any) => state.user);
+  const currentUser = useSelector((state: RootState) => state.user);
+  const [chatSocket, setChatSocket] = useState<Socket | null>(null);
 
   const [searchUser, { loading: searchUSerloading, error: searchUserError, data: searchUserData }] = useLazyQuery(SEARCH_USER_QUERY);
   const [fetchChatSummary, { loading: fetchChatSummaryLoading, error: fetchChatSummaryError, data: fetchChatSummaryData }] = useLazyQuery(QUERY_CONVERSATION_SUMMARY);
   const [fetchChatHistory, { loading: fetchChatHistoryLoading, error: fetchChatHistoryError, data: fetchChatHistoryData }] = useLazyQuery(QUERY_CHAT_HISTORY);
-
-
-  incomingChatMessageChannel.addEventListener('message', (event: MessageEvent<ChatMessageModel>) => {
-    refreshConversation();
-  });
 
   useEffect(() =>{
     fetchChatSummary({
@@ -124,6 +120,28 @@ export default function Conversation() {
         id: currentConversationId
       }
     });
+  }, []);
+
+  useEffect(() => {
+    let connection: Socket = io(
+      `${process.env.REACT_APP_BASE_URL}/chat`,
+      {
+        transports: ['websocket'], // you need to explicitly tell it to use websockets
+        auth: {
+          token: currentUser.accessToken,
+        }
+      },
+    );
+    connection.on('connect', () => {
+      console.log('connected');
+    });
+    connection.on('connect_error', err => {
+      console.log(err.message);
+    });
+    connection.on('message', (payload: ChatMessageModel) => {
+      refreshConversation();
+    });
+    setChatSocket(connection);
   }, []);
 
   useEffect(() => {
@@ -209,7 +227,7 @@ export default function Conversation() {
   }
 
   const handleSendMessage = () => {
-    chatSocket.emit(CHAT_MESSAGE_EVENT, {
+    chatSocket?.emit(CHAT_MESSAGE_EVENT, {
       conversationId: currentConversationId,
       content: chatMessage
     }, (response: {status: 'DONE' | 'FAILED'}) => {
