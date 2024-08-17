@@ -177,7 +177,7 @@ export default function Conversation() {
       .then((respMessages: ChatMessageModel[]) => {
         let isOldestPage = respMessages.length === 0;
         setIsReachOldestPage(isOldestPage);
-        if(!isOldestPage) setChatMessageHistory(prevMessages => [...prevMessages, ...respMessages]);
+        if(!isOldestPage) setChatMessageHistory(prevMessages => [...respMessages, ...prevMessages]);
       })
       .catch(err => {
         console.error(err);
@@ -191,14 +191,7 @@ export default function Conversation() {
 
   const refreshConversation = () => {
     console.log('refreshConversation');
-    fetchChatHistoryByPage(1)
-      .then((respMessages: ChatMessageModel[]) => {
-        setCurrentPage(1);
-        setIsReachOldestPage(false);
-        console.log('setChatMessageHistory' + respMessages.length);
-        setChatMessageHistory([...respMessages]);
-        if(conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
-      });
+    setCurrentPage(1);
   }
 
   const handleSendMessage = () => {
