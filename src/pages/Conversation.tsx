@@ -131,7 +131,6 @@ export default function Conversation() {
     conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
 
     const handleScroll = () => {
-      console.log("handleScroll");
       if (!conversationRef.current) return;
       if (conversationRef.current.scrollTop === 0) {
         handleScrollToTop();
@@ -190,7 +189,6 @@ export default function Conversation() {
   }
 
   const refreshConversation = () => {
-    console.log('refreshConversation');
     setCurrentPage(1);
   }
 
@@ -199,7 +197,7 @@ export default function Conversation() {
       conversationId: currentConversationId,
       content: chatMessage
     }, (response: {status: 'DONE' | 'FAILED'}) => {
-      console.log(response.status);
+      console.log('Send chat message:' + response.status);
       setChatMessage("");
       refreshConversation();
     });
