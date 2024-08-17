@@ -139,11 +139,9 @@ export default function Conversation() {
   }, []);
 
   useEffect(() => {
-    console.log('Initializing chat history');
     fetchChatHistoryByPage(1)
-      .then((messages: ChatMessageModel[]) => {
-        console.log('setChatMessageHistory' + messages.length);
-        setChatMessageHistory([...messages]);
+      .then((respMessages: ChatMessageModel[]) => {
+        setChatMessageHistory(respMessages);
       })
       .catch((err) => {
         console.error(err);
@@ -181,16 +179,17 @@ export default function Conversation() {
     if (fetchChatHistoryLoading) return;
   
     let nextPage = currentPage + 1;
-    console.log('Fetch history for page: ' + nextPage);
   
     fetchChatHistoryByPage(nextPage)
-      .then((messages: ChatMessageModel[]) => {
-        if (messages.length === 0) {
+      .then((respMessages: ChatMessageModel[]) => {
+        console.log(`Fetch history for page=${nextPage} length=${respMessages.length}`);
+        if (respMessages.length === 0) {
+          console.log('Reach oldest page');
           setIsReachOldestPage(true);
           return;
         }
-        setChatMessageHistory(prevMessages => [...prevMessages, ...messages]);
-        setCurrentPage(nextPage);
+        setChatMessageHistory(prevMessages => [...prevMessages, ...respMessages]);
+        setCurrentPage(prevState => prevState + 1);
       })
       .catch(err => {
         console.error(err);
