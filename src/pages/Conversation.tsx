@@ -140,16 +140,6 @@ export default function Conversation() {
     conversationRef.current?.addEventListener('scrollend', handleScroll);
   }, []);
 
-  useEffect(() => {
-    fetchChatHistoryByPage(1)
-      .then((respMessages: ChatMessageModel[]) => {
-        setChatMessageHistory(respMessages);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
-
   const fetchChatHistoryByPage = async (pageNum: number): Promise<ChatMessageModel[]> => {
     let resp = await fetchChatHistory({
       variables: {
@@ -179,24 +169,20 @@ export default function Conversation() {
   const handleScrollToTop = () => {
     if (isReachOldestPage) return;
     if (fetchChatHistoryLoading) return;
-  
-    let nextPage = currentPage + 1;
-  
-    fetchChatHistoryByPage(nextPage)
+    setCurrentPage(currentPage + 1);
+  };
+
+  useEffect(() => {
+    fetchChatHistoryByPage(currentPage)
       .then((respMessages: ChatMessageModel[]) => {
-        console.log(`Fetch history for page=${nextPage} length=${respMessages.length}`);
-        if (respMessages.length === 0) {
-          console.log('Reach oldest page');
-          setIsReachOldestPage(true);
-          return;
-        }
-        setChatMessageHistory(prevMessages => [...prevMessages, ...respMessages]);
-        setCurrentPage(prevState => prevState + 1);
+        let isOldestPage = respMessages.length === 0;
+        setIsReachOldestPage(isOldestPage);
+        if(!isOldestPage) setChatMessageHistory(prevMessages => [...prevMessages, ...respMessages]);
       })
       .catch(err => {
         console.error(err);
       });
-  };
+  }, [currentPage])
   
 
   const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
