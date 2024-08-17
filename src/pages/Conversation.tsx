@@ -139,7 +139,22 @@ export default function Conversation() {
     conversationRef.current?.addEventListener('scrollend', handleScroll);
   }, []);
 
+  useEffect(() => {
+    fetchChatHistoryByPage(currentPage)
+      .then((respMessages: ChatMessageModel[]) => {
+        let isOldestPage = respMessages.length === 0;
+        setIsReachOldestPage(isOldestPage);
+        if(!isOldestPage) setChatMessageHistory(prevMessages => currentPage === 1 ? respMessages : [...respMessages, ...prevMessages]);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }, [currentPage]);
+
+
   const fetchChatHistoryByPage = async (pageNum: number): Promise<ChatMessageModel[]> => {
+    console.log('fetch chat history by page: ' + pageNum);
+    
     let resp = await fetchChatHistory({
       variables: {
         id: currentConversationId,
@@ -171,25 +186,25 @@ export default function Conversation() {
     setCurrentPage(currentPage + 1);
   };
 
-  useEffect(() => {
-    fetchChatHistoryByPage(currentPage)
-      .then((respMessages: ChatMessageModel[]) => {
-        let isOldestPage = respMessages.length === 0;
-        setIsReachOldestPage(isOldestPage);
-        if(!isOldestPage) setChatMessageHistory(prevMessages => currentPage === 1 ? respMessages : [...respMessages, ...prevMessages]);
-      })
-      .catch(err => {
-        console.error(err);
-      });
-  }, [currentPage])
-  
-
   const handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
   }
 
   const refreshConversation = () => {
-    setCurrentPage(1);
+    // If currentPage > 1, just reset currentPage to trigger currentPage-based useEffect. Otherwise, force reset all related states.
+    if(currentPage > 1) {
+      setCurrentPage(1);
+    } else {
+      fetchChatHistoryByPage(1)
+        .then((respMessages: ChatMessageModel[]) => {
+          setCurrentPage(1);
+          setIsReachOldestPage(false);
+          setChatMessageHistory(respMessages);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
     if(conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
   }
 
