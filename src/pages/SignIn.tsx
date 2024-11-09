@@ -89,7 +89,7 @@ export default function SignIn() {
             transform: "translate(-50%, -50%)",
         }}>
             <Typography variant="h5" component="div" color="primary" gutterBottom>
-                {t('LOGIN')}
+                {t('SIGN_IN')}
             </Typography>
             <form
                 style={{

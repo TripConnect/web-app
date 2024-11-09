@@ -1,5 +1,5 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { gql, useMutation } from '@apollo/client';
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { useSelector } from "react-redux";
 import { Button, Container, Grid, Typography } from "@mui/material";
 
@@ -11,15 +11,32 @@ const PRIVATE_CONVERSATION_MUTATION = gql`
     }
 `;
 
-export default function UserProfile(props) {
-    const location = useLocation();
-    let navigate = useNavigate();
-    let { userId: profileUserId, displayName } = location.state;
-    const [createConversation, { data, loading, error }] = useMutation(PRIVATE_CONVERSATION_MUTATION);
-    const currentUser = useSelector((state) => state.user);
-    const isUserLoggedIn = Boolean(currentUser.userId);
+const USER_QUERY = gql`
+    query User($id: String!) {
+        user(id: $id) {
+            id
+            avatar
+            username
+            displayName
+        }
+    }
+`;
 
-    const handleChat = (e) => {
+export default function UserProfile() {
+    let navigate = useNavigate();
+    const { id: profileUserId } = useParams<{ id: string }>();
+    const { loading: profileLoading, error: profileError, data: profileUser } = useQuery(USER_QUERY, {
+        variables: { id: profileUserId },
+    });
+    const [createConversation, { data, loading, error }] = useMutation(PRIVATE_CONVERSATION_MUTATION);
+    const currentUser = useSelector((state: any) => state.user);
+
+    if (profileLoading) return <center>Loading...</center>;
+    if (profileError) return <center>Try again...</center>;
+
+    let { displayName } = profileUser.user;
+
+    const handleChat = () => {
         createConversation({ variables: { type: 'PRIVATE', members: [currentUser.userId, profileUserId].join(",") } })
             .then(response => {
                 if (response?.data?.createConversation) {
@@ -42,7 +59,7 @@ export default function UserProfile(props) {
                         {displayName}
                     </Typography>
                     {
-                        isUserLoggedIn && profileUserId !== currentUser.userId && <Button
+                        profileUserId !== currentUser.userId && <Button
                             variant="contained"
                             onClick={handleChat}
                         >

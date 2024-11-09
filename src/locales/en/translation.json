@@ -1,9 +1,11 @@
 {
-    "LOGIN": "Login",
-    "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
+    "SIGN_IN": "Sign in",
+    "SIGN_OUT": "Sign out",
     "SIGNUP": "signup",
+    "PROFILE": "Profile",
     "USERNAME": "Username",
     "PASSWORD": "Password",
+    "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
     "SEARCH": "Search",
     "CHAT_MESSAGE_HINT": "Message..."
 }

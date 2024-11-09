@@ -1,9 +1,11 @@
 {
-    "LOGIN": "Đăng nhập",
-    "NOW_HAVE_ACCOUNT_QUESTION": "Bạn chưa có tài khoản?",
+    "SIGN_IN": "Đăng nhập",
+    "SIGN_OUT": "Đăng xuất",
     "SIGNUP": "đăng ký",
+    "PROFILE": "Trang cá nhân",
     "USERNAME": "Tên đăng nhập",
     "PASSWORD": "Mật khẩu",
+    "NOW_HAVE_ACCOUNT_QUESTION": "Bạn chưa có tài khoản?",
     "SEARCH": "Tìm kiếm",
     "CHAT_MESSAGE_HINT": "Tin nhắn..."
 }

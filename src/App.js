@@ -2,9 +2,10 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Link,
+  Navigate
 } from "react-router-dom";
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { PersistGate } from 'redux-persist/integration/react';
@@ -56,6 +57,12 @@ i18next.init({
   }
 });
 
+const PrivateRoute = ({ component, ...rest }) => {
+  const currentUser = useSelector((state) => state.user);
+  const isAuthenticated = Boolean(currentUser.accessToken);
+  return isAuthenticated ? component : <SignIn />;
+};
+
 function App() {
   return (
     <I18nextProvider i18n={i18next}>
@@ -66,13 +73,11 @@ function App() {
               <Router>
                 <PrimaryHeader key="primary-header" />
                 <Routes>
-                  <Route path="/" element={<SignIn />} />
-                  <Route path="/login" element={<SignIn />} />
-                  <Route path="/upload" element={<UploadFile />} />
+                  <Route path="/" element={<PrivateRoute component={<Home />} />} />
                   <Route path="/signup" element={<Signup />} />
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/profile" element={<UserProfile />} />
-                  <Route path="/conversation/:id" element={<Conversation />} />
+                  <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile />} />} />
+                  <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation />} />} />
+                  <Route path="/upload" element={<UploadFile />} />
                 </Routes>
               </Router>
             </ThemeProvider>

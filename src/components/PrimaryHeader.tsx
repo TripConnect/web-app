@@ -76,22 +76,22 @@ const SEARCH_USER_QUERY = gql`
 `;
 
 export default function PrimaryHeader() {
-  const currentLanguage = useSelector(state => state.language.currentLanguage);
+  const currentLanguage = useSelector((state: any) => state.language.currentLanguage);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [searchUsersEl, setSearchUsersEl] = React.useState(true);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const currentUser = useSelector((state) => state.user);
+  const currentUser = useSelector((state: any) => state.user);
   const [searchUser, { loading, error, data: userSearchedData }] = useLazyQuery(SEARCH_USER_QUERY);
   const navigate = useNavigate();
-  const searchUsersRef = useRef();
-  const searchScheduler = useRef();
+  const searchUsersRef = useRef<any>();
+  const searchScheduler = useRef<any>();
   const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const shouldSearchUsersOpen = Boolean(searchUsersEl);
   const { t, i18n } = useTranslation();
 
-  const handleProfileMenuOpen = (event) => {
+  const handleProfileMenuOpen = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -104,11 +104,11 @@ export default function PrimaryHeader() {
     handleMobileMenuClose();
   };
 
-  const handleMobileMenuOpen = (event) => {
+  const handleMobileMenuOpen = (event: any) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleSearchTermChange = (e) => {
+  const handleSearchTermChange = (e: any) => {
     let searchTerm = e.target.value;
     console.log({ searchTerm });
     if (!searchTerm) return;
@@ -118,6 +118,8 @@ export default function PrimaryHeader() {
       setSearchUsersEl(true);
     }, 1000);
   }
+
+  const isAuthenticated = Boolean(currentUser.accessToken);
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -137,24 +139,26 @@ export default function PrimaryHeader() {
       onClose={handleMenuClose}
     >
       {
-        currentUser.userId ? <>
+        isAuthenticated ? <div>
           <MenuItem onClick={() => {
-            navigate(`/profile`, { state: { userId: currentUser.userId, displayName: currentUser.displayName } })
+            navigate(`/profile${currentUser.userId}`)
             handleMenuClose();
           }}>
-            Profile
+            {t('PROFILE')}
           </MenuItem>
           <MenuItem onClick={() => {
             localStorage.clear();
             window.location.href = '/';
             handleMenuClose();
-          }}>Log out</MenuItem>
-        </> :
+          }}>
+            {t('SIGN_OUT')}
+          </MenuItem>
+        </div> :
           <MenuItem onClick={() => {
             navigate('/login');
             handleMenuClose();
           }}>
-            {t('LOGIN')}
+            {t('SIGN_IN')}
           </MenuItem>
       }
     </Menu>
@@ -177,26 +181,6 @@ export default function PrimaryHeader() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
@@ -207,7 +191,7 @@ export default function PrimaryHeader() {
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
+        {t('PROFILE')}
       </MenuItem>
     </Menu>
   );
@@ -230,7 +214,7 @@ export default function PrimaryHeader() {
             noWrap
             component="div"
             sx={{ display: { xs: 'none', sm: 'block', cursor: 'pointer' } }}
-            onClick={() => {navigate('/')}}
+            onClick={() => { navigate('/') }}
           >
             TCONNECT
           </Typography>
@@ -253,12 +237,12 @@ export default function PrimaryHeader() {
                   maxWidth: '500px',
                 }}>
                 {
-                  userSearchedData.users.map(user => user.id !== currentUser.userId && (
+                  userSearchedData.users.map((user: any) => user.id !== currentUser.userId && (
                     <div
                       onClick={() => {
                         searchUsersRef.current.value = '';
                         setSearchUsersEl(false);
-                        navigate(`/profile`, { state: { userId: user.id, displayName: user.displayName } });
+                        navigate(`/profile/${user.id}`);
                       }}
                       style={{ display: "flex", alignItems: 'center', marginBottom: 10, cursor: 'pointer' }}
                     >
@@ -277,12 +261,7 @@ export default function PrimaryHeader() {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             {/* Notification area */}
             {
-              currentUser.userId && <>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                  <Badge badgeContent={4} color="error">
-                    <MailIcon />
-                  </Badge>
-                </IconButton>
+              isAuthenticated && <>
                 <IconButton
                   size="large"
                   aria-label="show 17 new notifications"
@@ -330,8 +309,8 @@ export default function PrimaryHeader() {
           {/* language options start */}
           <PopupState variant="popover" popupId="language-popup-menu">
             {(popupState) => (
-              <React.Fragment>
-                <Button variant="contained" {...bindTrigger(popupState)} startIcon={<LanguageIcon /> } style={{ width: 30 }}>
+              <div>
+                <Button variant="contained" {...bindTrigger(popupState)} startIcon={<LanguageIcon />} style={{ width: 30 }}>
                   {currentLanguage}
                 </Button>
                 <Menu {...bindMenu(popupState)}>
@@ -346,7 +325,7 @@ export default function PrimaryHeader() {
                     popupState.close();
                   }}>Vietnamese</MenuItem>
                 </Menu>
-              </React.Fragment>
+              </div>
             )}
           </PopupState>
           {/* language options end */}
