@@ -7,5 +7,6 @@
     "PASSWORD": "Password",
     "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
     "SEARCH": "Search",
-    "CHAT_MESSAGE_HINT": "Message..."
+    "CHAT_MESSAGE_HINT": "Message...",
+    "LANG": "Language"
 }

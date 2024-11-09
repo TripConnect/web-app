@@ -7,13 +7,11 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
-import LanguageIcon from '@mui/icons-material/Language';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,9 +19,7 @@ import { Avatar, Button, Paper } from '@mui/material';
 import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { useTranslation } from 'react-i18next';
-import { switchLanguage } from 'slices/language';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -76,7 +72,6 @@ const SEARCH_USER_QUERY = gql`
 `;
 
 export default function PrimaryHeader() {
-  const currentLanguage = useSelector((state: any) => state.language.currentLanguage);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [searchUsersEl, setSearchUsersEl] = React.useState(true);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -126,7 +121,7 @@ export default function PrimaryHeader() {
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
-        vertical: 'top',
+        vertical: 'bottom',
         horizontal: 'right',
       }}
       id={menuId}
@@ -139,21 +134,28 @@ export default function PrimaryHeader() {
       onClose={handleMenuClose}
     >
       {
-        isAuthenticated ? <div>
-          <MenuItem onClick={() => {
-            navigate(`/profile${currentUser.userId}`)
-            handleMenuClose();
-          }}>
-            {t('PROFILE')}
-          </MenuItem>
-          <MenuItem onClick={() => {
-            localStorage.clear();
-            window.location.href = '/';
-            handleMenuClose();
-          }}>
-            {t('SIGN_OUT')}
-          </MenuItem>
-        </div> :
+        isAuthenticated ?
+          <div>
+            <MenuItem onClick={() => {
+              navigate(`/profile/${currentUser.userId}`)
+              handleMenuClose();
+            }}>
+              {t('PROFILE')}
+            </MenuItem>
+            <MenuItem onClick={() => {
+              navigate(`/settings`);
+              handleMenuClose();
+            }}>
+              Settings
+            </MenuItem>
+            <MenuItem onClick={() => {
+              localStorage.clear();
+              window.location.href = '/';
+              handleMenuClose();
+            }}>
+              {t('SIGN_OUT')}
+            </MenuItem>
+          </div> :
           <MenuItem onClick={() => {
             navigate('/signin');
             handleMenuClose();
@@ -169,7 +171,7 @@ export default function PrimaryHeader() {
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
-        vertical: 'top',
+        vertical: 'bottom',
         horizontal: 'right',
       }}
       id={mobileMenuId}
@@ -305,30 +307,6 @@ export default function PrimaryHeader() {
               <MoreIcon />
             </IconButton>
           </Box>
-
-          {/* language options start */}
-          <PopupState variant="popover" popupId="language-popup-menu">
-            {(popupState) => (
-              <div>
-                <Button variant="contained" {...bindTrigger(popupState)} startIcon={<LanguageIcon />} style={{ width: 30 }}>
-                  {currentLanguage}
-                </Button>
-                <Menu {...bindMenu(popupState)}>
-                  <MenuItem onClick={async () => {
-                    await i18n.changeLanguage('en');
-                    dispatch(switchLanguage({ language: 'en' }));
-                    popupState.close();
-                  }}>English</MenuItem>
-                  <MenuItem onClick={async () => {
-                    await i18n.changeLanguage('vi');
-                    dispatch(switchLanguage({ language: 'vi' }));
-                    popupState.close();
-                  }}>Vietnamese</MenuItem>
-                </Menu>
-              </div>
-            )}
-          </PopupState>
-          {/* language options end */}
         </Toolbar>
       </AppBar>
 

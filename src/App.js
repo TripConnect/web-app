@@ -24,6 +24,8 @@ import PrimaryHeader from "components/PrimaryHeader";
 import theme from "theme";
 import enTranslation from 'locales/en/translation.json';
 import viTranslation from 'locales/vi/translation.json';
+import Settings from "pages/Settings";
+import { SystemLanguage } from "constants/lang";
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -49,10 +51,10 @@ const client = new ApolloClient({
 
 i18next.init({
   interpolation: { escapeValue: false }, // React already does escaping
-  lng: 'en',
+  lng: SystemLanguage.EN,
   resources: {
-    en: { translation: enTranslation },
-    vi: { translation: viTranslation }
+    [SystemLanguage.EN]: { translation: enTranslation },
+    [SystemLanguage.VI]: { translation: viTranslation }
   }
 });
 
@@ -86,6 +88,7 @@ function App() {
                   <Route path="/signup" element={<SignUp />} />
                   <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile />} />} />
                   <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation />} />} />
+                  <Route path="/settings" element={<PrivateRoute component={<Settings />} />} />
                   <Route path="/upload" element={<UploadFile />} />
                   <Route path="/" element={<PrivateRoute component={<Home />} />} />
                 </Routes>

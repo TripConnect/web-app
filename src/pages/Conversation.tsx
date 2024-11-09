@@ -1,12 +1,12 @@
-import { useLocation, useParams } from "react-router-dom";
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
-import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { gql, useLazyQuery } from '@apollo/client';
+import { memo, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Avatar, Button, Container, Grid, IconButton, TextField, Typography } from "@mui/material";
+import { Avatar, Grid, IconButton, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import { CHAT_MESSAGE_EVENT } from "constants/socket";
 import { ChatMessageModel } from 'types/chat';
-import { CHAT_HISTORY_PAGE_SIZE, INCOMING_CHAT_MESSAGE_CHANNEL } from "constants/common";
+import { CHAT_HISTORY_PAGE_SIZE } from "constants/common";
 import { useTranslation } from "react-i18next";
 import { RootState } from "store";
 import { io, Socket } from "socket.io-client";
@@ -70,12 +70,12 @@ const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessag
         maxWidth: "75%",
         alignSelf: isMine ? "flex-end" : "flex-start",
         boxSizing: "border-box",
-        margin: "0.2vw 0",
+        margin: "0.4rem 0",
       }}
     >
       {
         !isMine && <Avatar
-          alt={`-avatar`}
+          alt={`avatar`}
           variant="circular"
           src={owner.avatar}
           sx={{ width: 30, height: 30, objectFit: 'cover', marginRight: 0.5 }} />
@@ -83,7 +83,7 @@ const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessag
       <span
         style={{
           wordWrap: "break-word",
-          padding: "0.15rem 1rem",
+          padding: "0.4rem 1rem",
           borderRadius: "0.5rem",
           background: isMine ? "lightblue" : "lightgray",
         }}
@@ -237,66 +237,12 @@ export default function Conversation() {
     });
   }
 
-  // const handleSearchUserChange = (e: any) => {
-  //   clearTimeout(timeoutId as number);
-  //   if (e.target.value.length === 0) {
-  //     return;
-  //   }
-  //   setTimeoutId(
-  //     setTimeout(() => {
-  //       searchUser({ variables: { searchTerm: e.target.value } });
-  //     }, 800)
-  //   );
-  // }
-
   return (
     <Grid container justifyContent='center'>
-      {/* Sidebar */}
-      {/* <Grid item xs={4} style={{ background: "#eee", padding: 10 }}>
+      <Grid item xs={6}>
         <Grid container>
           <Grid item sm={12}>
-            <Typography variant="caption" style={{
-              fontWeight: 600,
-              fontSize: '1.75rem',
-              marginBottom: 10,
-            }}>Conversations</Typography>
-          </Grid>
-          <Grid item sm={12}>
-            <TextField
-                label="Find user"
-                id="find-user"
-                variant="filled"
-                size="small"
-                style={{ paddingBottom: 12 }}
-                onKeyUp={handleSearchUserChange}
-            />
-          </Grid>
-          <Grid item sm={12}>
-            <div>
-              {
-                searchUserData?.users && searchUserData.users
-                  .map((searchedUser: any, index: number) => currentUser.userId !== searchedUser.id && (
-                      <>
-                        <div
-                          key={`sidebarSearchUser-${searchedUser.id}`}
-                          style={{ padding: 10, cursor: "pointer" }}
-                        >
-                          {searchedUser.displayName}
-                        </div>
-                        {index < searchUserData.users.length - 1 && <hr />}
-                      </>
-                  ))
-              }
-            </div>
-          </Grid>
-        </Grid>
-      </Grid> */}
-
-      {/* Main */}
-      <Grid item xs={8}>
-        <Grid container>
-          <Grid item sm={12}>
-            <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', padding: '10px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', padding: '10px 0' }}>
               <Avatar
                 alt="Avatar"
                 variant="circular"
@@ -337,7 +283,7 @@ export default function Conversation() {
                 alignItems: 'flex-start',
                 width: "100%",
                 height: "75vh",
-                padding: "0.5vw",
+                padding: "0.5vw 0",
                 overflow: "auto",
               }}>
               {fetchChatHistoryLoading && "Loading..."}
