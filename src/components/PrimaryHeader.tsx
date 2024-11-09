@@ -183,17 +183,24 @@ export default function PrimaryHeader() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
+      <MenuItem onClick={() => {
+        navigate(`/profile/${currentUser.userId}`);
+        handleMobileMenuClose();
+      }}>
         {t('PROFILE')}
+      </MenuItem>
+      <MenuItem onClick={() => {
+        navigate(`/settings`);
+        handleMobileMenuClose();
+      }}>
+        {t('SETTING')}
+      </MenuItem>
+      <MenuItem onClick={() => {
+        localStorage.clear();
+        window.location.href = '/';
+        handleMobileMenuClose();
+      }}>
+        {t('SIGN_OUT')}
       </MenuItem>
     </Menu>
   );
@@ -202,15 +209,6 @@ export default function PrimaryHeader() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography
             variant="h6"
             noWrap
