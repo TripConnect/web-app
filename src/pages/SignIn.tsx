@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateToken } from "slices/user";
 import { SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
@@ -39,6 +39,15 @@ export default function SignIn() {
     });
     const [signin, { data, loading, error }] = useMutation(SIGNIN_MUTATION);
 
+    const currentUser = useSelector((state: any) => state.user);
+    const isAuthenticated = Boolean(currentUser.accessToken);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, [isAuthenticated, navigate]);
+
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
         if (!signInPayload.username || !signInPayload.password) {
@@ -64,7 +73,6 @@ export default function SignIn() {
     const handleRegister = () => {
         navigate("/signup");
     }
-
 
     const handleLoginChange = (e: React.ChangeEvent) => {
         let target = e.target as HTMLInputElement

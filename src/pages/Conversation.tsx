@@ -61,7 +61,7 @@ const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessag
   const currentUser = useSelector((state: any) => state.user);
   let isMine = owner.id === currentUser.userId;
   return (
-    <div 
+    <div
       style={{
         display: 'flex',
         justifyContent: 'center',
@@ -86,9 +86,9 @@ const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessag
           padding: "0.15rem 1rem",
           borderRadius: "0.5rem",
           background: isMine ? "lightblue" : "lightgray",
-        }} 
+        }}
       >
-        {!isMine && <div style={{fontWeight: 500}}>{owner.displayName}</div>}
+        {!isMine && <div style={{ fontWeight: 500 }}>{owner.displayName}</div>}
         {content}
       </span>
     </div>
@@ -96,9 +96,9 @@ const ChatMessage = memo(function ({ id, content, createdAt, owner }: ChatMessag
 }, (prevProps: ChatMessageProps, nextProps: ChatMessageProps) => prevProps.id === nextProps.id);
 
 export default function Conversation() {
-  const { id: currentConversationId } = useParams<{id: string}>();
+  const { id: currentConversationId } = useParams<{ id: string }>();
   const dispatch = useDispatch();
-  
+
   const { t } = useTranslation();
   const [timeoutId, setTimeoutId] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -114,7 +114,7 @@ export default function Conversation() {
   const [fetchChatSummary, { loading: fetchChatSummaryLoading, error: fetchChatSummaryError, data: fetchChatSummaryData }] = useLazyQuery(QUERY_CONVERSATION_SUMMARY);
   const [fetchChatHistory, { loading: fetchChatHistoryLoading, error: fetchChatHistoryError, data: fetchChatHistoryData }] = useLazyQuery(QUERY_CHAT_HISTORY);
 
-  useEffect(() =>{
+  useEffect(() => {
     fetchChatSummary({
       variables: {
         id: currentConversationId
@@ -145,7 +145,7 @@ export default function Conversation() {
   }, []);
 
   useEffect(() => {
-    if(!conversationRef.current) return;
+    if (!conversationRef.current) return;
     conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
 
     const handleScroll = () => {
@@ -162,7 +162,7 @@ export default function Conversation() {
       .then((respMessages: ChatMessageModel[]) => {
         let isOldestPage = respMessages.length === 0;
         setIsReachOldestPage(isOldestPage);
-        if(!isOldestPage) setChatMessageHistory(prevMessages => currentPage === 1 ? respMessages : [...respMessages, ...prevMessages]);
+        if (!isOldestPage) setChatMessageHistory(prevMessages => currentPage === 1 ? respMessages : [...respMessages, ...prevMessages]);
       })
       .catch(err => {
         console.error(err);
@@ -172,7 +172,7 @@ export default function Conversation() {
 
   const fetchChatHistoryByPage = async (pageNum: number): Promise<ChatMessageModel[]> => {
     console.log('fetch chat history by page: ' + pageNum);
-    
+
     let resp = await fetchChatHistory({
       variables: {
         id: currentConversationId,
@@ -180,7 +180,7 @@ export default function Conversation() {
         messageLimit: CHAT_HISTORY_PAGE_SIZE
       }
     });
-    
+
     let messages: ChatMessageModel[] = resp.data.conversation.messages
       .map((m: any): ChatMessageModel => ({
         id: m.id,
@@ -197,7 +197,7 @@ export default function Conversation() {
 
     return messages;
   }
-  
+
   const handleScrollToTop = () => {
     if (isReachOldestPage) return;
     if (fetchChatHistoryLoading) return;
@@ -210,7 +210,7 @@ export default function Conversation() {
 
   const refreshConversation = () => {
     // If currentPage > 1, just reset currentPage to trigger currentPage-based useEffect. Otherwise, force reset all related states.
-    if(currentPage > 1) {
+    if (currentPage > 1) {
       setCurrentPage(1);
     } else {
       fetchChatHistoryByPage(1)
@@ -223,14 +223,14 @@ export default function Conversation() {
           console.error(err);
         });
     }
-    if(conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
+    if (conversationRef.current) conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
   }
 
   const handleSendMessage = () => {
     chatSocket?.emit(CHAT_MESSAGE_EVENT, {
       conversationId: currentConversationId,
       content: chatMessage
-    }, (response: {status: 'DONE' | 'FAILED'}) => {
+    }, (response: { status: 'DONE' | 'FAILED' }) => {
       console.log('Send chat message:' + response.status);
       setChatMessage('');
       refreshConversation();
@@ -296,7 +296,7 @@ export default function Conversation() {
       <Grid item xs={8}>
         <Grid container>
           <Grid item sm={12}>
-            <div style={{display: 'flex', justifyContent: 'start', alignItems: 'center', padding: '10px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', padding: '10px 20px' }}>
               <Avatar
                 alt="Avatar"
                 variant="circular"
@@ -329,7 +329,7 @@ export default function Conversation() {
           <Grid item sm={12}>
             <div
               key={currentConversationId}
-              ref={conversationRef} 
+              ref={conversationRef}
               style={{
                 boxSizing: "border-box",
                 display: "flex",
@@ -339,7 +339,7 @@ export default function Conversation() {
                 height: "75vh",
                 padding: "0.5vw",
                 overflow: "auto",
-            }}>
+              }}>
               {fetchChatHistoryLoading && "Loading..."}
               {chatMessageHistory.length > 0 && chatMessageHistory
                 .map((message: ChatMessageModel) => <ChatMessage
@@ -359,20 +359,20 @@ export default function Conversation() {
               alignItems: "center",
               padding: '20px 0',
             }}>
-                <TextField
-                  placeholder={t('CHAT_MESSAGE_HINT')}
-                  id="filled-hidden-label-small"
-                  autoComplete='off'
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  value={chatMessage}
-                  onChange={handleChangeMessage}
-                  style={{ marginRight: 8 }}
-                />
-                <IconButton color="primary" onClick={handleSendMessage} disabled={chatMessage.length === 0}>
-                  <SendIcon />
-                </IconButton>
+              <TextField
+                placeholder={t('CHAT_MESSAGE_HINT')}
+                id="filled-hidden-label-small"
+                autoComplete='off'
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={chatMessage}
+                onChange={handleChangeMessage}
+                style={{ marginRight: 8 }}
+              />
+              <IconButton color="primary" onClick={handleSendMessage} disabled={chatMessage.length === 0}>
+                <SendIcon />
+              </IconButton>
             </div>
           </Grid>
         </Grid>

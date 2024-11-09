@@ -155,7 +155,7 @@ export default function PrimaryHeader() {
           </MenuItem>
         </div> :
           <MenuItem onClick={() => {
-            navigate('/login');
+            navigate('/signin');
             handleMenuClose();
           }}>
             {t('SIGN_IN')}
