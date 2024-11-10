@@ -11,5 +11,9 @@
     "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
     "SEARCH": "Search",
     "CHAT_MESSAGE_HINT": "Message...",
-    "LANG": "Language"
+    "LANG": "Language",
+    "CLOSE": "Close",
+    "OTP": "Verification code",
+    "CONFIRM": "Confirm",
+    "SETUP_2FA_SUBTITLE": "Please scan below QR or input the secret to your authenticator application for setup"
 }
