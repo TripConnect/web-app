@@ -12,7 +12,6 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,9 +19,8 @@ import { Avatar, Button, Paper } from '@mui/material';
 import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { useTranslation } from 'react-i18next';
-import { switchLanguage } from 'slices/language';
+import { stringAvatar } from '../utils/color';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -75,22 +73,21 @@ const SEARCH_USER_QUERY = gql`
 `;
 
 export default function PrimaryHeader() {
-  const currentLanguage = useSelector(state => state.language.currentLanguage);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [searchUsersEl, setSearchUsersEl] = React.useState(true);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const currentUser = useSelector((state) => state.user);
+  const currentUser = useSelector((state: any) => state.user);
   const [searchUser, { loading, error, data: userSearchedData }] = useLazyQuery(SEARCH_USER_QUERY);
   const navigate = useNavigate();
-  const searchUsersRef = useRef();
-  const searchScheduler = useRef();
+  const searchUsersRef = useRef<any>();
+  const searchScheduler = useRef<any>();
   const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const shouldSearchUsersOpen = Boolean(searchUsersEl);
   const { t, i18n } = useTranslation();
 
-  const handleProfileMenuOpen = (event) => {
+  const handleProfileMenuOpen = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -103,11 +100,11 @@ export default function PrimaryHeader() {
     handleMobileMenuClose();
   };
 
-  const handleMobileMenuOpen = (event) => {
+  const handleMobileMenuOpen = (event: any) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleSearchTermChange = (e) => {
+  const handleSearchTermChange = (e: any) => {
     let searchTerm = e.target.value;
     console.log({ searchTerm });
     if (!searchTerm) return;
@@ -118,12 +115,14 @@ export default function PrimaryHeader() {
     }, 1000);
   }
 
+  const isAuthenticated = Boolean(currentUser.accessToken);
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
-        vertical: 'top',
+        vertical: 'bottom',
         horizontal: 'right',
       }}
       id={menuId}
@@ -136,23 +135,33 @@ export default function PrimaryHeader() {
       onClose={handleMenuClose}
     >
       {
-        currentUser.userId ? <>
+        isAuthenticated ?
+          <div>
+            <MenuItem onClick={() => {
+              navigate(`/profile/${currentUser.userId}`)
+              handleMenuClose();
+            }}>
+              {t('PROFILE')}
+            </MenuItem>
+            <MenuItem onClick={() => {
+              navigate(`/settings`);
+              handleMenuClose();
+            }}>
+              {t('SETTING')}
+            </MenuItem>
+            <MenuItem onClick={() => {
+              localStorage.clear();
+              window.location.href = '/';
+              handleMenuClose();
+            }}>
+              {t('SIGN_OUT')}
+            </MenuItem>
+          </div> :
           <MenuItem onClick={() => {
-            navigate(`/profile`, { state: { userId: currentUser.userId, displayName: currentUser.displayName } })
+            navigate('/signin');
             handleMenuClose();
           }}>
-            Profile
-          </MenuItem>
-          <MenuItem onClick={() => {
-            localStorage.clear();
-            handleMenuClose();
-          }}>Log out</MenuItem>
-        </> :
-          <MenuItem onClick={() => {
-            navigate('/login');
-            handleMenuClose();
-          }}>
-            {t('LOGIN')}
+            {t('SIGN_IN')}
           </MenuItem>
       }
     </Menu>
@@ -163,7 +172,7 @@ export default function PrimaryHeader() {
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
-        vertical: 'top',
+        vertical: 'bottom',
         horizontal: 'right',
       }}
       id={mobileMenuId}
@@ -175,37 +184,24 @@ export default function PrimaryHeader() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
+      <MenuItem onClick={() => {
+        navigate(`/profile/${currentUser.userId}`);
+        handleMobileMenuClose();
+      }}>
+        {t('PROFILE')}
       </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
+      <MenuItem onClick={() => {
+        navigate(`/settings`);
+        handleMobileMenuClose();
+      }}>
+        {t('SETTING')}
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
+      <MenuItem onClick={() => {
+        localStorage.clear();
+        window.location.href = '/';
+        handleMobileMenuClose();
+      }}>
+        {t('SIGN_OUT')}
       </MenuItem>
     </Menu>
   );
@@ -214,20 +210,12 @@ export default function PrimaryHeader() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+            sx={{ display: { xs: 'none', sm: 'block', cursor: 'pointer' } }}
+            onClick={() => { navigate('/') }}
           >
             TCONNECT
           </Typography>
@@ -241,7 +229,7 @@ export default function PrimaryHeader() {
               inputProps={{ 'aria-label': 'search', name: 'searchTerm', onKeyUp: handleSearchTermChange, ref: searchUsersRef }}
             />
             {
-              shouldSearchUsersOpen && userSearchedData?.users &&
+              (shouldSearchUsersOpen && userSearchedData?.users.length > 0) &&
               <Paper
                 style={{
                   padding: 8,
@@ -250,20 +238,24 @@ export default function PrimaryHeader() {
                   maxWidth: '500px',
                 }}>
                 {
-                  userSearchedData.users.map(user => user.id !== currentUser.userId && (
+                  userSearchedData.users.map((user: any) => user.id !== currentUser.userId && (
                     <div
                       onClick={() => {
                         searchUsersRef.current.value = '';
                         setSearchUsersEl(false);
-                        navigate(`/profile`, { state: { userId: user.id, displayName: user.displayName } });
+                        navigate(`/profile/${user.id}`);
                       }}
                       style={{ display: "flex", alignItems: 'center', marginBottom: 10, cursor: 'pointer' }}
                     >
-                      <Avatar
-                        src={user.avatar ? process.env.REACT_APP_BASE_URL + user.avatar : process.env.REACT_APP_DEFAULT_AVATAR_URL}
-                        style={{ marginRight: 10, objectFit: "cover", width: 30, height: 30 }}
-                      />
-                      {user.displayName}
+                      {
+                        user.avatar ?
+                          <Avatar
+                            src={process.env.REACT_APP_BASE_URL + user.avatar}
+                            style={{ marginRight: 10, objectFit: "cover", width: 30, height: 30 }}
+                          /> :
+                          <Avatar {...stringAvatar(user.id, user.displayName)} style={{ fontSize: '1rem' }} />
+                      }
+                      <div style={{ marginLeft: 10 }}>{user.displayName}</div>
                     </div>
                   ))
                 }
@@ -274,12 +266,7 @@ export default function PrimaryHeader() {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             {/* Notification area */}
             {
-              currentUser.userId && <>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                  <Badge badgeContent={4} color="error">
-                    <MailIcon />
-                  </Badge>
-                </IconButton>
+              isAuthenticated && <>
                 <IconButton
                   size="large"
                   aria-label="show 17 new notifications"
@@ -302,12 +289,7 @@ export default function PrimaryHeader() {
               color="inherit"
             >
               {
-                currentUser ?
-                  <Avatar
-                    src={currentUser.avatar ? process.env.REACT_APP_BASE_URL + currentUser.avatar : process.env.REACT_APP_DEFAULT_AVATAR_URL}
-                    style={{ marginRight: 10, objectFit: "cover", width: 40, height: 40 }}
-                  /> :
-                  <AccountCircle />
+                currentUser.accessToken && <Avatar {...stringAvatar(currentUser.userId, currentUser.displayName)} style={{ fontSize: '1rem' }} />
               }
             </IconButton>
           </Box>
@@ -323,30 +305,6 @@ export default function PrimaryHeader() {
               <MoreIcon />
             </IconButton>
           </Box>
-
-          {/* language options start */}
-          <PopupState variant="popover" popupId="language-popup-menu">
-            {(popupState) => (
-              <React.Fragment>
-                <Button variant="contained" {...bindTrigger(popupState)}>
-                  {currentLanguage}
-                </Button>
-                <Menu {...bindMenu(popupState)}>
-                  <MenuItem onClick={async () => {
-                    await i18n.changeLanguage('en');
-                    dispatch(switchLanguage({ language: 'en' }));
-                    popupState.close();
-                  }}>English</MenuItem>
-                  <MenuItem onClick={async () => {
-                    await i18n.changeLanguage('vi');
-                    dispatch(switchLanguage({ language: 'vi' }));
-                    popupState.close();
-                  }}>Vietnamese</MenuItem>
-                </Menu>
-              </React.Fragment>
-            )}
-          </PopupState>
-          {/* language options end */}
         </Toolbar>
       </AppBar>
 

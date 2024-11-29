@@ -40,16 +40,16 @@ const VisuallyHiddenInput = styled('input')({
     left: 0,
     whiteSpace: 'nowrap',
     width: 1,
-  });
+});
 
-export default function Signup() {
+export default function SignUp() {
     const navigate = useNavigate();
     const [signup, { data, loading, error }] = useMutation(SIGNUP_MUTATION);
-    const [uploadFile, {loading: uploadLoading }] = useMutation(UPLOAD_MUTATION);
-    const [payload, setPayload] = useState({});
+    const [uploadFile, { loading: uploadLoading }] = useMutation(UPLOAD_MUTATION);
+    const [payload, setPayload] = useState<any>({});
     const apolloClient = useApolloClient();
 
-    const handlePayloadChange = (e) => {
+    const handlePayloadChange = (e: any) => {
         let { name, value } = e.target;
 
         if (name === "avatar" && e.target.validity.valid && e.target.files) {
@@ -58,8 +58,8 @@ export default function Signup() {
         setPayload({ ...payload, [name]: value });
     }
 
-    const handleSubmit = (e) => {
-        console.log({payload});
+    const handleSubmit = (e: any) => {
+        console.log({ payload });
         signup({ variables: payload })
             .then(response => {
                 apolloClient.resetStore();
@@ -67,7 +67,7 @@ export default function Signup() {
                 navigate("/");
             })
             .catch(error => {
-                console.log({error});
+                console.log({ error });
                 let statusCode = error.graphQLErrors[0].extensions.code;
                 switch (statusCode) {
                     case StatusCode.CONFLICT: {
@@ -116,7 +116,7 @@ export default function Signup() {
                     Avatar
                     <VisuallyHiddenInput type="file" name="avatar" onChange={handlePayloadChange} />
                 </Button>
-                { payload?.avatar?.name || <i>not uploaded</i> }
+                {payload?.avatar?.name || <i>not uploaded</i>}
 
                 <TextField
                     name="displayName"

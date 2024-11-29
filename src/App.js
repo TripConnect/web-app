@@ -1,30 +1,31 @@
+import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  useNavigate
 } from "react-router-dom";
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
+import { persistor, store } from 'store';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { PersistGate } from 'redux-persist/integration/react';
 import { ThemeProvider } from '@mui/material/styles';
 import i18next from "i18next";
+import { I18nextProvider } from "react-i18next";
 
-import Welcome from 'pages/Welcome';
+import SignIn from 'pages/SignIn';
 import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
 import Conversation from "pages/Conversation";
-import Signup from "pages/Signup";
-import SocketIOListener from 'services/SocketIOListener';
-import { persistor, store } from 'store';
-import theme from "theme";
+import SignUp from "pages/SignUp";
 import UploadFile from "pages/UploadFile";
 import PrimaryHeader from "components/PrimaryHeader";
-import { I18nextProvider } from "react-i18next";
-
+import theme from "theme";
 import enTranslation from 'locales/en/translation.json';
 import viTranslation from 'locales/vi/translation.json';
+import Settings from "pages/Settings";
+import { SystemLanguage } from "constants/lang";
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -35,35 +36,61 @@ const client = new ApolloClient({
       "Apollo-Require-Preflight": "true",
     },
   }),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'no-cache',
+    },
+    query: {
+      fetchPolicy: 'no-cache',
+    },
+    mutate: {
+      fetchPolicy: 'no-cache',
+    },
+  },
 });
 
 i18next.init({
   interpolation: { escapeValue: false }, // React already does escaping
-  lng: 'en',
+  lng: SystemLanguage.EN,
   resources: {
-    en: { translation: enTranslation },
-    vi: { translation: viTranslation }
+    [SystemLanguage.EN]: { translation: enTranslation },
+    [SystemLanguage.VI]: { translation: viTranslation }
   }
 });
 
+const PrivateRoute = ({ component }) => {
+  const currentUser = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const isAuthenticated = Boolean(currentUser.accessToken);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/signin");
+    }
+  }, [isAuthenticated, navigate]);
+
+  return isAuthenticated ? component : null;
+};
+
 function App() {
+  // console.log(window.location.pathname == "/");
+
   return (
     <I18nextProvider i18n={i18next}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <ApolloProvider client={client}>
             <ThemeProvider theme={theme}>
-              <SocketIOListener />
               <Router>
                 <PrimaryHeader key="primary-header" />
                 <Routes>
-                  <Route path="/" element={<Welcome />} />
-                  <Route path="/login" element={<Welcome />} />
+                  <Route path="/signin" element={<SignIn />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile />} />} />
+                  <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation />} />} />
+                  <Route path="/settings" element={<PrivateRoute component={<Settings />} />} />
                   <Route path="/upload" element={<UploadFile />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/profile" element={<UserProfile />} />
-                  <Route path="/conversation" element={<Conversation />} />
+                  <Route path="/" element={<PrivateRoute component={<Home />} />} />
                 </Routes>
               </Router>
             </ThemeProvider>

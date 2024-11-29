@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateToken } from "slices/user";
 import { SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
@@ -24,21 +24,38 @@ const SIGNIN_MUTATION = gql`
     }
 `;
 
-export default function Welcome(props) {
+type SignInPayload = {
+    username: string;
+    password: string;
+}
+
+export default function SignIn() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    let [loginPayload, setLoginPayload] = useState({});
+    let [signInPayload, setSignInPayload] = useState<SignInPayload>({
+        username: 'sadgirl1999',
+        password: '123456789'
+    });
     const [signin, { data, loading, error }] = useMutation(SIGNIN_MUTATION);
 
-    const handleSubmit = (e) => {
+    const currentUser = useSelector((state: any) => state.user);
+    const isAuthenticated = Boolean(currentUser.accessToken);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, [isAuthenticated, navigate]);
+
+    const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        if (!loginPayload.username || !loginPayload.password) {
+        if (!signInPayload.username || !signInPayload.password) {
             alert(SIGNIN_INVALID);
             return
         }
 
-        signin({ variables: { ...loginPayload } })
+        signin({ variables: { ...signInPayload } })
             .then(response => {
                 let { userInfo, token } = response.data.signin;
                 let { id: userId, displayName, avatar } = userInfo;
@@ -53,15 +70,15 @@ export default function Welcome(props) {
             });
     }
 
-    const handleRegister = (e) => {
+    const handleRegister = () => {
         navigate("/signup");
     }
 
-
-    const handleLoginChange = (e) => {
-        setLoginPayload({
-            ...loginPayload,
-            [e.target.name]: e.target.value,
+    const handleLoginChange = (e: React.ChangeEvent) => {
+        let target = e.target as HTMLInputElement
+        setSignInPayload({
+            ...signInPayload,
+            [target.name]: target.value,
         })
     }
 
@@ -80,12 +97,12 @@ export default function Welcome(props) {
             transform: "translate(-50%, -50%)",
         }}>
             <Typography variant="h5" component="div" color="primary" gutterBottom>
-                {t('LOGIN')}
+                {t('SIGN_IN')}
             </Typography>
             <form
                 style={{
                     width: '100%',
-                }} 
+                }}
                 onSubmit={handleSubmit}
             >
                 <TextField
@@ -94,8 +111,10 @@ export default function Welcome(props) {
                     variant="outlined"
                     fullWidth
                     onChange={handleLoginChange}
-                    required
+                    value={signInPayload.username}
                     style={{ marginBottom: '0.5rem' }}
+                    autoComplete="off"
+                    required
                 />
                 <TextField
                     name="password"
@@ -104,6 +123,7 @@ export default function Welcome(props) {
                     type="password"
                     fullWidth
                     onChange={handleLoginChange}
+                    value={signInPayload.password}
                     style={{ marginBottom: '0.5rem' }}
                     required
                 />
@@ -122,7 +142,7 @@ export default function Welcome(props) {
                 width: "100%",
                 textAlign: "right",
             }}>
-                <i>{t("NOW_HAVE_ACCOUNT_QUESTION")}</i> <span style={{cursor: "pointer", color: "darkblue"}} role="link" onClick={handleRegister}>{t("SIGNUP")}</span>
+                <i>{t("NOW_HAVE_ACCOUNT_QUESTION")}</i> <span style={{ cursor: "pointer", color: "darkblue" }} role="link" onClick={handleRegister}>{t("SIGNUP")}</span>
             </div>
         </Paper>
     )
