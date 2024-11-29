@@ -1,7 +1,10 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useSelector } from "react-redux";
-import { Button, Container, Grid, Typography } from "@mui/material";
+import { Avatar, Button, Container, Grid, Typography } from "@mui/material";
+import ForumIcon from '@mui/icons-material/Forum';
+import { stringAvatar } from "utils/color";
+import { useTranslation } from "react-i18next";
 
 const PRIVATE_CONVERSATION_MUTATION = gql`
     mutation CreateConversation($type: String!, $members: String!) {
@@ -24,6 +27,7 @@ const USER_QUERY = gql`
 
 export default function UserProfile() {
     let navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const { id: profileUserId } = useParams<{ id: string }>();
     const { loading: profileLoading, error: profileError, data: profileUser } = useQuery(USER_QUERY, {
         variables: { id: profileUserId },
@@ -52,18 +56,33 @@ export default function UserProfile() {
         <Container>
             <Grid container>
                 <Grid item xs={12}>
-                    <Typography variant="h1" style={{
-                        fontWeight: 500,
-                        fontSize: '2rem',
+                    <section style={{
+                        display: 'flex',
+                        justifyContent: 'start',
+                        alignItems: 'center',
+                        marginTop: 10,
+                        marginBottom: 20
                     }}>
-                        {displayName}
-                    </Typography>
+                        <Avatar {...stringAvatar(profileUserId as string, displayName)} style={{ width: 100, height: 100, fontSize: '2.5rem' }} />
+                        <Typography variant="h1" style={{
+                            marginLeft: 20,
+                            fontWeight: 500,
+                            fontSize: '2rem',
+                        }}>
+                            {displayName}
+                        </Typography>
+                    </section>
+
                     {
                         profileUserId !== currentUser.userId && <Button
+                            style={{ textTransform: 'none' }}
                             variant="contained"
                             onClick={handleChat}
                         >
-                            Chat
+                            <ForumIcon />
+                            <span style={{ display: 'inline-block', marginLeft: 5 }}>
+                                {t('CHAT_BUTTON_BODY')}
+                            </span>
                         </Button>
                     }
                 </Grid>

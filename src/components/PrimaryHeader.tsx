@@ -20,6 +20,7 @@ import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { stringAvatar } from '../utils/color';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -146,7 +147,7 @@ export default function PrimaryHeader() {
               navigate(`/settings`);
               handleMenuClose();
             }}>
-              Settings
+              {t('SETTING')}
             </MenuItem>
             <MenuItem onClick={() => {
               localStorage.clear();
@@ -246,11 +247,15 @@ export default function PrimaryHeader() {
                       }}
                       style={{ display: "flex", alignItems: 'center', marginBottom: 10, cursor: 'pointer' }}
                     >
-                      <Avatar
-                        src={user.avatar ? process.env.REACT_APP_BASE_URL + user.avatar : process.env.REACT_APP_DEFAULT_AVATAR_URL}
-                        style={{ marginRight: 10, objectFit: "cover", width: 30, height: 30 }}
-                      />
-                      {user.displayName}
+                      {
+                        user.avatar ?
+                          <Avatar
+                            src={process.env.REACT_APP_BASE_URL + user.avatar}
+                            style={{ marginRight: 10, objectFit: "cover", width: 30, height: 30 }}
+                          /> :
+                          <Avatar {...stringAvatar(user.id, user.displayName)} style={{ fontSize: '1rem' }} />
+                      }
+                      <div style={{ marginLeft: 10 }}>{user.displayName}</div>
                     </div>
                   ))
                 }
@@ -284,12 +289,7 @@ export default function PrimaryHeader() {
               color="inherit"
             >
               {
-                currentUser ?
-                  <Avatar
-                    src={currentUser.avatar ? process.env.REACT_APP_BASE_URL + currentUser.avatar : process.env.REACT_APP_DEFAULT_AVATAR_URL}
-                    style={{ marginRight: 10, objectFit: "cover", width: 40, height: 40 }}
-                  /> :
-                  <AccountCircle />
+                currentUser.accessToken && <Avatar {...stringAvatar(currentUser.userId, currentUser.displayName)} style={{ fontSize: '1rem' }} />
               }
             </IconButton>
           </Box>
