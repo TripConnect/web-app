@@ -12,7 +12,6 @@ const SIGNIN_MUTATION = gql`
         signin(username: $username, password: $password) {
             userInfo {
                 id
-                username
                 displayName
                 avatar
             }

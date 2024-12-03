@@ -1,4 +1,4 @@
-function stringToColor(string: string) {
+export function stringToColor(string: string) {
     let hash = 0;
     let i;
 
@@ -18,13 +18,6 @@ function stringToColor(string: string) {
     return color;
 }
 
-function stringAvatar(colorMarker: string, name: string) {
-    return {
-        sx: {
-            bgcolor: stringToColor(colorMarker),
-        },
-        children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-    };
+export function shortenFullName(fullname: String): String {
+    return `${fullname.split(' ')[0][0]}${fullname.split(' ')[1][0]}`;
 }
-
-export { stringAvatar };

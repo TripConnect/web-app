@@ -3,7 +3,7 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { useSelector } from "react-redux";
 import { Avatar, Button, Container, Grid, Typography } from "@mui/material";
 import ForumIcon from '@mui/icons-material/Forum';
-import { stringAvatar } from "utils/color";
+import { shortenFullName, stringToColor } from "utils/avatar";
 import { useTranslation } from "react-i18next";
 
 const PRIVATE_CONVERSATION_MUTATION = gql`
@@ -19,7 +19,6 @@ const USER_QUERY = gql`
         user(id: $id) {
             id
             avatar
-            username
             displayName
         }
     }
@@ -63,7 +62,10 @@ export default function UserProfile() {
                         marginTop: 10,
                         marginBottom: 20
                     }}>
-                        <Avatar {...stringAvatar(profileUserId as string, displayName)} style={{ width: 100, height: 100, fontSize: '2.5rem' }} />
+                        <Avatar
+                            sx={{ bgcolor: stringToColor(profileUserId as string) }}
+                            children={shortenFullName(displayName)}
+                            style={{ width: 100, height: 100, fontSize: '2.5rem' }} />
                         <Typography variant="h1" style={{
                             marginLeft: 20,
                             fontWeight: 500,

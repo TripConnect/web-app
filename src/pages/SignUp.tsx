@@ -17,7 +17,6 @@ const SIGNUP_MUTATION = gql`
                 accessToken
                 refreshToken
             }
-            username
         }
     }
 `;

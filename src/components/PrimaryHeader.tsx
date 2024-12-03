@@ -9,18 +9,16 @@ import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useDispatch, useSelector } from 'react-redux';
-import { Avatar, Button, Paper } from '@mui/material';
+import { Avatar, Paper } from '@mui/material';
 import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { stringAvatar } from '../utils/color';
+import { shortenFullName, stringToColor } from '../utils/avatar';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -253,7 +251,10 @@ export default function PrimaryHeader() {
                             src={process.env.REACT_APP_BASE_URL + user.avatar}
                             style={{ marginRight: 10, objectFit: "cover", width: 30, height: 30 }}
                           /> :
-                          <Avatar {...stringAvatar(user.id, user.displayName)} style={{ fontSize: '1rem' }} />
+                          <Avatar
+                            sx={{ bgcolor: stringToColor(user.id) }}
+                            children={shortenFullName(user.displayName)}
+                            style={{ fontSize: '1rem' }} />
                       }
                       <div style={{ marginLeft: 10 }}>{user.displayName}</div>
                     </div>
@@ -289,7 +290,10 @@ export default function PrimaryHeader() {
               color="inherit"
             >
               {
-                currentUser.accessToken && <Avatar {...stringAvatar(currentUser.userId, currentUser.displayName)} style={{ fontSize: '1rem' }} />
+                currentUser.accessToken && <Avatar
+                  sx={{ bgcolor: stringToColor(currentUser.userId) }}
+                  children={shortenFullName(currentUser.displayName)}
+                  style={{ fontSize: '1rem' }} />
               }
             </IconButton>
           </Box>
