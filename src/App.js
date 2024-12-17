@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { Provider, useSelector } from 'react-redux';
 import { persistor, store } from 'store';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { PersistGate } from 'redux-persist/integration/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -26,16 +26,28 @@ import enTranslation from 'locales/en/translation.json';
 import viTranslation from 'locales/vi/translation.json';
 import Settings from "pages/Settings";
 import { SystemLanguage } from "constants/lang";
+import { setContext } from '@apollo/client/link/context';
+import { getCurrentUser } from "utils/storeHelpers";
+
+const httpLink = createHttpLink({
+  uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
+});
+
+const authLink = setContext((_, { headers }) => {
+  let currentUser = getCurrentUser();
+  const token = currentUser.accessToken;
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    }
+  }
+});
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
   cache: new InMemoryCache(),
-  link: createUploadLink({
-    uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
-    headers: {
-      "Apollo-Require-Preflight": "true",
-    },
-  }),
+  link: authLink.concat(httpLink),
   defaultOptions: {
     watchQuery: {
       fetchPolicy: 'no-cache',

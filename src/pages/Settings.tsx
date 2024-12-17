@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import LanguageIcon from '@mui/icons-material/Language';
@@ -7,16 +7,41 @@ import { QRCodeSVG } from 'qrcode.react';
 
 import { SystemLanguage } from "constants/lang";
 import { switchLanguage } from "slices/language";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 type TwoFactorSetupProps = {
     isOpen: boolean
 }
 
+const ME_QUERY = gql`
+    query Me {
+        me {
+            enabled2fa
+        }
+    }
+`;
+
+const GENERATE_PREVIEW_2FA_MUTATION = gql`
+    mutation Generate2FASecret {
+        generate2FASecret {
+            secret
+            qrCode
+        }
+    }
+`;
+
 function TwoFASetupSection(props: TwoFactorSetupProps) {
     const { t } = useTranslation();
     let [isOpen, setOpen] = useState(props.isOpen);
-    const currentUser = useSelector((state: any) => state.user);
+
+    const { loading: meLoading, error: meError, data: meData } = useQuery(ME_QUERY);
+    const [generatePreview2faSettings, { data: twofaSettingsData, loading, error }] = useMutation(GENERATE_PREVIEW_2FA_MUTATION);
+
+    useEffect(() => {
+        generatePreview2faSettings();
+    }, []);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -28,7 +53,14 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
 
     return (
         <section>
-            <Button variant="contained" color="success" onClick={handleClickOpen}>{t("SETUP_2FA")}</Button>
+            <Button
+                variant="contained"
+                color="success"
+                disabled={meData?.me.enabled2fa || false}
+                onClick={handleClickOpen}
+            >
+                {t("SETUP_2FA")}
+            </Button>
 
             <Dialog
                 open={isOpen}
@@ -44,18 +76,27 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                     </DialogContentText>
                     <DialogContentText id="alert-dialog-qrcode" style={{ margin: '12px 0' }}>
                         <center>
-                            <QRCodeSVG width={150} value={"otpauth://totp/TripConnect:sadboy?issuer=TripConnect&secret=AFUOPPEFEBTDEER2X4FFYJDBREPLFCZQ&algorithm=SHA1&digits=6&period=30"} />
+                            {twofaSettingsData?.generate2FASecret?.qrCode?.length &&
+                                <QRCodeSVG width={150} value={twofaSettingsData.generate2FASecret.qrCode} />}
                         </center>
                     </DialogContentText>
                     <DialogContentText id="alert-dialog-qrcode">
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <IconButton
+                                size="small"
+                                aria-label="show 17 new notifications"
+                                color="inherit"
+                                onClick={() => generatePreview2faSettings()}
+                            >
+                                <AutorenewIcon />
+                            </IconButton>
                             <TextField
                                 id="totp-input"
                                 label={t('OTP')}
                                 type='search'
                                 size="small"
                                 variant="outlined"
-                                style={{ width: 150 }}
+                                style={{ width: 150, margin: '0 8px' }}
                                 autoComplete="off"
                             />
                         </div>
