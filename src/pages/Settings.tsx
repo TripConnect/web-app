@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Skeleton, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import LanguageIcon from '@mui/icons-material/Language';
@@ -78,9 +78,33 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                     <DialogContentText id="alert-dialog-qrcode" >
                         <center style={{ height: 160, alignContent: 'center', overflow: 'hidden' }}>
                             {
-                                twofaSettingsData?.generate2FASecret?.qrCode?.length &&
-                                <QRCodeSVG width={150} height={150} value={twofaSettingsData.generate2FASecret.qrCode} />
+                                twofaSettingsData?.generate2FASecret?.qrCode ?
+                                    <QRCodeSVG width={150} height={150} value={twofaSettingsData.generate2FASecret.qrCode} /> :
+                                    <Skeleton variant="rounded" width={150} height={150} animation='wave' />
                             }
+                        </center>
+                        <center>
+                            <code
+                                style={{
+                                    height: 30,
+                                    fontSize: '0.9rem',
+                                    overflow: 'hidden',
+                                    alignContent: 'center',
+                                    background: '#eee',
+                                    border: 'solid 0.5px grey',
+                                    padding: '2px 8px',
+                                    borderRadius: 4,
+                                    display: 'inline-block',
+                                    wordBreak: 'break-all',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => {
+                                    const secret = twofaSettingsData?.generate2FASecret?.secret || '';
+                                    navigator.clipboard.writeText(secret);
+                                }}
+                            >
+                                {twofaSettingsData?.generate2FASecret?.secret || ''}
+                            </code>
                         </center>
                     </DialogContentText>
                     <DialogContentText id="alert-dialog-qrcode" style={{ marginTop: 12 }}>
