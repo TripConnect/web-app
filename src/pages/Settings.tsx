@@ -50,6 +50,7 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
     const handleClose = () => {
         setOpen(false);
     }
+    console.log("render TwoFASetupSection");
 
     return (
         <section>
@@ -71,17 +72,19 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                     <strong>{t("TWO_FACTOR_AUTHENTICATION")}</strong>
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-subtitle">
+                    <DialogContentText id="alert-dialog-subtitle" style={{ marginBottom: 12 }}>
                         {t('SETUP_2FA_SUBTITLE')}
                     </DialogContentText>
-                    <DialogContentText id="alert-dialog-qrcode" style={{ margin: '12px 0' }}>
-                        <center>
-                            {twofaSettingsData?.generate2FASecret?.qrCode?.length &&
-                                <QRCodeSVG width={150} value={twofaSettingsData.generate2FASecret.qrCode} />}
+                    <DialogContentText id="alert-dialog-qrcode" >
+                        <center style={{ height: 160, alignContent: 'center', overflow: 'hidden' }}>
+                            {
+                                twofaSettingsData?.generate2FASecret?.qrCode?.length &&
+                                <QRCodeSVG width={150} height={150} value={twofaSettingsData.generate2FASecret.qrCode} />
+                            }
                         </center>
                     </DialogContentText>
-                    <DialogContentText id="alert-dialog-qrcode">
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <DialogContentText id="alert-dialog-qrcode" style={{ marginTop: 12 }}>
+                        <center style={{ alignContent: 'center', overflow: 'hidden' }}>
                             <IconButton
                                 size="small"
                                 aria-label="show 17 new notifications"
@@ -96,10 +99,10 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                                 type='search'
                                 size="small"
                                 variant="outlined"
-                                style={{ width: 150, margin: '0 8px' }}
+                                style={{ width: 150, margin: '0 8px', padding: 0 }}
                                 autoComplete="off"
                             />
-                        </div>
+                        </center>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
