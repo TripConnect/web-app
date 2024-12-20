@@ -67,7 +67,9 @@ export default function SignIn() {
                 let statusCode = error.graphQLErrors[0].extensions.code;
                 switch (statusCode) {
                     case StatusCode.MULTI_FACTOR_REQUIRED:
-                        navigate('/otp-validation');;
+                        navigate('/otp-validation', {
+                            state: signInPayload
+                        });
                         break;
                     case StatusCode.MULTI_FACTOR_UNAUTHORIZED:
                         alert(OTP_INCORRECT);

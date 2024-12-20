@@ -1,15 +1,60 @@
 import React, { useState, useRef } from "react";
 import { TextField, Box, Button } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
+import { gql, useMutation } from "@apollo/client";
+import { updateToken } from "slices/user";
+import { useDispatch } from "react-redux";
+import { StatusCode } from "constants/graphql";
+import { OTP_INCORRECT, SIGNIN_INCORRECT } from "constants/messages";
 
-const OTPInput: React.FC = () => {
-    const otpLength = 6;
-    const [otp, setOtp] = useState<string[]>(Array(otpLength).fill(""));
-    const inputsRef = useRef<Array<HTMLInputElement | null>>(Array(otpLength).fill(null));
+const SIGNIN_MUTATION = gql`
+    mutation Signin($username: String!, $password: String!, $otp: String!) {
+        signin(username: $username, password: $password, otp: $otp) {
+            userInfo {
+                id
+                displayName
+                avatar
+            }
+            token {
+                accessToken
+                refreshToken
+            }
+        }
+    }
+`;
+
+export default function OtpValidation() {
+    const OTP_LENGTH = 6;
+    const { state } = useLocation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
+    const [signin, { data, loading, error }] = useMutation(SIGNIN_MUTATION);
+    const inputsRef = useRef<Array<HTMLInputElement | null>>(Array(OTP_LENGTH).fill(null));
+    let { username, password } = state;
 
     const handleValidateOtp = () => {
-        if (otp.length !== otpLength || otp.some(d => Number.isNaN(parseInt(d)))) {
+        if (otp.length !== OTP_LENGTH || otp.some(d => Number.isNaN(parseInt(d)))) {
             alert("Invalid OTP");
         }
+        signin({ variables: { username, password, otp: otp.join('') } })
+            .then(response => {
+                let { userInfo, token } = response.data.signin;
+                let { id: userId, displayName, avatar } = userInfo;
+                let { accessToken, refreshToken } = token;
+                dispatch(updateToken({ userId, accessToken, refreshToken, displayName, avatar }));
+                navigate("/home");
+            })
+            .catch(error => {
+                let statusCode = error.graphQLErrors[0].extensions.code;
+                switch (statusCode) {
+                    case StatusCode.MULTI_FACTOR_UNAUTHORIZED:
+                        alert(OTP_INCORRECT);
+                        break;
+                    default:
+                        alert(SIGNIN_INCORRECT);
+                }
+            });
     }
 
     const handleChange = (index: number, value: string) => {
@@ -19,7 +64,7 @@ const OTPInput: React.FC = () => {
         setOtp(updatedOtp);
 
         // Move focus to the next cell if a digit is entered
-        if (value && index < otpLength - 1) {
+        if (value && index < OTP_LENGTH - 1) {
             inputsRef.current[index + 1]?.focus();
         }
     };
@@ -36,8 +81,8 @@ const OTPInput: React.FC = () => {
     const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
         const clipboardData = event.clipboardData.getData("Text");
         if (!/^\d+$/.test(clipboardData)) return; // Only accept numeric values
-        const pastedOtp = clipboardData.split("").slice(0, otpLength);
-        const updatedOtp = Array(otpLength).fill("");
+        const pastedOtp = clipboardData.split("").slice(0, OTP_LENGTH);
+        const updatedOtp = Array(OTP_LENGTH).fill("");
         pastedOtp.forEach((digit, i) => {
             updatedOtp[i] = digit;
         });
@@ -88,5 +133,3 @@ const OTPInput: React.FC = () => {
         </main>
     );
 };
-
-export default OTPInput;
