@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
 import { useDispatch, useSelector } from "react-redux";
 import { updateToken } from "slices/user";
-import { SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
+import { OTP_INCORRECT, SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { StatusCode } from "constants/graphql";
 
 const SIGNIN_MUTATION = gql`
     mutation Signin($username: String!, $password: String!) {
@@ -61,11 +62,20 @@ export default function SignIn() {
                 let { accessToken, refreshToken } = token;
                 dispatch(updateToken({ userId, accessToken, refreshToken, displayName, avatar }));
                 navigate("/home");
-
             })
             .catch(error => {
-                console.error(error);
-                alert(SIGNIN_INCORRECT);
+                let statusCode = error.graphQLErrors[0].extensions.code;
+                switch (statusCode) {
+                    case StatusCode.MULTI_FACTOR_REQUIRED:
+                        navigate('/otp-validation');;
+                        break;
+                    case StatusCode.MULTI_FACTOR_UNAUTHORIZED:
+                        alert(OTP_INCORRECT);
+                        break;
+                    default:
+                        alert(SIGNIN_INCORRECT);
+                }
+
             });
     }
 

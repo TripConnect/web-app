@@ -8,7 +8,6 @@ import {
 import { Provider, useSelector } from 'react-redux';
 import { persistor, store } from 'store';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
-import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { PersistGate } from 'redux-persist/integration/react';
 import { ThemeProvider } from '@mui/material/styles';
 import i18next from "i18next";
@@ -28,6 +27,7 @@ import Settings from "pages/Settings";
 import { SystemLanguage } from "constants/lang";
 import { setContext } from '@apollo/client/link/context';
 import { getCurrentUser } from "utils/storeHelpers";
+import OtpValidation from "pages/OtpValidation";
 
 const httpLink = createHttpLink({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -70,8 +70,8 @@ i18next.init({
   }
 });
 
-const PrivateRoute = ({ component }) => {
-  const currentUser = useSelector((state) => state.user);
+const PrivateRoute = ({ component }: { component: any }) => {
+  const currentUser = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const isAuthenticated = Boolean(currentUser.accessToken);
 
@@ -97,6 +97,7 @@ function App() {
                 <PrimaryHeader key="primary-header" />
                 <Routes>
                   <Route path="/signin" element={<SignIn />} />
+                  <Route path="/otp-validation" element={<OtpValidation />} />
                   <Route path="/signup" element={<SignUp />} />
                   <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile />} />} />
                   <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation />} />} />
