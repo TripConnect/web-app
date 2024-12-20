@@ -1,15 +1,21 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Skeleton, TextField } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import {
+    Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl,
+    Grid, IconButton, MenuItem, Select, SelectChangeEvent, Skeleton, TextField
+} from "@mui/material";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LanguageIcon from '@mui/icons-material/Language';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { QRCodeSVG } from 'qrcode.react';
 
 import { SystemLanguage } from "constants/lang";
 import { switchLanguage } from "slices/language";
-import { Fragment, useEffect, useState } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+import CustomSnakeBar from "components/common/CustomSnakeBar";
+import { useNavigate } from "react-router-dom";
 
 type TwoFactorSetupProps = {
     isOpen: boolean
@@ -32,12 +38,23 @@ const GENERATE_PREVIEW_2FA_MUTATION = gql`
     }
 `;
 
+const ENABLE_2FA_MUTATION = gql`
+    mutation Enable2FA($secret: String!, $otp: String!) {
+        enable2FA(secret: $secret, otp: $otp) {
+            success
+        }
+    }
+`;
+
 function TwoFASetupSection(props: TwoFactorSetupProps) {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     let [isOpen, setOpen] = useState(props.isOpen);
+    let [otp, setOtp] = useState('');
 
     const { loading: meLoading, error: meError, data: meData } = useQuery(ME_QUERY);
     const [generatePreview2faSettings, { data: twofaSettingsData, loading, error }] = useMutation(GENERATE_PREVIEW_2FA_MUTATION);
+    const [enable2fa, { data: enable2faData, loading: complete2faLoading, error: complete2faError }] = useMutation(ENABLE_2FA_MUTATION);
 
     useEffect(() => {
         generatePreview2faSettings();
@@ -50,14 +67,36 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
     const handleClose = () => {
         setOpen(false);
     }
-    console.log("render TwoFASetupSection");
+
+    const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setOtp(e.target.value);
+    }
+
+    const handeConfirm2faOtp = () => {
+        enable2fa({
+            variables: {
+                secret: twofaSettingsData?.generate2FASecret?.secret,
+                otp
+            }
+        })
+            .then(resp => {
+                console.log('Clicked');
+                let { success } = resp.data.enable2FA;
+                if (success) {
+                    navigate(`/`);
+                }
+            })
+            .catch(err => {
+                let statusCode = err.graphQLErrors[0].extensions.code;
+            });
+    }
 
     return (
         <section>
             <Button
                 variant="contained"
                 color="success"
-                disabled={meData?.me.enabled2fa || false}
+                disabled={meData?.me?.enabled2fa || true}
                 onClick={handleClickOpen}
             >
                 {t("SETUP_2FA")}
@@ -75,8 +114,16 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                     <DialogContentText id="alert-dialog-subtitle" style={{ marginBottom: 12 }}>
                         {t('SETUP_2FA_SUBTITLE')}
                     </DialogContentText>
-                    <DialogContentText id="alert-dialog-qrcode" >
-                        <center style={{ height: 160, alignContent: 'center', overflow: 'hidden' }}>
+                    <DialogContentText id="alert-dialog-qrcode">
+                        <center
+                            style={{
+                                height: 160,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                overflow: 'hidden'
+                            }}
+                        >
                             {
                                 twofaSettingsData?.generate2FASecret?.qrCode ?
                                     <QRCodeSVG width={150} height={150} value={twofaSettingsData.generate2FASecret.qrCode} /> :
@@ -85,16 +132,20 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                         </center>
                         <center>
                             <code
+                                title="Copy to clipboard"
                                 style={{
+                                    userSelect: 'none',
+                                    width: 300,
                                     height: 30,
                                     fontSize: '0.9rem',
                                     overflow: 'hidden',
-                                    alignContent: 'center',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
                                     background: '#eee',
                                     border: 'solid 0.5px grey',
                                     padding: '2px 8px',
                                     borderRadius: 4,
-                                    display: 'inline-block',
                                     wordBreak: 'break-all',
                                     cursor: 'pointer',
                                 }}
@@ -103,15 +154,22 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                                     navigator.clipboard.writeText(secret);
                                 }}
                             >
-                                {twofaSettingsData?.generate2FASecret?.secret || ''}
+                                <span>{twofaSettingsData?.generate2FASecret?.secret || ''}</span>
+                                <ContentCopyIcon fontSize="small" />
                             </code>
                         </center>
                     </DialogContentText>
                     <DialogContentText id="alert-dialog-qrcode" style={{ marginTop: 12 }}>
-                        <center style={{ alignContent: 'center', overflow: 'hidden' }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                overflow: 'visible'
+                            }}
+                        >
                             <IconButton
                                 size="small"
-                                aria-label="show 17 new notifications"
                                 color="inherit"
                                 onClick={() => generatePreview2faSettings()}
                             >
@@ -125,16 +183,18 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
                                 variant="outlined"
                                 style={{ width: 150, margin: '0 8px', padding: 0 }}
                                 autoComplete="off"
+                                onChange={handleOtpChange}
                             />
-                        </center>
+                            {complete2faError && <CustomSnakeBar message="Invalid OTP" />}
+                        </div>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" color="success">{t('CONFIRM')}</Button>
+                    <Button variant="contained" color="success" onClick={handeConfirm2faOtp}>{t('CONFIRM')}</Button>
                     <Button variant="outlined" color="secondary" onClick={handleClose}>{t('CLOSE')}</Button>
                 </DialogActions>
             </Dialog>
-        </section>
+        </section >
     );
 }
 
