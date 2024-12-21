@@ -2,8 +2,9 @@ import React, { useState, useRef } from "react";
 import { TextField, Box, Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
-import { updateToken } from "slices/user";
 import { useDispatch } from "react-redux";
+
+import { updateToken } from "slices/user";
 import { StatusCode } from "constants/graphql";
 import { OTP_INCORRECT, SIGNIN_INCORRECT } from "constants/messages";
 
