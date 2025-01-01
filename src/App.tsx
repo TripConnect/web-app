@@ -28,6 +28,7 @@ import { SystemLanguage } from "constants/lang";
 import { setContext } from '@apollo/client/link/context';
 import { getCurrentUser } from "utils/storeHelpers";
 import OtpValidation from "pages/OtpValidation";
+import LivestreamHost from "pages/LivestreamHost";
 
 const httpLink = createHttpLink({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -97,6 +98,7 @@ function App() {
                 <PrimaryHeader key="primary-header" />
                 <Routes>
                   <Route path="/signin" element={<SignIn />} />
+                  <Route path="/livestream/:id/host" element={<PrivateRoute component={<LivestreamHost />} />} />
                   <Route path="/otp-validation" element={<OtpValidation />} />
                   <Route path="/signup" element={<SignUp />} />
                   <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile />} />} />
