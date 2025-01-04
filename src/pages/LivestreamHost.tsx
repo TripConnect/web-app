@@ -45,6 +45,10 @@ export default function LivestreamHost() {
             .on('error', async (error) => {
                 console.error(error);
             });
+
+        return () => {
+            livesConnRef.current?.disconnect();
+        };
     }, []);
 
     return (
