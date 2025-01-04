@@ -23,7 +23,7 @@ export default function LivestreamHost() {
             }
         })
             .on('connect', async () => {
-                console.log('livestream socket connected');
+                console.log('Livestream socket connected');
                 if (!videoRef.current) return;
                 if (videoRef.current?.srcObject) return;
 
@@ -42,12 +42,20 @@ export default function LivestreamHost() {
                 };
                 recorderRef.current.start(10_000);
             })
-            .on('error', async (error) => {
+            .on('disconnect', () => {
+                console.log('Livestream socket disconnected');
+            })
+            .on('connect_error', async (error) => {
                 console.error(error);
             });
 
         return () => {
+            console.log('Clean up useEffect resources');
             livesConnRef.current?.disconnect();
+            videoRef.current = null;
+            recorderRef.current = null;
+            livesConnRef.current = null;
+            mediaStreamRef.current = null;
         };
     }, []);
 
