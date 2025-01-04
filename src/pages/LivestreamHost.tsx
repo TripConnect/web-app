@@ -24,16 +24,17 @@ export default function LivestreamHost() {
         })
             .on('connect', async () => {
                 console.log('livestream socket connected');
-                if (!videoRef.current || !livesConnRef.current) return;
+                if (!videoRef.current) return;
+                if (videoRef.current?.srcObject) return;
 
                 mediaStreamRef.current = await navigator.mediaDevices.getUserMedia(mediaConstraints);
                 videoRef.current.srcObject = mediaStreamRef.current;
-                livesConnRef.current.emit('start', { roomId });
+                livesConnRef.current?.emit('start', { roomId });
 
                 recorderRef.current = new MediaRecorder(mediaStreamRef.current);
                 recorderRef.current.ondataavailable = (event) => {
                     if (event.data.size > 0) {
-                        livesConnRef.current?.send({
+                        livesConnRef.current?.emit('segment', {
                             roomId,
                             segment: event.data
                         });
@@ -45,8 +46,6 @@ export default function LivestreamHost() {
                 console.error(error);
             });
     }, []);
-
-    console.log('re-render');
 
     return (
         <section>
