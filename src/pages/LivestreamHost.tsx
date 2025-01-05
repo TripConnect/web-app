@@ -22,25 +22,33 @@ export default function LivestreamHost() {
                 token: currentUser.accessToken
             }
         })
-            .on('connect', async () => {
-                console.log('Livestream socket connected');
-                if (!videoRef.current) return;
-                if (videoRef.current?.srcObject) return;
+            .on('connect', () => {
+                setTimeout(async () => {
+                    console.log('Livestream socket connected');
+                    mediaStreamRef.current = await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
-                mediaStreamRef.current = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-                videoRef.current.srcObject = mediaStreamRef.current;
-                livesConnRef.current?.emit('start', { roomId });
-
-                recorderRef.current = new MediaRecorder(mediaStreamRef.current);
-                recorderRef.current.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
-                        livesConnRef.current?.emit('segment', {
-                            roomId,
-                            segment: event.data
-                        });
+                    if (videoRef.current && !videoRef.current?.srcObject) {
+                        console.log('Apply video source');
+                        videoRef.current.srcObject = mediaStreamRef.current;
+                        livesConnRef.current?.emit('start', { roomId });
                     }
-                };
-                recorderRef.current.start(10_000);
+
+                    if (!recorderRef.current) {
+                        console.log('Apply video recorder');
+                        recorderRef.current = new MediaRecorder(mediaStreamRef.current);
+                        recorderRef.current.ondataavailable = (event) => {
+                            console.log('Recorder data available');
+                            if (event.data.size > 0) {
+                                console.log('Send segment');
+                                livesConnRef.current?.emit('segment', {
+                                    roomId,
+                                    segment: event.data
+                                });
+                            }
+                        };
+                        recorderRef.current.start(10_000);
+                    }
+                }, 1000);
             })
             .on('disconnect', () => {
                 console.log('Livestream socket disconnected');
@@ -52,12 +60,13 @@ export default function LivestreamHost() {
         return () => {
             console.log('Clean up useEffect resources');
             livesConnRef.current?.disconnect();
-            videoRef.current = null;
             recorderRef.current = null;
             livesConnRef.current = null;
             mediaStreamRef.current = null;
         };
     }, []);
+
+    console.log('Re-rendering');
 
     return (
         <section>
