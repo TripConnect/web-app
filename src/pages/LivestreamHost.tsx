@@ -49,7 +49,13 @@ export default function LivestreamHost() {
                                 });
                             }
                         });
-                        recorderRef.current.start(10_000);
+                        recorderRef.current.addEventListener('error', event => {
+                            console.error(event);
+                        });
+                        recorderRef.current.addEventListener('stop', event => {
+                            console.warn('Video recorder stopped');
+                        });
+                        recorderRef.current.start(1_000);
                     }
                 }, 1000);
             })
