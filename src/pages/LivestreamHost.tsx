@@ -63,8 +63,11 @@ export default function LivestreamHost() {
         return () => {
             console.log('Clean up useEffect resources');
             livesConnRef.current?.disconnect();
-            recorderRef.current = null;
+            recorderRef.current?.stop();
+            mediaStreamRef.current?.getTracks().forEach(track => track.stop());
+
             livesConnRef.current = null;
+            recorderRef.current = null;
             mediaStreamRef.current = null;
         };
     }, []);
