@@ -39,7 +39,7 @@ export default function LivestreamHost() {
                     if (!recorderRef.current) {
                         console.log('Apply video recorder');
                         recorderRef.current = new MediaRecorder(mediaStreamRef.current);
-                        recorderRef.current.ondataavailable = (event) => {
+                        recorderRef.current.addEventListener('dataavailable', event => {
                             console.log('Recorder data available');
                             if (event.data.size > 0) {
                                 console.log('Send segment');
@@ -48,7 +48,7 @@ export default function LivestreamHost() {
                                     segment: event.data
                                 });
                             }
-                        };
+                        });
                         recorderRef.current.start(10_000);
                     }
                 }, 1000);
