@@ -55,7 +55,7 @@ export default function LivestreamHost() {
                         recorderRef.current.addEventListener('stop', event => {
                             console.warn('Video recorder stopped');
                         });
-                        recorderRef.current.start(1_000);
+                        recorderRef.current.start(10_000);
                     }
                 }, 1000);
             })
