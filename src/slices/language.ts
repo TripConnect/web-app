@@ -15,7 +15,7 @@ export const languageSlice = createSlice({
             }
         }
     },
-})
+});
 
 export const { switchLanguage } = languageSlice.actions;
 

@@ -3,7 +3,7 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { useSelector } from "react-redux";
 import { Avatar, Button, Container, Grid, Typography } from "@mui/material";
 import ForumIcon from '@mui/icons-material/Forum';
-import { shortenFullName, stringToColor } from "utils/avatar";
+import { shortenFullName, stringToColor } from "helpers/avatar";
 import { useTranslation } from "react-i18next";
 
 const PRIVATE_CONVERSATION_MUTATION = gql`

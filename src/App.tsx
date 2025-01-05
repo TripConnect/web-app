@@ -26,7 +26,7 @@ import viTranslation from 'locales/vi/translation.json';
 import Settings from "pages/Settings";
 import { SystemLanguage } from "constants/lang";
 import { setContext } from '@apollo/client/link/context';
-import { getCurrentUser } from "utils/storeHelpers";
+import { getCurrentUser } from "helpers/storeHelpers";
 import OtpValidation from "pages/OtpValidation";
 import LivestreamHost from "pages/LivestreamHost";
 
