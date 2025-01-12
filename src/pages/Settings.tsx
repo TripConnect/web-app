@@ -24,7 +24,7 @@ type TwoFactorSetupProps = {
 const ME_QUERY = gql`
     query Me {
         me {
-            enabled2fa
+            enabledTwofa
         }
     }
 `;
@@ -96,7 +96,7 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
             <Button
                 variant="contained"
                 color="success"
-                disabled={meData?.me?.enabled2fa || true}
+                disabled={meData?.me?.enabledTwofa || true}
                 onClick={handleClickOpen}
             >
                 {t("SETUP_2FA")}
