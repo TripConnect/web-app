@@ -34,8 +34,8 @@ export default function SignIn() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     let [signInPayload, setSignInPayload] = useState<SignInPayload>({
-        username: 'sadgirl1999',
-        password: '123456789'
+        username: '',
+        password: ''
     });
     const [signin, { data, loading, error }] = useMutation(SIGNIN_MUTATION);
 
