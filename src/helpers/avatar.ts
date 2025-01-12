@@ -19,5 +19,6 @@ export function stringToColor(string: string) {
 }
 
 export function shortenFullName(fullname: String): String {
-    return `${fullname.split(' ')[0][0]}${fullname.split(' ')[1][0]}`;
-}
+    return fullname.includes(' ') ?
+        `${fullname.split(' ')[0][0]}${fullname.split(' ')[1][0]}`.toUpperCase() : fullname.slice(0, 2).toUpperCase();
+} 

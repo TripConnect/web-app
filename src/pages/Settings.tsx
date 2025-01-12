@@ -96,7 +96,7 @@ function TwoFASetupSection(props: TwoFactorSetupProps) {
             <Button
                 variant="contained"
                 color="success"
-                disabled={meData?.me?.enabledTwofa || true}
+                disabled={meData?.me?.enabledTwofa}
                 onClick={handleClickOpen}
             >
                 {t("SETUP_2FA")}
