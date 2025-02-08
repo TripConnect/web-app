@@ -64,7 +64,7 @@ export default function SignIn() {
                 navigate("/home");
             })
             .catch(error => {
-                let statusCode = error.graphQLErrors[0].extensions.code;
+                let statusCode = error?.graphQLErrors?.[0]?.extensions?.code ?? "UNKNOWN_ERROR";
                 switch (statusCode) {
                     case StatusCode.MULTI_FACTOR_REQUIRED:
                         navigate('/otp-validation', {

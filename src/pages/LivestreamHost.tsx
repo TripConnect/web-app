@@ -33,7 +33,13 @@ export default function LivestreamHost() {
                     if (videoRef.current && !videoRef.current?.srcObject) {
                         console.log('Apply video source');
                         videoRef.current.srcObject = mediaStreamRef.current;
-                        livesConnRef.current?.emit('start', { roomId });
+                        livesConnRef.current?.emit(
+                            "start",
+                            { roomId },
+                            (ack: { status: 'SUCCESS' | 'FAILED' }) => {
+                                console.log("Start livestream: " + ack.status);
+                            }
+                        );
                     }
 
                     if (!recorderRef.current) {
@@ -43,10 +49,16 @@ export default function LivestreamHost() {
                             console.log('Recorder data available');
                             if (event.data.size > 0) {
                                 console.log('Send segment');
-                                livesConnRef.current?.emit('segment', {
-                                    roomId,
-                                    segment: event.data
-                                });
+                                livesConnRef.current?.emit(
+                                    'segment',
+                                    {
+                                        roomId,
+                                        segment: event.data
+                                    },
+                                    (ack: { status: 'SUCCESS' | 'FAILED' }) => {
+                                        debugger
+                                        console.log("Record: " + ack.status);
+                                    });
                             }
                         });
                         recorderRef.current.addEventListener('error', event => {
@@ -55,7 +67,7 @@ export default function LivestreamHost() {
                         recorderRef.current.addEventListener('stop', event => {
                             console.warn('Video recorder stopped');
                         });
-                        recorderRef.current.start(10_000);
+                        recorderRef.current.start(5_000);
                     }
                 }, 1000);
             })
