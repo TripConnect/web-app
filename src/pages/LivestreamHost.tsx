@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { io, Socket } from "socket.io-client";
+
 import { RootState } from 'store';
 
 export default function LivestreamHost() {
@@ -49,8 +50,9 @@ export default function LivestreamHost() {
                         console.log('Recorder data available');
                         if (event.data.size > 0) {
                             console.log('Send segment');
+
                             livestreamSocket?.emit(
-                                'segment',
+                                "segment",
                                 {
                                     roomId,
                                     segment: event.data
@@ -62,12 +64,12 @@ export default function LivestreamHost() {
                         }
                     });
                     recorderRef.current.addEventListener('error', event => {
-                        console.error(event);
+                        console.error("Livestream record error: " + event);
                     });
                     recorderRef.current.addEventListener('stop', event => {
                         console.warn('Video recorder stopped');
                     });
-                    recorderRef.current.start(5_000);
+                    recorderRef.current.start(10_000);
                 }
             }, 1000);
         });
