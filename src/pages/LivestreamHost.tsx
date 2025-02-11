@@ -49,7 +49,7 @@ export default function LivestreamHost() {
                     recorderRef.current.addEventListener('dataavailable', event => {
                         console.log('Recorder data available');
                         if (event.data.size > 0) {
-                            console.log('Send segment');
+                            console.log('Send segment: ' + event.data.size);
 
                             livestreamSocket?.emit(
                                 "segment",
@@ -73,10 +73,10 @@ export default function LivestreamHost() {
                 }
             }, 1000);
         });
-        livestreamSocket.on('disconnect', () => {
-            console.log('Livestream socket disconnected');
+        livestreamSocket.on('disconnect', (reason) => {
+            console.log('Livestream socket disconnected: ' + reason);
         });
-        livestreamSocket.on('connect_error', async (error) => {
+        livestreamSocket.on('connect_error', error => {
             console.error(error);
         });
 
