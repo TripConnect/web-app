@@ -15,7 +15,7 @@ const PRIVATE_CONVERSATION_MUTATION = gql`
 `;
 
 const USER_QUERY = gql`
-    query User($id: String!) {
+    query User($id: ID!) {
         user(id: $id) {
             id
             avatar
