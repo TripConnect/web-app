@@ -7,8 +7,8 @@ import { shortenFullName, stringToColor } from "helpers/avatar";
 import { useTranslation } from "react-i18next";
 
 const PRIVATE_CONVERSATION_MUTATION = gql`
-    mutation CreateConversation($type: String!, $members: String!) {
-        createConversation(type: $type, members: $members) {
+    mutation CreateConversation($memberIds: [String!]!) {
+        createConversation(type: PRIVATE, memberIds: $memberIds) {
             id
         }
     }
@@ -40,7 +40,7 @@ export default function UserProfile() {
     let { displayName } = profileUser.user;
 
     const handleChat = () => {
-        createConversation({ variables: { type: 'PRIVATE', members: [currentUser.userId, profileUserId].join(",") } })
+        createConversation({ variables: { memberIds: [currentUser.userId, profileUserId] } })
             .then(response => {
                 if (response?.data?.createConversation) {
                     let { id } = response.data.createConversation;
