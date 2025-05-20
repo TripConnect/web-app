@@ -12,7 +12,7 @@ import { RootState } from "store";
 import { io, Socket } from "socket.io-client";
 
 const QUERY_CONVERSATION_SUMMARY = gql`
-  query Conversation($id: String!) {
+  query Conversation($id: ID!) {
     conversation(id: $id) {
       name
       type
@@ -25,9 +25,9 @@ const QUERY_CONVERSATION_SUMMARY = gql`
 `;
 
 const QUERY_CHAT_HISTORY = gql`
-  query Conversation($id: String!, $messagePage: Int, $messageLimit: Int) {
+  query Conversation($id: ID!, $messagePageNumber: Int, $messagePageSize: Int) {
     conversation(id: $id) {
-      messages(messagePage: $messagePage, messageLimit: $messageLimit) {
+      messages(messagePageNumber: $messagePageNumber, messagePageSize: $messagePageSize) {
         id
         messageContent
         fromUser {
@@ -176,8 +176,8 @@ export default function Conversation() {
     let resp = await fetchChatHistory({
       variables: {
         id: currentConversationId,
-        messagePage: pageNum,
-        messageLimit: CHAT_HISTORY_PAGE_SIZE
+        messagePageNum: pageNum,
+        messagePageSize: CHAT_HISTORY_PAGE_SIZE
       }
     });
 
