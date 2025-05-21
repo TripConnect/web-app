@@ -29,7 +29,7 @@ const QUERY_CHAT_HISTORY = gql`
     conversation(id: $id) {
       messages(messagePageNumber: $messagePageNumber, messagePageSize: $messagePageSize) {
         id
-        messageContent
+        content
         fromUser {
           id
           avatar
@@ -101,7 +101,7 @@ export default function Conversation() {
 
   const { t } = useTranslation();
   const [timeoutId, setTimeoutId] = useState<any>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [isReachOldestPage, setIsReachOldestPage] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>("");
   const [chatMessageHistory, setChatMessageHistory] = useState<ChatMessageModel[]>([]);
@@ -176,7 +176,7 @@ export default function Conversation() {
     let resp = await fetchChatHistory({
       variables: {
         id: currentConversationId,
-        messagePageNum: pageNum,
+        messagePageNumber: pageNum,
         messagePageSize: CHAT_HISTORY_PAGE_SIZE
       }
     });
@@ -190,7 +190,7 @@ export default function Conversation() {
           avatar: m.fromUser.avatar,
           displayName: m.fromUser.displayName,
         },
-        content: m.messageContent,
+        content: m.content,
         createdAt: m.createdAt,
       }))
       .reverse();
@@ -210,12 +210,12 @@ export default function Conversation() {
 
   const refreshConversation = () => {
     // If currentPage > 1, just reset currentPage to trigger currentPage-based useEffect. Otherwise, force reset all related states.
-    if (currentPage > 1) {
-      setCurrentPage(1);
+    if (currentPage > 0) {
+      setCurrentPage(0);
     } else {
-      fetchChatHistoryByPage(1)
+      fetchChatHistoryByPage(0)
         .then((respMessages: ChatMessageModel[]) => {
-          setCurrentPage(1);
+          setCurrentPage(0);
           setIsReachOldestPage(false);
           setChatMessageHistory(respMessages);
         })
