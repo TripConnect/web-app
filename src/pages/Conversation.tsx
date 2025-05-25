@@ -134,14 +134,25 @@ export default function Conversation() {
     );
     connection.on('connect', () => {
       console.log('connected');
+      connection.emit("listen", { conversationId: currentConversationId });
     });
+    connection.io.on('reconnect', () => {
+      console.log('reconnected');
+      connection.emit('listen', { conversationId: currentConversationId });
+    });
+
     connection.on('connect_error', err => {
       console.log(err.message);
     });
     connection.on('message', (payload: ChatMessageModel) => {
+      console.log("receive mesasge");
       refreshConversation();
     });
     setChatSocket(connection);
+
+    return () => {
+      connection.emit("unlisten", { conversationId: currentConversationId });
+    }
   }, []);
 
   useEffect(() => {
