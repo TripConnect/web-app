@@ -3,5 +3,5 @@ export type ChatMessageModel = {
     conversationId: string,
     owner: User,
     content: string,
-    createdAt: number,
+    createdAt: string,
 }
