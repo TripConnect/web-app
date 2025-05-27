@@ -1,15 +1,12 @@
 import { useParams } from "react-router-dom";
-import { gql, useLazyQuery } from '@apollo/client';
 import { memo, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Container, Grid, IconButton, TextField, Typography } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import { CHAT_MESSAGE_EVENT } from "constants/socket";
 import { ChatMessageModel } from 'types/chat';
-import { CHAT_HISTORY_PAGE_SIZE } from "constants/common";
-import { useTranslation } from "react-i18next";
 import { RootState } from "store";
 import { io, Socket } from "socket.io-client";
+import "./index.scss";
 
 export default function Conversation() {
   const { id: currentConversationId } = useParams<{ id: string }>();
@@ -41,20 +38,31 @@ export default function Conversation() {
     });
 
     return () => {
+      console.log("<Conversation /> unmounted");
       connection.emit("unlisten", { conversationId: currentConversationId });
     }
   }, []);
 
   return (
     <Container>
-      <Grid container >
+      <Grid container>
         <Grid item xs={12}>
-          <section>
+          <section id="conversation-section">
 
           </section>
         </Grid>
         <Grid item xs={12}>
-          <input type="text" />
+          <section id="input-section">
+            <TextField
+              id="input-section__inpMessage"
+              multiline
+              size="small"
+              rows={1}
+              placeholder="Chat message..."
+              variant="outlined"
+            />
+            <SendIcon id="input-section__btnSendMessage" />
+          </section>
         </Grid>
       </Grid>
     </Container>

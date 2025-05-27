@@ -1,0 +1,23 @@
+#input-section {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: green;
+
+    &__inpMessage {
+        width: 90%;
+        background-color: red;
+    }
+
+    &__btnSendMessage {
+        width: 10%;
+        background-color: blue;
+        cursor: pointer;
+        color: #ccc;
+
+        &--active {
+            color: blue;
+        }
+    }
+}

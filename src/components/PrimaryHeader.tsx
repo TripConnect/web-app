@@ -104,7 +104,6 @@ export default function PrimaryHeader() {
 
   const handleSearchTermChange = (e: any) => {
     let searchTerm = e.target.value;
-    console.log({ searchTerm });
     if (!searchTerm) return;
     clearTimeout(searchScheduler.current);
     searchScheduler.current = setTimeout(() => {
