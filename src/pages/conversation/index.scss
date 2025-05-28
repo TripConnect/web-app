@@ -1,17 +1,18 @@
-#input-section {
+.input-section {
     display: flex;
     width: 100%;
     justify-content: center;
     align-items: center;
     background-color: green;
+    gap: 8px;
 
     &__inpMessage {
-        width: 90%;
-        background-color: red;
+        width: 80%;
+        background-color: pink;
     }
 
     &__btnSendMessage {
-        width: 10%;
+        width: 20%;
         background-color: blue;
         cursor: pointer;
         color: #ccc;

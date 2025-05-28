@@ -45,23 +45,23 @@ export default function Conversation() {
 
   return (
     <Container>
-      <Grid container>
+      <Grid container xs={12} md={8} justifyContent="center" alignItems="center" margin="0 auto">
         <Grid item xs={12}>
-          <section id="conversation-section">
+          <section className="conversation-section">
 
           </section>
         </Grid>
         <Grid item xs={12}>
-          <section id="input-section">
+          <section className="input-section">
             <TextField
-              id="input-section__inpMessage"
+              className="input-section__inpMessage"
               multiline
               size="small"
               rows={1}
               placeholder="Chat message..."
               variant="outlined"
             />
-            <SendIcon id="input-section__btnSendMessage" />
+            <SendIcon className="input-section__btnSendMessage" />
           </section>
         </Grid>
       </Grid>
