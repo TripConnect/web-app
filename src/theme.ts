@@ -24,7 +24,7 @@ declare module '@mui/material/styles' {
 
 const theme = createTheme({
     spacing: 8,
-    contentAvailableHeight: "95vh",
+    contentAvailableHeight: "90vh",
     avatar: {
         sm: {
             width: "30px",
