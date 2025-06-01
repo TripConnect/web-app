@@ -8,6 +8,9 @@ import { RootState } from "store";
 import { io, Socket } from "socket.io-client";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import { GraphQLModels } from "types/graphql.type";
+import ChatMessage from "./ChatMesasge";
+
+const MESSAGE_PAGE_NUMBER = 50;
 
 const FIND_CONVERSATION_QUERY = gql`
   query Conversation($id: ID!) {
@@ -25,13 +28,18 @@ const FIND_CONVERSATION_QUERY = gql`
 
 const CHAT_HISTORY_QUERY = gql`
   query Conversation($id: ID!, $messagePageNumber: Int!, $messagePageSize: Int!) {
-      conversation(id: $id) {
-          messages($messagePageNumber, $messagePageSize) {
-              content
-              createdAt
-              id
-          }
+    conversation(id: $id) {
+      messages(messagePageNumber: $messagePageNumber,messagePageSize: $messagePageSize) {
+        id
+        content
+        fromUser {
+          avatar
+          displayName
+          id
+        }
+        createdAt
       }
+    }
   }
 `;
 
@@ -45,13 +53,18 @@ export default function Conversation() {
     navigate("/");
   }
 
+  // Conversation members
   const { loading: convLoading, error: convError, data: convData } = useQuery<
     { conversation?: GraphQLModels.Conversation }, GraphQLModels.ConversationQueryInput
   >(
     FIND_CONVERSATION_QUERY,
     { variables: { id: currConvId as string } }
   );
-  const [chatHistory, { loading: historyLoading, error: historyError, data: historyData }] = useLazyQuery(CHAT_HISTORY_QUERY);
+  // Conversation chatting history
+  const [fetchChatHistory, { loading: historyLoading, error: historyError, data: historyData }] = useLazyQuery<
+    { conversation?: GraphQLModels.Conversation },
+    GraphQLModels.ConversationQueryInput | GraphQLModels.MessagesQueryArgs
+  >(CHAT_HISTORY_QUERY);
 
   // socket initialization
   useEffect(() => {
@@ -83,6 +96,17 @@ export default function Conversation() {
       console.log("<Conversation /> unmounted");
       connection.emit("unlisten", { conversationId: currConvId });
     }
+  }, []);
+
+  // chat history initiazation
+  useEffect(() => {
+    fetchChatHistory({
+      variables: {
+        id: currConvId as string,
+        messagePageNumber: 0,
+        messagePageSize: MESSAGE_PAGE_NUMBER
+      }
+    });
   }, []);
 
   return (
@@ -119,10 +143,10 @@ export default function Conversation() {
       {/* Header end */}
 
       {/* Conversation start */}
-      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "80%" }}>
-        <Grid item xs={12} md={8} >
+      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "80%", overflow: "auto" }}>
+        <Grid item xs={12} md={8}>
           <Box component="section" className="conversation-section">
-
+            {historyData?.conversation?.messages?.map(message => <ChatMessage key={message.id} {...message} />)}
           </Box>
         </Grid>
       </Grid>
@@ -133,8 +157,8 @@ export default function Conversation() {
         height: "10%",
         width: "100%",
       }}>
-        <Grid item xs={12} md={8} sx={{ width: "100%" }}>
-          <Box>
+        <Grid item xs={12} md={8}>
+          <Box component="section">
             <TextField
               className="input-section__inpMessage"
               multiline
