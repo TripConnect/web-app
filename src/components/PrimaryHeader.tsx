@@ -204,7 +204,7 @@ export default function PrimaryHeader() {
   );
 
   return (
-    <Box sx={{ flexGrow: 1, height: "5vh" }}>
+    <Box component="main" sx={{ flexGrow: 1, height: "5vh", marginBottom: "26px" }}>
       <AppBar position="sticky">
         <Toolbar>
           <Typography

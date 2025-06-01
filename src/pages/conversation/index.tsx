@@ -47,7 +47,7 @@ export default function Conversation() {
   }, []);
 
   return (
-    <Container sx={{ height: theme.contentAvailableHeight, paddingTop: "12px" }}>
+    <Container sx={{ height: theme.contentAvailableHeight }}>
       {/* Header start */}
       <Grid container xs={12} md={8} justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "10%" }}>
         <Grid item xs={12}>
