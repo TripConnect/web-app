@@ -1,20 +1,59 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Avatar, AvatarGroup, Box, Container, Grid, IconButton, Skeleton, TextField, Typography, useTheme } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import { ChatMessageModel } from 'types/chat';
+import { ChatMessageModel } from 'types/socket.type';
 import { RootState } from "store";
 import { io, Socket } from "socket.io-client";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { GraphQLModels } from "types/graphql.type";
+
+const FIND_CONVERSATION_QUERY = gql`
+  query Conversation($id: ID!) {
+    conversation(id: $id) {
+      type
+      name
+      members {
+        id
+        avatar
+        displayName
+      }
+    }
+  }
+`;
+
+const CHAT_HISTORY_QUERY = gql`
+  query Conversation($id: ID!, $messagePageNumber: Int!, $messagePageSize: Int!) {
+      conversation(id: $id) {
+          messages($messagePageNumber, $messagePageSize) {
+              content
+              createdAt
+              id
+          }
+      }
+  }
+`;
 
 export default function Conversation() {
-  const { id: currentConversationId } = useParams<{ id: string }>();
-  const currentUser = useSelector((state: RootState) => state.user);
+  const { id: currConvId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const theme = useTheme();
+  const currentUser = useSelector((state: RootState) => state.user);
 
-  const [conversationInfo, setConversationInfo] = useState<{ name: string, type: "PRIVATE" | "GROUP" }>(); // for title display
-  const [topMembers, setTopMember] = useState<{ name: string, avatar: string }[]>([]); // for avatar display
+  if (!currConvId) {
+    navigate("/");
+  }
 
+  const { loading: convLoading, error: convError, data: convData } = useQuery<
+    { conversation?: GraphQLModels.Conversation }, GraphQLModels.ConversationQueryInput
+  >(
+    FIND_CONVERSATION_QUERY,
+    { variables: { id: currConvId as string } }
+  );
+  const [chatHistory, { loading: historyLoading, error: historyError, data: historyData }] = useLazyQuery(CHAT_HISTORY_QUERY);
+
+  // socket initialization
   useEffect(() => {
     let connection: Socket = io(
       `${process.env.REACT_APP_BASE_URL}/chat`,
@@ -27,11 +66,11 @@ export default function Conversation() {
     );
     connection.on('connect', () => {
       console.log('connected');
-      connection.emit("listen", { conversationId: currentConversationId });
+      connection.emit("listen", { conversationId: currConvId });
     });
     connection.io.on('reconnect', () => {
       console.log('reconnected');
-      connection.emit('listen', { conversationId: currentConversationId });
+      connection.emit('listen', { conversationId: currConvId });
     });
     connection.on('connect_error', err => {
       console.log(err.message);
@@ -42,24 +81,36 @@ export default function Conversation() {
 
     return () => {
       console.log("<Conversation /> unmounted");
-      connection.emit("unlisten", { conversationId: currentConversationId });
+      connection.emit("unlisten", { conversationId: currConvId });
     }
   }, []);
 
   return (
-    <Container sx={{ height: theme.contentAvailableHeight }}>
+    <Container component="main" sx={{ height: theme.contentAvailableHeight }}>
       {/* Header start */}
-      <Grid container xs={12} md={8} justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "10%" }}>
-        <Grid item xs={12}>
+      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "10%" }}>
+        <Grid item xs={12} md={8}>
           <Box component="section" sx={{ display: "flex", justifyContent: "start", alignItems: "center", gap: "10px" }}>
             {
-              topMembers.length ?
-                <AvatarGroup max={4}>{topMembers.map(member => <Avatar src={member.avatar} />)}</AvatarGroup> :
-                <Skeleton variant="circular" animation="wave"><Avatar sx={{ ...theme.avatar.md }} /></Skeleton>
+              convData ?
+                <AvatarGroup spacing="small" max={4}>
+                  {
+                    convData.conversation!.members!
+                      .filter(member => member.id !== currentUser.userId)
+                      .map(member => <Avatar key={`conv-avt-${member.id}`} src={member.avatar} />)
+                  }
+                </AvatarGroup> :
+                <Skeleton variant="circular" animation="wave"><Avatar key="conv-default-avt" sx={{ ...theme.avatar.md }} /></Skeleton>
             }
             {
-              conversationInfo?.name ?
-                <Typography variant="h6" noWrap component="span">{conversationInfo?.name}</Typography> :
+              convData ?
+                <Typography variant="h6" noWrap component="span" fontSize="1.4rem" fontWeight="540">
+                  {
+                    convData.conversation?.type === GraphQLModels.ConversationType.PRIVATE ?
+                      convData.conversation?.members?.find(m => m.id !== currentUser.userId)?.displayName :
+                      convData.conversation?.name
+                  }
+                </Typography> :
                 <Skeleton variant="text" width="40%" height="28px" animation="wave" />
             }
           </Box>
@@ -68,8 +119,8 @@ export default function Conversation() {
       {/* Header end */}
 
       {/* Conversation start */}
-      <Grid container xs={12} md={8} justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "80%" }}>
-        <Grid item xs={12} >
+      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "80%" }}>
+        <Grid item xs={12} md={8} >
           <Box component="section" className="conversation-section">
 
           </Box>
@@ -78,11 +129,11 @@ export default function Conversation() {
       {/* Conversation end */}
 
       {/* Chat input start */}
-      <Grid container xs={12} md={8} justifyContent="center" alignItems="center" margin="0 auto" sx={{
+      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{
         height: "10%",
         width: "100%",
       }}>
-        <Grid item xs={12} sx={{ width: "100%" }}>
+        <Grid item xs={12} md={8} sx={{ width: "100%" }}>
           <Box>
             <TextField
               className="input-section__inpMessage"
