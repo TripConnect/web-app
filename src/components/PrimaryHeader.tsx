@@ -222,6 +222,7 @@ export default function PrimaryHeader() {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
+              key="header-search-bar"
               placeholder={t("SEARCH") + '...'}
               inputProps={{ 'aria-label': 'search', name: 'searchTerm', onKeyUp: handleSearchTermChange, ref: searchUsersRef }}
             />
