@@ -14,7 +14,7 @@ import { QRCodeSVG } from 'qrcode.react';
 
 import { SystemLanguage } from "constants/lang";
 import { switchLanguage } from "slices/language";
-import CustomSnakeBar from "components/common/CustomSnakeBar";
+import CustomSnakeBar from "shared/components/CustomSnakeBar";
 import { useNavigate } from "react-router-dom";
 
 type TwoFactorSetupProps = {

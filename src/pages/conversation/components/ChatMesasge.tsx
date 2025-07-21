@@ -1,13 +1,17 @@
 import { Avatar, Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "store";
-import { GraphQLModels } from "types/graphql.type";
 
-export default function ChatMessage(props: GraphQLModels.Message) {
+interface ChatMessageProps {
+    userId: string;
+    content: string;
+}
+
+export default function ChatMessage(props: ChatMessageProps) {
     const theme = useTheme();
     const currentUser = useSelector((state: RootState) => state.user);
 
-    let isMine = currentUser.userId === props.fromUser?.id;
+    let isMine = currentUser.userId === props.userId;
 
     return (
         <Stack
