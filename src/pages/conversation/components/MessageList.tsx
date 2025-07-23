@@ -12,6 +12,8 @@ interface MessageListProps {
 export default function MessageList(props: MessageListProps) {
     let { messages, loadMore, hasMore } = props;
 
+    console.table(messages);
+
     return (
         <Box
             id="chatScrollDiv"

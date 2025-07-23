@@ -4,17 +4,16 @@ import MessageList from "./components/MessageList";
 
 const PAGE_SIZE = 20;
 
-let defaultMessages = Array<Message>(PAGE_SIZE).map((_, idx) => ({
+let defaultMessages = Array.from(
+  { length: PAGE_SIZE },
+  (_, idx): Message => ({
     id: "fake-message-id",
     content: `fake-content ${idx + 1}`,
-    conversation: {
-      id: "fake-conversation"
-    },
+    conversation: { id: "fake-conversation" },
     createdAt: new Date().toISOString(),
-    fromUser: {
-      id: "fake-user-id"
-    }
-}));
+    fromUser: { id: "fake-user-id" }
+  })
+);
 
 export default function Conversation() {
   const [pageNumber, setPageNumber] = useState(0);
@@ -28,18 +27,7 @@ export default function Conversation() {
    * @returns List of messages
    */
   async function fetchOlderMessages(pageNumber: number, limit: number): Promise<Message[]> {
-    let mesage = new Array<Message>(limit).map((_, idx) => ({
-      id: "fake-message-id",
-      content: `fake-content ${idx + 1}`,
-      conversation: {
-        id: "fake-conversation"
-      },
-      createdAt: new Date().toISOString(),
-      fromUser: {
-        id: "fake-user-id"
-      }
-    }));
-
+    let mesage = [...defaultMessages];
     return pageNumber >= 5 ? [] : mesage;
   }
 
@@ -54,6 +42,7 @@ export default function Conversation() {
 
   return (
     <div>
+      <h1>Conversation</h1>
       <MessageList hasMore={hasMore} loadMore={loadMore} messages={messages} />
     </div>
   );
