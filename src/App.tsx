@@ -104,7 +104,7 @@ function App() {
                   <Route path="/settings" element={<PrivateRoute component={<Settings />} />} />
                   <Route path="/upload" element={<UploadFile />} />
                   {/* <Route path="/" element={<PrivateRoute component={<Home />} />} /> */}
-                  <Route path="/" element={<PrivateRoute component={<Conversation />} />} />
+                  <Route path="/" element={<Conversation />}/>
                 </Routes>
               </Router>
             </ThemeProvider>
