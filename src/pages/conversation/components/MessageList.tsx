@@ -16,7 +16,7 @@ export default function MessageList(props: MessageListProps) {
 
     return (
         <Box
-            id="chatScrollDiv"
+            id="scrollableDiv"
             sx={{
                 height: '100%',
                 overflow: 'auto',
@@ -29,12 +29,22 @@ export default function MessageList(props: MessageListProps) {
                 next={loadMore}
                 hasMore={hasMore}
                 inverse={true}
-                scrollableTarget="chatScrollDiv"
-                scrollThreshold={100}
+                scrollableTarget="scrollableDiv"
                 loader={<Typography align="center">Loading messages...</Typography>}
+                endMessage={
+                    <Typography align="center" sx={{ py: 2 }}>
+                        No more messages
+                    </Typography>
+                }
+                style={{ display: 'flex', flexDirection: 'column-reverse' }}
             >
-                {messages.map(msg => <ChatMessage key={msg.id} content={msg.content} userId={msg.fromUser.id} />)}
-
+                {messages.map(msg => (
+                    <ChatMessage 
+                        key={msg.id} 
+                        content={msg.content} 
+                        userId={msg.fromUser.id} 
+                    />
+                ))}
             </InfiniteScroll>
         </Box>
     );

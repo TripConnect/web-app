@@ -7,7 +7,7 @@ const PAGE_SIZE = 20;
 let defaultMessages = Array.from(
   { length: PAGE_SIZE },
   (_, idx): Message => ({
-    id: "fake-message-id",
+    id: `fake-message-id-${idx + 1}`,
     content: `fake-content ${idx + 1}`,
     conversation: { id: "fake-conversation" },
     createdAt: new Date().toISOString(),
@@ -16,7 +16,7 @@ let defaultMessages = Array.from(
 );
 
 export default function Conversation() {
-  const [pageNumber, setPageNumber] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [hasMore, setHasMore] = useState(true);
 
@@ -27,8 +27,17 @@ export default function Conversation() {
    * @returns List of messages
    */
   async function fetchOlderMessages(pageNumber: number, limit: number): Promise<Message[]> {
-    let mesage = [...defaultMessages];
-    return pageNumber >= 5 ? [] : mesage;
+    if (pageNumber >= 5) return [];
+    return Array.from(
+      { length: limit },
+      (_, idx): Message => ({
+        id: `fake-message-id-${pageNumber}-${idx + 1}`,
+        content: `fake-content ${pageNumber * PAGE_SIZE + idx + 1}`,
+        conversation: { id: "fake-conversation" },
+        createdAt: new Date().toISOString(),
+        fromUser: { id: "fake-user-id" }
+      })
+    );
   }
 
   const loadMore = async () => {
