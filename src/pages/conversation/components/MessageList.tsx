@@ -1,51 +1,51 @@
-import { Box, Typography } from "@mui/material";
+import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Message } from "../types";
-import ChatMessage from "./ChatMesasge";
 
-interface MessageListProps {
-    messages: Message[]
-    loadMore: () => Promise<void>,
-    hasMore: boolean
+type MessageListProps = {
+    fetchMore: () => void;
+    hasMore: boolean;
+    messages: string[];
+    messageLength?: number;
 }
 
 export default function MessageList(props: MessageListProps) {
-    let { messages, loadMore, hasMore } = props;
+    const { fetchMore, hasMore, messages, messageLength } = props;
 
-    console.table(messages);
-
-    return (
-        <Box
-            id="scrollableDiv"
-            sx={{
-                height: '100%',
-                overflow: 'auto',
-                display: 'flex',
-                flexDirection: 'column-reverse'
+  return (
+    <div
+      id="chatDiv"
+      style={{
+        height: 400,
+        overflowY: "scroll",
+        display: "flex",
+        flexDirection: "column-reverse",
+        border: "1px solid #ccc",
+        padding: 8
+      }}
+    >
+      <InfiniteScroll
+        dataLength={messages.length}
+        next={fetchMore}
+        hasMore={hasMore}
+        loader={<p style={{ textAlign: "center" }}>Loading...</p>}
+        inverse={true}
+        scrollableTarget="chatDiv"
+        style={{ display: "flex", flexDirection: "column-reverse" }}
+      >
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            style={{
+              padding: "8px",
+              margin: "4px 0",
+              background: "#f1f1f1",
+              borderRadius: 4
             }}
-        >
-            <InfiniteScroll
-                dataLength={messages.length}
-                next={loadMore}
-                hasMore={hasMore}
-                inverse={true}
-                scrollableTarget="scrollableDiv"
-                loader={<Typography align="center">Loading messages...</Typography>}
-                endMessage={
-                    <Typography align="center" sx={{ py: 2 }}>
-                        No more messages
-                    </Typography>
-                }
-                style={{ display: 'flex', flexDirection: 'column-reverse' }}
-            >
-                {messages.map(msg => (
-                    <ChatMessage 
-                        key={msg.id} 
-                        content={msg.content} 
-                        userId={msg.fromUser.id} 
-                    />
-                ))}
-            </InfiniteScroll>
-        </Box>
-    );
+          >
+            {msg}
+          </div>
+        ))}
+      </InfiniteScroll>
+    </div>
+  );
 }
