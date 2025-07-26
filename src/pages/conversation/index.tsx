@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Message } from "./types";
+import { Message } from "./state";
 import MessageList from "./components/MessageList";
 
 
 export default function Conversation() {
-  const [messages, setMessages] = useState(
+  const [messages, setMessages] = useState<string[]>(
     Array.from({ length: 10 }, (_, i) => `Message ${i + 1}`)
   );
 
@@ -29,7 +29,11 @@ export default function Conversation() {
   return (
     <div>
       <h1>Conversation</h1>
-      <MessageList fetchMore={fetchMore} hasMore={hasMore} messages={messages} messageLength={messages.length} />
+      <MessageList
+          fetchMore={fetchMore}
+          hasMore={hasMore}
+          messages={messages}
+          messageLength={messages.length} />
     </div>
   );
 }

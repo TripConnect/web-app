@@ -7,9 +7,9 @@ export type Conversation = {
 }
 
 export type Message = {
-    content: string
-    conversation: Conversation
-    createdAt: string // ISO 8601
-    fromUser: User
     id: string
+    conversation: Conversation
+    fromUser: User
+    content: string
+    createdAt: string // ISO 8601
 }
