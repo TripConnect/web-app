@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Message } from "./state";
+import {useCallback, useState} from "react";
 import MessageList from "./components/MessageList";
-
+import {ScrollDirection} from "./state";
 
 export default function Conversation() {
+  const [fetchMoreType, setFetchMoreType] = useState<"before" | "after">("before");
   const [messages, setMessages] = useState<string[]>(
     Array.from({ length: 10 }, (_, i) => `Message ${i + 1}`)
   );
@@ -26,14 +26,21 @@ export default function Conversation() {
     }, 500);
   };
 
+  const changeScrollDirection = useCallback((direction: ScrollDirection) => {
+    if(fetchMoreType === "before" && direction === "up") return;
+    if(fetchMoreType === "after" && direction === "down") return;
+
+    setFetchMoreType(direction === "up" ? "before" : "after");
+  }, [fetchMoreType]);
+
   return (
     <div>
       <h1>Conversation</h1>
       <MessageList
+          changeScrollDirection={changeScrollDirection}
           fetchMore={fetchMore}
           hasMore={hasMore}
-          messages={messages}
-          messageLength={messages.length} />
+          messages={messages} />
     </div>
   );
 }

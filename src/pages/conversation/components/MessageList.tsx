@@ -1,19 +1,31 @@
-import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {ScrollDirection} from "../state";
+import {useRef} from "react";
 
 type MessageListProps = {
+    changeScrollDirection: (direction: ScrollDirection) => void;
     fetchMore: () => void;
     hasMore: boolean;
     messages: string[];
-    messageLength?: number;
-}
+};
 
 export default function MessageList(props: MessageListProps) {
-    const { fetchMore, hasMore, messages, messageLength } = props;
+  const { fetchMore, hasMore, messages, changeScrollDirection } = props;
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  scrollRef.current?.addEventListener("wheel", event => {
+    if (event.deltaY < 0) {
+      changeScrollDirection("up");
+    } else if (event.deltaY > 0) {
+      changeScrollDirection("down");
+    }
+  });
 
   return (
     <div
       id="chatDiv"
+      ref={scrollRef}
       style={{
         height: 400,
         overflowY: "scroll",
