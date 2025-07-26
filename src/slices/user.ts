@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 export type UserState = {
     userId: string | null,
@@ -20,14 +20,14 @@ export const userSlice = createSlice({
     name: 'userSlice',
     initialState,
     reducers: {
-        updateToken: (state, action): UserState => {
+        updateToken: (state, action: PayloadAction<UserState>): UserState => {
             return {
                 ...state,
                 ...action.payload,
             }
         }
     },
-})
+});
 
 export const { updateToken } = userSlice.actions;
 

@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { gql, useMutation } from '@apollo/client';
 import { useDispatch, useSelector } from "react-redux";
 import { updateToken } from "slices/user";
-import { OTP_INCORRECT, SIGNIN_INCORRECT, SIGNIN_INVALID } from "constants/messages";
+import {OTP_INCORRECT, SIGN_IN_INCORRECT, SIGN_IN_INVALID} from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { StatusCode } from "constants/graphql";
+import {graphql} from "../gql";
 
-const SIGN_IN_MUTATION = gql`
+const SIGN_IN_MUTATION = graphql(`
     mutation SignIn($username: String!, $password: String!) {
         signIn(username: $username, password: $password) {
             userInfo {
@@ -22,7 +23,7 @@ const SIGN_IN_MUTATION = gql`
             }
         }
     }
-`;
+`);
 
 type SignInPayload = {
     username: string;
@@ -37,7 +38,7 @@ export default function SignIn() {
         username: '',
         password: ''
     });
-    const [signin, { data, loading, error }] = useMutation(SIGN_IN_MUTATION);
+    const [signIn, { data, loading, error }] = useMutation(SIGN_IN_MUTATION);
 
     const currentUser = useSelector((state: any) => state.user);
     const isAuthenticated = Boolean(currentUser.accessToken);
@@ -48,19 +49,30 @@ export default function SignIn() {
         }
     }, [isAuthenticated, navigate]);
 
-    const handleSubmit = (e: React.SyntheticEvent) => {
+    const handleSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         if (!signInPayload.username || !signInPayload.password) {
-            alert(SIGNIN_INVALID);
+            alert(SIGN_IN_INVALID);
             return
         }
 
-        signin({ variables: { ...signInPayload } })
+        signIn({ variables: { ...signInPayload } })
             .then(response => {
-                let { userInfo, token } = response.data.signin;
-                let { id: userId, displayName, avatar } = userInfo;
-                let { accessToken, refreshToken } = token;
-                dispatch(updateToken({ userId, accessToken, refreshToken, displayName, avatar }));
+                if(!response.data) {
+                    throw Error(SIGN_IN_INVALID);
+                }
+
+                let signInData = response.data.signIn;
+
+                // TODO: Investigate why signInData.userInfo is nullable
+                let action = updateToken({
+                    userId: signInData.userInfo!.id,
+                    accessToken: signInData.token!.accessToken,
+                    refreshToken: signInData.token!.refreshToken,
+                    displayName: signInData.userInfo!.displayName,
+                    avatar: signInData.userInfo!.avatar || null
+                });
+                dispatch(action);
                 navigate("/home");
             })
             .catch(error => {
@@ -75,7 +87,7 @@ export default function SignIn() {
                         alert(OTP_INCORRECT);
                         break;
                     default:
-                        alert(SIGNIN_INCORRECT);
+                        alert(SIGN_IN_INCORRECT);
                 }
 
             });
