@@ -1,6 +1,7 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import {ScrollDirection} from "../state";
-import {useRef} from "react";
+import {useEffect, useRef} from "react";
+import { useDebounceCallback } from 'usehooks-ts';
 
 type MessageListProps = {
     changeScrollDirection: (direction: ScrollDirection) => void;
@@ -14,13 +15,25 @@ export default function MessageList(props: MessageListProps) {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  scrollRef.current?.addEventListener("wheel", event => {
-    if (event.deltaY < 0) {
-      changeScrollDirection("up");
-    } else if (event.deltaY > 0) {
-      changeScrollDirection("down");
-    }
-  });
+  const debouncedWheel = useDebounceCallback(
+    (deltaY: number) => {
+      if (deltaY < 0) changeScrollDirection('up');
+      else if (deltaY > 0) changeScrollDirection('down');
+    },
+    500
+  );
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const listener = (e: WheelEvent) => debouncedWheel(e.deltaY);
+    el.addEventListener('wheel', listener);
+    return () => {
+      el.removeEventListener('wheel', listener);
+      debouncedWheel.cancel();
+    };
+  }, [debouncedWheel]);
 
   return (
     <div
@@ -41,6 +54,7 @@ export default function MessageList(props: MessageListProps) {
         hasMore={hasMore}
         loader={<p style={{ textAlign: "center" }}>Loading...</p>}
         inverse={true}
+        scrollThreshold={50}
         scrollableTarget="chatDiv"
         style={{ display: "flex", flexDirection: "column-reverse" }}
       >

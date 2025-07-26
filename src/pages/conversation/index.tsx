@@ -27,6 +27,7 @@ export default function Conversation() {
   };
 
   const changeScrollDirection = useCallback((direction: ScrollDirection) => {
+    console.log({direction})
     if(fetchMoreType === "before" && direction === "up") return;
     if(fetchMoreType === "after" && direction === "down") return;
 
