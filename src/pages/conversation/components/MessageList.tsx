@@ -1,13 +1,14 @@
 import InfiniteScroll from "react-infinite-scroll-component";
-import {ScrollDirection} from "../state";
+import {Message, ScrollDirection} from "../state";
 import {useEffect, useRef} from "react";
 import { useDebounceCallback } from 'usehooks-ts';
+import ChatMessage from "./ChatMesasge";
 
 type MessageListProps = {
     changeScrollDirection: (direction: ScrollDirection) => void;
     fetchMore: () => void;
     hasMore: boolean;
-    messages: string[];
+    messages: Message[];
 };
 
 export default function MessageList(props: MessageListProps) {
@@ -58,19 +59,7 @@ export default function MessageList(props: MessageListProps) {
         scrollableTarget="chatDiv"
         style={{ display: "flex", flexDirection: "column-reverse" }}
       >
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            style={{
-              padding: "8px",
-              margin: "4px 0",
-              background: "#f1f1f1",
-              borderRadius: 4
-            }}
-          >
-            {msg}
-          </div>
-        ))}
+        {messages.map(msg => <ChatMessage key={msg.id} id={msg.id} user={msg.fromUser} content={msg.content} />)}
       </InfiniteScroll>
     </div>
   );

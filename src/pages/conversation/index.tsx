@@ -1,25 +1,33 @@
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import MessageList from "./components/MessageList";
-import {ScrollDirection} from "./state";
+import {Message, ScrollDirection} from "./state";
+
+const FETCH_LIMIT = 50;
 
 export default function Conversation() {
   const [fetchMoreType, setFetchMoreType] = useState<"before" | "after">("before");
-  const [messages, setMessages] = useState<string[]>(
-    Array.from({ length: 10 }, (_, i) => `Message ${i + 1}`)
-  );
+  const [messages, setMessages] = useState<Message[]>([]);
 
-  const MAX = 50;
+  const MAX = 500;
   const hasMore = messages.length < MAX;
 
+  useEffect(() => {
+    fetchMore();
+  }, []);
+
   const fetchMore = () => {
-    // Simulate async fetch: prepend 10 older messages
     setTimeout(() => {
       setMessages(prev => {
-        const start = prev.length + 1;
-        const end = Math.min(prev.length + 10, MAX);
-        const older = Array.from(
-          { length: end - prev.length },
-          (_, i) => `Message ${start + i}`
+        const older: Message[] = Array.from(
+          { length: FETCH_LIMIT },
+          (_, i): Message => ({
+            id: window.self.crypto.randomUUID().toString(),
+            content: "Message from " + new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            fromUser: {
+              id: window.self.crypto.randomUUID(),
+            }
+          })
         );
         return [...prev, ...older];
       });
@@ -27,7 +35,6 @@ export default function Conversation() {
   };
 
   const changeScrollDirection = useCallback((direction: ScrollDirection) => {
-    console.log({direction})
     if(fetchMoreType === "before" && direction === "up") return;
     if(fetchMoreType === "after" && direction === "down") return;
 

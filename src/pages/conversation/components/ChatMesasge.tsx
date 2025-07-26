@@ -1,9 +1,11 @@
 import { Avatar, Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "store";
+import {User} from "../state";
 
 interface ChatMessageProps {
-    userId: string;
+    id: string;
+    user: User;
     content: string;
 }
 
@@ -11,7 +13,7 @@ export default function ChatMessage(props: ChatMessageProps) {
     const theme = useTheme();
     const currentUser = useSelector((state: RootState) => state.user);
 
-    let isMine = currentUser.userId === props.userId;
+    let isMine = currentUser.userId === props.user.id;
 
     return (
         <Stack
