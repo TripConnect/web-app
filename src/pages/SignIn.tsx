@@ -8,9 +8,9 @@ import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { StatusCode } from "constants/graphql";
 
-const SIGNIN_MUTATION = gql`
-    mutation Signin($username: String!, $password: String!) {
-        signin(username: $username, password: $password) {
+const SIGN_IN_MUTATION = gql`
+    mutation SignIn($username: String!, $password: String!) {
+        signIn(username: $username, password: $password) {
             userInfo {
                 id
                 displayName
@@ -37,7 +37,7 @@ export default function SignIn() {
         username: '',
         password: ''
     });
-    const [signin, { data, loading, error }] = useMutation(SIGNIN_MUTATION);
+    const [signin, { data, loading, error }] = useMutation(SIGN_IN_MUTATION);
 
     const currentUser = useSelector((state: any) => state.user);
     const isAuthenticated = Boolean(currentUser.accessToken);

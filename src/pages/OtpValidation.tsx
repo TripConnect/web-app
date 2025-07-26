@@ -9,7 +9,7 @@ import { StatusCode } from "constants/graphql";
 import { OTP_INCORRECT, SIGNIN_INCORRECT } from "constants/messages";
 
 const SIGNIN_MUTATION = gql`
-    mutation Signin($username: String!, $password: String!, $otp: String!) {
+    mutation SigninWithOTP($username: String!, $password: String!, $otp: String!) {
         signin(username: $username, password: $password, otp: $otp) {
             userInfo {
                 id

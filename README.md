@@ -6,3 +6,9 @@ The client UI in web platform implemented by `ReactJS` and `Redux toolkit`.
 npm install --legacy-peer-deps
 npm start
 ```
+
+# Tips and Cheatsheet
+Generate GraphQL related models 
+```
+npx graphql-codegen --watch
+```
