@@ -1,13 +1,13 @@
 import {SyntheticEvent, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useDispatch, useSelector } from "react-redux";
 import { updateToken } from "slices/user";
 import {OTP_INCORRECT, SIGN_IN_INCORRECT, SIGN_IN_INVALID} from "constants/messages";
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { StatusCode } from "constants/graphql";
-import {graphql} from "../gql";
+import { graphql } from "../gql";
 
 const SIGN_IN_MUTATION = graphql(`
     mutation SignIn($username: String!, $password: String!) {
@@ -64,13 +64,12 @@ export default function SignIn() {
 
                 let signInData = response.data.signIn;
 
-                // TODO: Investigate why signInData.userInfo is nullable
                 let action = updateToken({
                     userId: signInData.userInfo!.id,
                     accessToken: signInData.token!.accessToken,
                     refreshToken: signInData.token!.refreshToken,
                     displayName: signInData.userInfo!.displayName,
-                    avatar: signInData.userInfo!.avatar || null
+                    avatar: signInData.userInfo!.avatar
                 });
                 dispatch(action);
                 navigate("/home");

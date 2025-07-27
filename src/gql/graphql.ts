@@ -20,8 +20,8 @@ export type Scalars = {
 
 export type AuthUser = {
   __typename?: 'AuthUser';
-  token?: Maybe<Token>;
-  userInfo?: Maybe<Self>;
+  token: Maybe<Token>;
+  userInfo: Maybe<Self>;
 };
 
 export type Conversation = {
@@ -29,7 +29,7 @@ export type Conversation = {
   createdAt: Scalars['DateTime']['output'];
   createdBy: User;
   id: Scalars['ID']['output'];
-  lastMessageAt?: Maybe<Scalars['DateTime']['output']>;
+  lastMessageAt: Maybe<Scalars['DateTime']['output']>;
   members: Array<User>;
   messages: Array<Message>;
   name: Scalars['String']['output'];
@@ -44,8 +44,8 @@ export type ConversationMembersArgs = {
 
 
 export type ConversationMessagesArgs = {
-  messageAfter?: InputMaybe<Scalars['DateTime']['input']>;
-  messageBefore?: InputMaybe<Scalars['DateTime']['input']>;
+  messageAfter: InputMaybe<Scalars['DateTime']['input']>;
+  messageBefore: InputMaybe<Scalars['DateTime']['input']>;
   messageLimit: Scalars['Int']['input'];
 };
 
@@ -75,7 +75,7 @@ export type Mutation = {
 
 export type MutationCreateConversationArgs = {
   memberIds: Array<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
   type: ConversationType;
 };
 
@@ -124,7 +124,7 @@ export type ResponseModel = {
 
 export type Self = {
   __typename?: 'Self';
-  avatar?: Maybe<Scalars['String']['output']>;
+  avatar: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
   enabledTwofa: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -144,7 +144,7 @@ export type Token = {
 
 export type User = {
   __typename?: 'User';
-  avatar?: Maybe<Scalars['String']['output']>;
+  avatar: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
 };
@@ -156,7 +156,7 @@ export type SigninWithOtpMutationVariables = Exact<{
 }>;
 
 
-export type SigninWithOtpMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo?: { __typename?: 'Self', id: string, displayName: string, avatar?: string | null } | null, token?: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
+export type SigninWithOtpMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string | null } | null, token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -182,7 +182,7 @@ export type SignInMutationVariables = Exact<{
 }>;
 
 
-export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo?: { __typename?: 'Self', id: string, displayName: string, avatar?: string | null } | null, token?: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
+export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string | null } | null, token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
 
 export type CreateConversationMutationVariables = Exact<{
   memberIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
@@ -196,14 +196,31 @@ export type UserQueryVariables = Exact<{
 }>;
 
 
-export type UserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, avatar?: string | null, displayName: string } };
+export type UserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, avatar: string | null, displayName: string } };
+
+export type InitUiQueryQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type InitUiQueryQuery = { __typename?: 'Query', conversation: { __typename?: 'Conversation', name: string, type: ConversationType } };
+
+export type FetchMessageQueryQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  before: InputMaybe<Scalars['DateTime']['input']>;
+  after: InputMaybe<Scalars['DateTime']['input']>;
+  limit: Scalars['Int']['input'];
+}>;
+
+
+export type FetchMessageQueryQuery = { __typename?: 'Query', conversation: { __typename?: 'Conversation', messages: Array<{ __typename?: 'Message', id: string, content: string, createdAt: any, fromUser: { __typename?: 'User', id: string, displayName: string, avatar: string | null } }> } };
 
 export type UsersQueryVariables = Exact<{
   searchTerm: Scalars['String']['input'];
 }>;
 
 
-export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, displayName: string, avatar?: string | null }> };
+export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, displayName: string, avatar: string | null }> };
 
 
 export const SigninWithOtpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SigninWithOTP"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"username"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"otp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signIn"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"username"},"value":{"kind":"Variable","name":{"kind":"Name","value":"username"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}},{"kind":"Argument","name":{"kind":"Name","value":"otp"},"value":{"kind":"Variable","name":{"kind":"Name","value":"otp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]}}]} as unknown as DocumentNode<SigninWithOtpMutation, SigninWithOtpMutationVariables>;
@@ -213,4 +230,6 @@ export const Enable2FaDocument = {"kind":"Document","definitions":[{"kind":"Oper
 export const SignInDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SignIn"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"username"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signIn"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"username"},"value":{"kind":"Variable","name":{"kind":"Name","value":"username"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]}}]} as unknown as DocumentNode<SignInMutation, SignInMutationVariables>;
 export const CreateConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"memberIds"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"PRIVATE"}},{"kind":"Argument","name":{"kind":"Name","value":"memberIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"memberIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateConversationMutation, CreateConversationMutationVariables>;
 export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"User"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
+export const InitUiQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InitUiQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"conversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<InitUiQueryQuery, InitUiQueryQueryVariables>;
+export const FetchMessageQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FetchMessageQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"conversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messages"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"messageBefore"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"messageAfter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"messageLimit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"fromUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FetchMessageQueryQuery, FetchMessageQueryQueryVariables>;
 export const UsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Users"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"searchTerm"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]} as unknown as DocumentNode<UsersQuery, UsersQueryVariables>;
