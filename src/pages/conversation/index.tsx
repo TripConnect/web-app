@@ -3,7 +3,9 @@ import MessageList from "./components/MessageList";
 import {Message, ScrollDirection} from "./state";
 import {graphql} from "../../gql";
 import {useParams} from "react-router-dom";
-import {useQuery} from "@apollo/client";
+import {useLazyQuery, useQuery} from "@apollo/client";
+import MessageComposer from "./components/MessageComposer";
+import {useTranslation} from "react-i18next";
 
 const FETCH_LIMIT = 50;
 
@@ -36,9 +38,18 @@ const FETCH_MESSAGE_QUERY = graphql(`
 export default function Conversation() {
   const { id: conversationId = "" } = useParams<{ id: string }>();
 
+  // effect hook
+  useEffect(() => {
+    fetchMore();
+  }, []);
+
+  // common hooks
+  const { t } = useTranslation();
   const [fetchMoreType, setFetchMoreType] = useState<"before" | "after">("before");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [hasMore, sethasMore] = useState<boolean>(true);
 
+  // debounce hooks
   const changeScrollDirection = useCallback((direction: ScrollDirection) => {
     if(fetchMoreType === "before" && direction === "up") return;
     if(fetchMoreType === "after" && direction === "down") return;
@@ -46,46 +57,65 @@ export default function Conversation() {
     setFetchMoreType(direction === "up" ? "before" : "after");
   }, [fetchMoreType]);
 
-  useEffect(() => {
-    fetchMore();
-  }, []);
-
+  // graphql hooks
   const { data: convInfo } = useQuery(INIT_UI_QUERY, {
     variables: {
       id: conversationId,
     }
   });
+  const [fetchMessage, { loading :fetchMessageLoading, error: fetchMessageError, data: fetchMessageData }] = useLazyQuery(FETCH_MESSAGE_QUERY);
 
-  const MAX = 500;
-  const hasMore = messages.length < MAX;
-
+  // action definitions
   const fetchMore = () => {
-    setTimeout(() => {
-      setMessages(prev => {
-        const older: Message[] = Array.from(
-          { length: FETCH_LIMIT },
-          (_, i): Message => ({
-            id: window.self.crypto.randomUUID().toString(),
-            content: "Message from " + new Date().toISOString(),
-            createdAt: new Date().toISOString(),
-            fromUser: {
-              id: window.self.crypto.randomUUID(),
-            }
-          })
-        );
-        return [...prev, ...older];
-      });
-    }, 500);
+    let before, after: Date | null = null;
+    if(fetchMoreType === "before") {
+      before = new Date(Math.min(...messages.map(msg => +new Date(msg.createdAt))));
+    } else {
+      after = new Date(Math.max(...messages.map(msg => +new Date(msg.createdAt))));
+    }
+    fetchMessage({variables: {
+        id: conversationId,
+        before: before,
+        after: after,
+        limit: FETCH_LIMIT
+    }})
+      .then(response => {
+        let msgLst = response.data?.conversation.messages;
+        if(!msgLst || !msgLst.length) {
+          sethasMore(false);
+          return;
+        }
+
+        let msgState = msgLst.map((msg): Message => ({
+          id: msg.id,
+          fromUser: msg.fromUser,
+          content: msg.content,
+          createdAt: msg.createdAt,
+        }));
+
+        if(fetchMoreType === "before") {
+          setMessages(prev => [...msgState, ...prev]);
+        } else {
+          setMessages(prev => [...prev, ...msgState]);
+        }
+
+        sethasMore(true);
+      })
   };
+
+  const sendMessage = (msg: string) => {
+    console.log(msg)
+  }
 
   return (
     <div>
-      <h1>Conversation</h1>
+      <h1>{convInfo?.conversation.name || "Conversation"}</h1>
       <MessageList
           changeScrollDirection={changeScrollDirection}
           fetchMore={fetchMore}
           hasMore={hasMore}
           messages={messages} />
+      <MessageComposer onSend={sendMessage} disabled={false} placeholder={t("CHAT_MESSAGE_HINT")} />
     </div>
   );
 }
