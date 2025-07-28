@@ -38,16 +38,11 @@ const FETCH_MESSAGE_QUERY = graphql(`
 export default function Conversation() {
   const { id: conversationId = "" } = useParams<{ id: string }>();
 
-  // effect hook
-  useEffect(() => {
-    fetchMore();
-  }, []);
-
   // common hooks
   const { t } = useTranslation();
   const [fetchMoreType, setFetchMoreType] = useState<"before" | "after">("before");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [hasMore, sethasMore] = useState<boolean>(true);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
   // debounce hooks
   const changeScrollDirection = useCallback((direction: ScrollDirection) => {
@@ -66,10 +61,11 @@ export default function Conversation() {
   const [fetchMessage, { loading :fetchMessageLoading, error: fetchMessageError, data: fetchMessageData }] = useLazyQuery(FETCH_MESSAGE_QUERY);
 
   // action definitions
-  const fetchMore = () => {
+  const fetchMore = useCallback(() => {
     let before, after: Date | null = null;
     if(fetchMoreType === "before") {
-      before = new Date(Math.min(...messages.map(msg => +new Date(msg.createdAt))));
+      before = messages.length ?
+        new Date(Math.min(...messages.map(msg => +new Date(msg.createdAt)))) : +new Date();
     } else {
       after = new Date(Math.max(...messages.map(msg => +new Date(msg.createdAt))));
     }
@@ -80,13 +76,13 @@ export default function Conversation() {
         limit: FETCH_LIMIT
     }})
       .then(response => {
-        let msgLst = response.data?.conversation.messages;
-        if(!msgLst || !msgLst.length) {
-          sethasMore(false);
+        let msgList = response.data?.conversation.messages;
+        if(!msgList || msgList.length < FETCH_LIMIT) {
+          setHasMore(false);
           return;
         }
 
-        let msgState = msgLst.map((msg): Message => ({
+        let msgState = msgList.map((msg): Message => ({
           id: msg.id,
           fromUser: msg.fromUser,
           content: msg.content,
@@ -99,9 +95,14 @@ export default function Conversation() {
           setMessages(prev => [...prev, ...msgState]);
         }
 
-        sethasMore(true);
+        setHasMore(true);
       })
-  };
+  }, [conversationId, fetchMessage, fetchMoreType, messages]);
+
+  // effect hook
+  useEffect(() => {
+    fetchMore();
+  }, [fetchMore]);
 
   const sendMessage = (msg: string) => {
     console.log(msg)
