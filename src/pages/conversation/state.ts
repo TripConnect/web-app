@@ -6,11 +6,13 @@ export type Conversation = {
     id: string;
 };
 
+// MUST have either correlationId or id
 export type Message = {
-    id: string;
+    id?: string;
+    correlationId?: string;
     fromUser: User;
     content: string;
-    createdAt: string; // ISO 8601
+    sentTime: string; // ISO 8601
 };
 
 export type ScrollDirection = "up" | "down";

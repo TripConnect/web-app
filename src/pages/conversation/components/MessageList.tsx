@@ -59,7 +59,7 @@ export default function MessageList(props: MessageListProps) {
         scrollableTarget="chatDiv"
         style={{ display: "flex", flexDirection: "column-reverse" }}
       >
-        {messages.map(msg => <ChatMessage key={msg.id} id={msg.id} user={msg.fromUser} content={msg.content} />)}
+        {messages.map((msg, idx) => <ChatMessage key={`msg-${idx}`} id={msg.id} user={msg.fromUser} content={msg.content} />)}
       </InfiniteScroll>
     </div>
   );

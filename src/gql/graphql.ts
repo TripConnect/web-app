@@ -131,7 +131,7 @@ export type ResponseModel = {
 
 export type Self = {
   __typename?: 'Self';
-  avatar: Maybe<Scalars['String']['output']>;
+  avatar: Scalars['String']['output'];
   displayName: Scalars['String']['output'];
   enabledTwofa: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -168,7 +168,7 @@ export type SigninWithOtpMutationVariables = Exact<{
 }>;
 
 
-export type SigninWithOtpMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string | null } | null, token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
+export type SigninWithOtpMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null, token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -194,7 +194,7 @@ export type SignInMutationVariables = Exact<{
 }>;
 
 
-export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string | null } | null, token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
+export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null, token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
 
 export type CreateConversationMutationVariables = Exact<{
   memberIds: Array<Scalars['String']['input']> | Scalars['String']['input'];

@@ -4,7 +4,7 @@ import { RootState } from "store";
 import {User} from "../state";
 
 interface ChatMessageProps {
-    id: string;
+    id?: string;
     user: User;
     content: string;
 }

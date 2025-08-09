@@ -1,20 +1,14 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 export type UserState = {
-    userId: string | null,
-    avatar: string | null,
-    displayName: string | null,
-    accessToken: string | null,
-    refreshToken: string | null,
+    userId?: string,
+    avatar?: string,
+    displayName?: string,
+    accessToken?: string,
+    refreshToken?: string,
 }
 
-const initialState: UserState = {
-    userId: null,
-    avatar: process.env.REACT_APP_DEFAULT_AVATAR_URL as string,
-    displayName: null,
-    accessToken: null,
-    refreshToken: null,
-};
+const initialState: UserState = {};
 
 export const userSlice = createSlice({
     name: 'userSlice',

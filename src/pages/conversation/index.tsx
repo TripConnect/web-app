@@ -81,11 +81,10 @@ export default function Conversation() {
     let before, after: Date | null = null;
     if(fetchMoreType === "before") {
       before = messages.length ?
-        new Date(Math.min(...messages.map(msg => +new Date(msg.createdAt)))) : +new Date();
+        new Date(Math.min(...messages.map(msg => +new Date(msg.sentTime)))) : new Date();
     } else {
-      after = new Date(Math.max(...messages.map(msg => +new Date(msg.createdAt))));
+      after = new Date(Math.max(...messages.map(msg => +new Date(msg.sentTime))));
     }
-    console.log("fetch more message");
     fetchMessage({variables: {
         id: conversationId,
         before: before,
@@ -103,8 +102,8 @@ export default function Conversation() {
           id: msg.id,
           fromUser: msg.fromUser,
           content: msg.content,
-          createdAt: msg.createdAt,
-        }));
+          sentTime: msg.createdAt,
+        })).reverse();
 
         if(fetchMoreType === "before") {
           setMessages(prev => [...msgState, ...prev]);
@@ -148,6 +147,15 @@ export default function Conversation() {
     sendMessage({variables: {conversationId: conversationId, content: msg}})
       .then(response => {
         console.log(response);
+        let pendingMessage: Message = {
+          correlationId: response.data?.sendMessage.correlationId,
+          content: msg,
+          fromUser: {
+            id: currentUser.userId as string,
+          },
+          sentTime: new Date().toISOString(),
+        }
+        setMessages(prev => [pendingMessage, ...prev]);
       })
       .catch(error => console.log(error));
   }
