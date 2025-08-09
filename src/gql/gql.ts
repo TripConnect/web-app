@@ -23,6 +23,7 @@ type Documents = {
     "\n    query User($id: ID!) {\n        user(id: $id) {\n            id\n            avatar\n            displayName\n        }\n    }\n": typeof types.UserDocument,
     "\n    query InitUiQuery($id: ID!) {\n        conversation(id: $id) {\n            name\n            type\n        }\n    }\n": typeof types.InitUiQueryDocument,
     "\n  query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {\n      conversation(id: $id) {\n          messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {\n              id\n              content\n              createdAt\n              fromUser {\n                  id\n                  displayName\n                  avatar\n              }\n          }\n      }\n    }\n": typeof types.FetchMessageQueryDocument,
+    "\n    mutation SendMessageMutation($conversationId: ID!, $content: String!) {\n        sendMessage(conversation_id: $conversationId, content: $content) {\n            correlationId\n        }\n    }\n": typeof types.SendMessageMutationDocument,
     "\n  query Users($searchTerm: String!) {\n    users(searchTerm: $searchTerm) {\n      id\n      displayName\n      avatar\n    }\n  }\n": typeof types.UsersDocument,
 };
 const documents: Documents = {
@@ -35,6 +36,7 @@ const documents: Documents = {
     "\n    query User($id: ID!) {\n        user(id: $id) {\n            id\n            avatar\n            displayName\n        }\n    }\n": types.UserDocument,
     "\n    query InitUiQuery($id: ID!) {\n        conversation(id: $id) {\n            name\n            type\n        }\n    }\n": types.InitUiQueryDocument,
     "\n  query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {\n      conversation(id: $id) {\n          messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {\n              id\n              content\n              createdAt\n              fromUser {\n                  id\n                  displayName\n                  avatar\n              }\n          }\n      }\n    }\n": types.FetchMessageQueryDocument,
+    "\n    mutation SendMessageMutation($conversationId: ID!, $content: String!) {\n        sendMessage(conversation_id: $conversationId, content: $content) {\n            correlationId\n        }\n    }\n": types.SendMessageMutationDocument,
     "\n  query Users($searchTerm: String!) {\n    users(searchTerm: $searchTerm) {\n      id\n      displayName\n      avatar\n    }\n  }\n": types.UsersDocument,
 };
 
@@ -88,6 +90,10 @@ export function graphql(source: "\n    query InitUiQuery($id: ID!) {\n        co
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {\n      conversation(id: $id) {\n          messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {\n              id\n              content\n              createdAt\n              fromUser {\n                  id\n                  displayName\n                  avatar\n              }\n          }\n      }\n    }\n"): (typeof documents)["\n  query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {\n      conversation(id: $id) {\n          messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {\n              id\n              content\n              createdAt\n              fromUser {\n                  id\n                  displayName\n                  avatar\n              }\n          }\n      }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation SendMessageMutation($conversationId: ID!, $content: String!) {\n        sendMessage(conversation_id: $conversationId, content: $content) {\n            correlationId\n        }\n    }\n"): (typeof documents)["\n    mutation SendMessageMutation($conversationId: ID!, $content: String!) {\n        sendMessage(conversation_id: $conversationId, content: $content) {\n            correlationId\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
