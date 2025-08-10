@@ -125,7 +125,7 @@ export default function Conversation() {
     }
 
     setHasMore(gqlMessages.length < FETCH_LIMIT);
-  }, []);
+  }, [fetchMessageLoading, fetchMoreType, callFetchMore, conversationId, messages]);
 
   // effect hook
   useEffect(() => {
