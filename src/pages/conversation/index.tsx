@@ -74,7 +74,7 @@ export default function Conversation() {
     }
   });
 
-  const [fetchMessage] = useLazyQuery(FETCH_MESSAGE_QUERY);
+  const [fetchMessage, {loading: fetchMessageLoading}] = useLazyQuery(FETCH_MESSAGE_QUERY);
   const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION);
 
   const callFetchMore = async (conversationId: string, limit: number, before?: Date, after?: Date): Promise<Message[]> => {
@@ -96,7 +96,9 @@ export default function Conversation() {
   }
 
   // action definitions
-  const fetchMore = useCallback(async () => {
+  const fetchMore = useCallback(async (): Promise<void> => {
+    if(fetchMessageLoading) return;
+
     let before: Date | undefined;
     let after: Date | undefined;
 
@@ -105,13 +107,13 @@ export default function Conversation() {
         new Date(Math.min(...messages
           // eslint-disable-next-line eqeqeq
           .filter(msg => msg.sentTime)
-          .map(msg => +new Date(msg.sentTime as string)))) : new Date();
+          .map(msg => +new Date(msg.sentTime as string)))) : undefined;
     } else {
       after = messages.length ?
         new Date(Math.max(...messages
           // eslint-disable-next-line eqeqeq
           .filter(msg => msg.sentTime)
-          .map(msg => +new Date(msg.sentTime as string)))) : new Date();
+          .map(msg => +new Date(msg.sentTime as string)))) : undefined;
     }
 
     let gqlMessages = await callFetchMore(conversationId, FETCH_LIMIT, before, after);
