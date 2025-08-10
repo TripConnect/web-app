@@ -16,10 +16,10 @@ import { I18nextProvider } from "react-i18next";
 import SignIn from 'pages/SignIn';
 import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
-import Conversation from "pages/conversation";
+import {Conversation} from "pages/conversation";
 import SignUp from "pages/SignUp";
 import UploadFile from "pages/UploadFile";
-import PrimaryHeader from "components/PrimaryHeader";
+import PrimaryHeader from "shared/components/PrimaryHeader";
 import theme from "theme";
 import enTranslation from 'locales/en/translation.json';
 import viTranslation from 'locales/vi/translation.json';
@@ -86,8 +86,6 @@ const PrivateRoute = ({ component }: { component: any }) => {
 };
 
 function App() {
-  // console.log(window.location.pathname == "/");
-
   return (
     <I18nextProvider i18n={i18next}>
       <Provider store={store}>
@@ -105,7 +103,7 @@ function App() {
                   <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation />} />} />
                   <Route path="/settings" element={<PrivateRoute component={<Settings />} />} />
                   <Route path="/upload" element={<UploadFile />} />
-                  <Route path="/" element={<PrivateRoute component={<Home />} />} />
+                   <Route path="/" element={<PrivateRoute component={<Home />} />} />
                 </Routes>
               </Router>
             </ThemeProvider>

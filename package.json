@@ -7,15 +7,16 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
+    "@graphql-codegen/cli": "^5.0.7",
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
+    "@parcel/watcher": "^2.5.1",
     "@reduxjs/toolkit": "^2.0.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "apollo-upload-client": "^18.0.1",
     "babel-preset-es2015": "^6.24.1",
-    "graphql": "^16.9.0",
     "i18next": "^23.10.1",
     "material-ui-popup-state": "^5.1.0",
     "qrcode.react": "^4.1.0",
@@ -24,6 +25,7 @@
     "react-dom": "^18.2.0",
     "react-hls-player": "^3.0.7",
     "react-i18next": "^14.1.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
@@ -31,6 +33,7 @@
     "sass": "^1.89.0",
     "socket.io-client": "^4.7.1",
     "socket.io-msgpack-parser": "^3.0.2",
+    "usehooks-ts": "^3.1.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -58,9 +61,12 @@
     ]
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.14.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "typescript": "^5.4.5"
+    "graphql": "^16.11.0",
+    "graphql-sock": "^1.0.1",
+    "typescript": "^5.8.3"
   }
 }

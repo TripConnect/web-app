@@ -1,178 +1,218 @@
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { Avatar, AvatarGroup, Box, Container, Grid, IconButton, Skeleton, TextField, Typography, useTheme } from "@mui/material";
-import SendIcon from '@mui/icons-material/Send';
-import { ChatMessageModel } from 'types/socket.type';
-import { RootState } from "store";
-import { io, Socket } from "socket.io-client";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
-import { GraphQLModels } from "types/graphql.type";
-import ChatMessage from "./ChatMesasge";
+import {useCallback, useEffect, useState} from "react";
+import MessageList from "./components/MessageList";
+import {Message, ScrollDirection} from "./state";
+import {graphql} from "../../gql";
+import {useParams} from "react-router-dom";
+import {useLazyQuery, useMutation, useQuery} from "@apollo/client";
+import MessageComposer from "./components/MessageComposer";
+import {useTranslation} from "react-i18next";
+import {Container, Grid} from "@mui/material";
+import {io, Socket} from "socket.io-client";
+import {RootState} from "../../store";
+import {useSelector} from "react-redux";
 
-const MESSAGE_PAGE_NUMBER = 50;
+const FETCH_LIMIT = 50;
 
-const FIND_CONVERSATION_QUERY = gql`
-  query Conversation($id: ID!) {
-    conversation(id: $id) {
-      type
-      name
-      members {
-        id
-        avatar
-        displayName
-      }
-    }
-  }
-`;
-
-const CHAT_HISTORY_QUERY = gql`
-  query Conversation($id: ID!, $messagePageNumber: Int!, $messagePageSize: Int!) {
-    conversation(id: $id) {
-      messages(messagePageNumber: $messagePageNumber,messagePageSize: $messagePageSize) {
-        id
-        content
-        fromUser {
-          avatar
-          displayName
-          id
+const INIT_UI_QUERY = graphql(`
+    query InitUiQuery($id: ID!) {
+        conversation(id: $id) {
+            name
+            type
         }
-        createdAt
+    }
+`);
+
+const FETCH_MESSAGE_QUERY = graphql(`
+  query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {
+      conversation(id: $id) {
+          messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {
+              id
+              content
+              createdAt
+              sentTime
+              fromUser {
+                  id
+                  displayName
+                  avatar
+              }
+          }
       }
     }
-  }
-`;
+`);
 
-export default function Conversation() {
-  const { id: currConvId } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const theme = useTheme();
+const SEND_MESSAGE_MUTATION = graphql(`
+    mutation SendMessageMutation($conversationId: ID!, $content: String!) {
+        sendMessage(conversation_id: $conversationId, content: $content) {
+            correlationId
+        }
+    }
+`);
+
+export function Conversation() {
+  const {id: conversationId = ""} = useParams<{ id: string }>();
+
+  // common hooks
+  const {t} = useTranslation();
   const currentUser = useSelector((state: RootState) => state.user);
+  const [fetchMoreType, setFetchMoreType] = useState<"before" | "after">("before");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [socket, setSocket] = useState<Socket>();
 
-  if (!currConvId) {
-    navigate("/");
-  }
+  // debounce hooks
+  const changeScrollDirection = useCallback((direction: ScrollDirection) => {
+    if (fetchMoreType === "before" && direction === "up") return;
+    if (fetchMoreType === "after" && direction === "down") return;
 
-  // Conversation members
-  const { loading: convLoading, error: convError, data: convData } = useQuery<
-    { conversation?: GraphQLModels.Conversation }, GraphQLModels.ConversationQueryInput
-  >(
-    FIND_CONVERSATION_QUERY,
-    { variables: { id: currConvId as string } }
-  );
-  // Conversation chatting history
-  const [fetchChatHistory, { loading: historyLoading, error: historyError, data: historyData }] = useLazyQuery<
-    { conversation?: GraphQLModels.Conversation },
-    GraphQLModels.ConversationQueryInput | GraphQLModels.MessagesQueryArgs
-  >(CHAT_HISTORY_QUERY);
+    setFetchMoreType(direction === "up" ? "before" : "after");
+  }, [fetchMoreType]);
 
-  // socket initialization
-  useEffect(() => {
-    let connection: Socket = io(
-      `${process.env.REACT_APP_BASE_URL}/chat`,
-      {
-        transports: ['websocket'], // you need to explicitly tell it to use websockets
-        auth: {
-          token: currentUser.accessToken,
-        }
-      },
-    );
-    connection.on('connect', () => {
-      console.log('connected');
-      connection.emit("listen", { conversationId: currConvId });
-    });
-    connection.io.on('reconnect', () => {
-      console.log('reconnected');
-      connection.emit('listen', { conversationId: currConvId });
-    });
-    connection.on('connect_error', err => {
-      console.log(err.message);
-    });
-    connection.on('message', (payload: ChatMessageModel) => {
-      console.log("receive mesasge");
-    });
-
-    return () => {
-      console.log("<Conversation /> unmounted");
-      connection.emit("unlisten", { conversationId: currConvId });
+  // graphql hooks
+  const {data: convInfo} = useQuery(INIT_UI_QUERY, {
+    variables: {
+      id: conversationId,
     }
-  }, []);
+  });
 
-  // chat history initiazation
-  useEffect(() => {
-    fetchChatHistory({
+  const [fetchMessage, {loading: fetchMessageLoading}] = useLazyQuery(FETCH_MESSAGE_QUERY);
+  const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION);
+
+  const callFetchMore = useCallback(async (conversationId: string, limit: number, before?: Date, after?: Date): Promise<Message[]> => {
+    let response = await fetchMessage({
       variables: {
-        id: currConvId as string,
-        messagePageNumber: 0,
-        messagePageSize: MESSAGE_PAGE_NUMBER
+        id: conversationId,
+        before: before,
+        after: after,
+        limit: limit
       }
     });
-  }, []);
+
+    let msgList = response.data?.conversation.messages;
+    if (!msgList || msgList.length === 0) return [];
+
+    return msgList.map(msg => ({
+      id: msg.id,
+      fromUser: msg.fromUser,
+      content: msg.content,
+      sentTime: msg.sentTime,
+    })).reverse();
+  }, [fetchMessage]);
+
+  // action definitions
+  const fetchMore = useCallback(async (): Promise<void> => {
+    if (fetchMessageLoading) return;
+
+    let before: Date | undefined;
+    let after: Date | undefined;
+
+    if (fetchMoreType === "before") {
+      before = messages.length ?
+        new Date(Math.min(...messages
+          // eslint-disable-next-line eqeqeq
+          .filter(msg => msg.sentTime)
+          .map(msg => +new Date(msg.sentTime as string)))) : undefined;
+    } else {
+      after = messages.length ?
+        new Date(Math.max(...messages
+          // eslint-disable-next-line eqeqeq
+          .filter(msg => msg.sentTime)
+          .map(msg => +new Date(msg.sentTime as string)))) : undefined;
+    }
+
+    let gqlMessages = await callFetchMore(conversationId, FETCH_LIMIT, before, after);
+
+    if (fetchMoreType === "before") {
+      setMessages(prev => [...gqlMessages.reverse(), ...prev]);
+    } else {
+      setMessages(prev => [...prev, ...gqlMessages.reverse()]);
+    }
+
+    setHasMore(gqlMessages.length > FETCH_LIMIT);
+  }, [fetchMessageLoading, fetchMoreType, callFetchMore, conversationId, messages]);
+
+  // effect hook
+  useEffect(() => {
+    callFetchMore(conversationId, FETCH_LIMIT, new Date(), undefined)
+      .then(gqlMessages => {
+        setMessages(gqlMessages.reverse());
+        setHasMore(gqlMessages.length > FETCH_LIMIT);
+      });
+  }, [callFetchMore, conversationId]);
+
+  // connect for socket.io related
+  useEffect(() => {
+    let socket = io(`${process.env.REACT_APP_BASE_URL}/chat`, {
+      transports: ['websocket'],
+      auth: {
+        token: currentUser.accessToken
+      }
+    });
+
+    socket.on('connect', () => {
+      socket.emit('listen', {conversationId: conversationId});
+    });
+    socket.on('reconnect', () => {
+      socket.emit('listen', {conversationId: conversationId});
+    });
+    socket.on('new_message', event => {
+      if(event.fromUserId !== currentUser.userId) {
+        let incomingMessage: Message = {
+          id: event.id,
+          correlationId: event.correlationId,
+          fromUser: {
+            id: event.fromUserIdm
+          },
+          content: event.content,
+          sentTime: event.sentTime,
+        }
+        setMessages(prev => [incomingMessage, ...prev]);
+        return;
+      }
+
+      setMessages(prev => {
+        let pendingMessage = prev.find(msg => msg.correlationId === event.correlationId);
+        if (!pendingMessage) return [...prev];
+
+        pendingMessage.id = event.id as string;
+        pendingMessage.sentTime = event.sentTime as string;
+        return [...prev];
+      });
+    });
+
+    setSocket(socket);
+    return () => {
+      socket.disconnect();
+    };
+  }, [conversationId, currentUser.accessToken, currentUser.userId]);
+
+  const handleSendMessage = (msg: string) => {
+    sendMessage({variables: {conversationId: conversationId, content: msg}})
+      .then(response => {
+        let pendingMessage: Message = {
+          correlationId: response.data?.sendMessage.correlationId,
+          content: msg,
+          fromUser: {
+            id: currentUser.userId as string,
+          },
+        }
+        setMessages(prev => [pendingMessage, ...prev]);
+      })
+      .catch(error => console.log(error));
+  }
 
   return (
-    <Container component="main" sx={{ height: theme.contentAvailableHeight }}>
-      {/* Header start */}
-      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "10%" }}>
-        <Grid item xs={12} md={8}>
-          <Box component="section" sx={{ display: "flex", justifyContent: "start", alignItems: "center", gap: "10px" }}>
-            {
-              convData ?
-                <AvatarGroup spacing="small" max={4}>
-                  {
-                    convData.conversation!.members!
-                      .filter(member => member.id !== currentUser.userId)
-                      .map(member => <Avatar key={`conv-avt-${member.id}`} src={member.avatar} />)
-                  }
-                </AvatarGroup> :
-                <Skeleton variant="circular" animation="wave"><Avatar key="conv-default-avt" sx={{ ...theme.avatar.md }} /></Skeleton>
-            }
-            {
-              convData ?
-                <Typography variant="h6" noWrap component="span" fontSize="1.4rem" fontWeight="540">
-                  {
-                    convData.conversation?.type === GraphQLModels.ConversationType.PRIVATE ?
-                      convData.conversation?.members?.find(m => m.id !== currentUser.userId)?.displayName :
-                      convData.conversation?.name
-                  }
-                </Typography> :
-                <Skeleton variant="text" width="40%" height="28px" animation="wave" />
-            }
-          </Box>
+    <Container>
+      <Grid container>
+        <Grid item xs={12}>
+          <h1>{convInfo?.conversation.name || "Conversation"}</h1>
+          <MessageList
+            changeScrollDirection={changeScrollDirection}
+            fetchMore={fetchMore}
+            hasMore={hasMore}
+            messages={messages}/>
+          <MessageComposer onSend={handleSendMessage} disabled={false} placeholder={t("CHAT_MESSAGE_HINT")}/>
         </Grid>
       </Grid>
-      {/* Header end */}
-
-      {/* Conversation start */}
-      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{ height: "80%", overflow: "auto" }}>
-        <Grid item xs={12} md={8}>
-          <Box component="section" className="conversation-section">
-            {historyData?.conversation?.messages?.map(message => <ChatMessage key={message.id} {...message} />)}
-          </Box>
-        </Grid>
-      </Grid>
-      {/* Conversation end */}
-
-      {/* Chat input start */}
-      <Grid container justifyContent="center" alignItems="center" margin="0 auto" sx={{
-        height: "10%",
-        width: "100%",
-      }}>
-        <Grid item xs={12} md={8}>
-          <Box component="section">
-            <TextField
-              className="input-section__inpMessage"
-              multiline
-              size="small"
-              rows={1}
-              placeholder="Chat message..."
-              variant="outlined"
-              sx={{ width: "90%" }}
-            />
-            <SendIcon className="input-section__btnSendMessage" fontSize="large" sx={{ width: "10%", cursor: "pointer" }} />
-          </Box>
-        </Grid>
-      </Grid>
-      {/* Chat input end */}
-    </Container >
+    </Container>
   );
 }

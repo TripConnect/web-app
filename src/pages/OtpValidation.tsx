@@ -6,11 +6,11 @@ import { useDispatch } from "react-redux";
 
 import { updateToken } from "slices/user";
 import { StatusCode } from "constants/graphql";
-import { OTP_INCORRECT, SIGNIN_INCORRECT } from "constants/messages";
+import { OTP_INCORRECT, SIGN_IN_INCORRECT } from "constants/messages";
 
 const SIGNIN_MUTATION = gql`
-    mutation Signin($username: String!, $password: String!, $otp: String!) {
-        signin(username: $username, password: $password, otp: $otp) {
+    mutation SigninWithOTP($username: String!, $password: String!, $otp: String!) {
+        signIn(username: $username, password: $password, otp: $otp) {
             userInfo {
                 id
                 displayName
@@ -53,7 +53,7 @@ export default function OtpValidation() {
                         alert(OTP_INCORRECT);
                         break;
                     default:
-                        alert(SIGNIN_INCORRECT);
+                        alert(SIGN_IN_INCORRECT);
                 }
             });
     }

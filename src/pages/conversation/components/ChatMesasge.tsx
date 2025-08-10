@@ -1,13 +1,20 @@
 import { Avatar, Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "store";
-import { GraphQLModels } from "types/graphql.type";
+import {User} from "../state";
 
-export default function ChatMessage(props: GraphQLModels.Message) {
+interface ChatMessageProps {
+    id?: string;
+    user: User;
+    content: string;
+    sentTime?: string;
+}
+
+export default function ChatMessage(props: ChatMessageProps) {
     const theme = useTheme();
     const currentUser = useSelector((state: RootState) => state.user);
 
-    let isMine = currentUser.userId === props.fromUser?.id;
+    let isMine = currentUser.userId === props.user.id;
 
     return (
         <Stack
@@ -18,7 +25,7 @@ export default function ChatMessage(props: GraphQLModels.Message) {
             sx={{ my: 1 }}
         >
             {!isMine && <Avatar sx={{ ...theme.avatar.sm }} />}
-            <Box>
+            <Box title={props.sentTime ? new Date(props.sentTime).toLocaleString() : "..."}>
                 <Paper
                     sx={{
                         p: 0.8,

@@ -25,7 +25,7 @@ export default function LivestreamHost() {
         });
         livestreamSocket.on('connect', () => {
             setTimeout(async () => {
-                console.log('Livestream socket connected');
+                // console.log('Livestream socket connected');
                 if (!mediaStreamRef.current) {
                     console.log('Apply media stream');
                     mediaStreamRef.current = await navigator.mediaDevices.getUserMedia(mediaConstraints);

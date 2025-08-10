@@ -18,7 +18,7 @@ import { gql, useLazyQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { shortenFullName, stringToColor } from '../helpers/avatar';
+import { shortenFullName, stringToColor } from '../../../helpers/avatar';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
