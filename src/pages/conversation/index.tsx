@@ -107,27 +107,22 @@ export default function Conversation() {
     }
 
     let gqlMessages = await callFetchMore(conversationId, FETCH_LIMIT, before, after);
-    if(gqlMessages.length < FETCH_LIMIT) {
-      setHasMore(false);
-      return;
-    }
 
     if(fetchMoreType === "before") {
       setMessages(prev => [...gqlMessages, ...prev]);
     } else {
       setMessages(prev => [...prev, ...gqlMessages]);
     }
+
+    setHasMore(gqlMessages.length < FETCH_LIMIT);
   }, []);
 
   // effect hook
   useEffect(() => {
     callFetchMore(conversationId, FETCH_LIMIT, new Date(), undefined)
       .then(gqlMessages => {
-        if(gqlMessages.length < FETCH_LIMIT) {
-          setHasMore(false);
-          return;
-        }
         setMessages(gqlMessages);
+        setHasMore(gqlMessages.length < FETCH_LIMIT);
       });
   }, []);
 
