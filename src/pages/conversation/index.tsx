@@ -137,7 +137,7 @@ export function Conversation() {
         setMessages(gqlMessages);
         setHasMore(gqlMessages.length > FETCH_LIMIT);
       });
-  }, []);
+  }, [callFetchMore, conversationId]);
 
   // connect for socket.io related
   useEffect(() => {
