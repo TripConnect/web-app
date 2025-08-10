@@ -48,11 +48,11 @@ const SEND_MESSAGE_MUTATION = graphql(`
     }
 `);
 
-export default function Conversation() {
-  const { id: conversationId = "" } = useParams<{ id: string }>();
+export function Conversation() {
+  const {id: conversationId = ""} = useParams<{ id: string }>();
 
   // common hooks
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const currentUser = useSelector((state: RootState) => state.user);
   const [fetchMoreType, setFetchMoreType] = useState<"before" | "after">("before");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -61,14 +61,14 @@ export default function Conversation() {
 
   // debounce hooks
   const changeScrollDirection = useCallback((direction: ScrollDirection) => {
-    if(fetchMoreType === "before" && direction === "up") return;
-    if(fetchMoreType === "after" && direction === "down") return;
+    if (fetchMoreType === "before" && direction === "up") return;
+    if (fetchMoreType === "after" && direction === "down") return;
 
     setFetchMoreType(direction === "up" ? "before" : "after");
   }, [fetchMoreType]);
 
   // graphql hooks
-  const { data: convInfo } = useQuery(INIT_UI_QUERY, {
+  const {data: convInfo} = useQuery(INIT_UI_QUERY, {
     variables: {
       id: conversationId,
     }
@@ -77,32 +77,35 @@ export default function Conversation() {
   const [fetchMessage, {loading: fetchMessageLoading}] = useLazyQuery(FETCH_MESSAGE_QUERY);
   const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION);
 
-  const callFetchMore = async (conversationId: string, limit: number, before?: Date, after?: Date): Promise<Message[]> => {
-    let response = await fetchMessage({variables: {
+  const callFetchMore = useCallback(async (conversationId: string, limit: number, before?: Date, after?: Date): Promise<Message[]> => {
+    let response = await fetchMessage({
+      variables: {
         id: conversationId,
         before: before,
         after: after,
         limit: limit
-      }});
-    let msgList = response.data?.conversation.messages;
-    if(!msgList || msgList.length === 0) return [];
+      }
+    });
 
-    return msgList.map(msg=> ({
+    let msgList = response.data?.conversation.messages;
+    if (!msgList || msgList.length === 0) return [];
+
+    return msgList.map(msg => ({
       id: msg.id,
       fromUser: msg.fromUser,
       content: msg.content,
       sentTime: msg.sentTime,
     })).reverse();
-  }
+  }, [fetchMessage]);
 
   // action definitions
   const fetchMore = useCallback(async (): Promise<void> => {
-    if(fetchMessageLoading) return;
+    if (fetchMessageLoading) return;
 
     let before: Date | undefined;
     let after: Date | undefined;
 
-    if(fetchMoreType === "before") {
+    if (fetchMoreType === "before") {
       before = messages.length ?
         new Date(Math.min(...messages
           // eslint-disable-next-line eqeqeq
@@ -118,7 +121,7 @@ export default function Conversation() {
 
     let gqlMessages = await callFetchMore(conversationId, FETCH_LIMIT, before, after);
 
-    if(fetchMoreType === "before") {
+    if (fetchMoreType === "before") {
       setMessages(prev => [...gqlMessages, ...prev]);
     } else {
       setMessages(prev => [...prev, ...gqlMessages]);
@@ -146,16 +149,16 @@ export default function Conversation() {
     });
 
     socket.on('connect', () => {
-      socket.emit('listen', { conversationId: conversationId });
+      socket.emit('listen', {conversationId: conversationId});
     });
     socket.on('reconnect', () => {
-      socket.emit('listen', { conversationId: conversationId });
+      socket.emit('listen', {conversationId: conversationId});
     });
     socket.on('new_message', event => {
       console.log("New message", event);
       setMessages(prev => {
         let pendingMessage = prev.find(msg => msg.correlationId === event.correlationId);
-        if(!pendingMessage) return [...prev];
+        if (!pendingMessage) return [...prev];
 
         pendingMessage.id = event.id as string;
         pendingMessage.sentTime = event.sentTime as string;
@@ -164,7 +167,9 @@ export default function Conversation() {
     });
 
     setSocket(socket);
-    return () => {socket.disconnect();};
+    return () => {
+      socket.disconnect();
+    };
   }, [conversationId, currentUser.accessToken]);
 
   const handleSendMessage = (msg: string) => {
@@ -184,15 +189,15 @@ export default function Conversation() {
 
   return (
     <Container>
-      <Grid container >
+      <Grid container>
         <Grid item xs={12}>
-            <h1>{convInfo?.conversation.name || "Conversation"}</h1>
-            <MessageList
-              changeScrollDirection={changeScrollDirection}
-              fetchMore={fetchMore}
-              hasMore={hasMore}
-              messages={messages} />
-            <MessageComposer onSend={handleSendMessage} disabled={false} placeholder={t("CHAT_MESSAGE_HINT")} />
+          <h1>{convInfo?.conversation.name || "Conversation"}</h1>
+          <MessageList
+            changeScrollDirection={changeScrollDirection}
+            fetchMore={fetchMore}
+            hasMore={hasMore}
+            messages={messages}/>
+          <MessageComposer onSend={handleSendMessage} disabled={false} placeholder={t("CHAT_MESSAGE_HINT")}/>
         </Grid>
       </Grid>
     </Container>

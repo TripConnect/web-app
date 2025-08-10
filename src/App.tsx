@@ -16,7 +16,7 @@ import { I18nextProvider } from "react-i18next";
 import SignIn from 'pages/SignIn';
 import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
-import Conversation from "pages/conversation";
+import {Conversation} from "pages/conversation";
 import SignUp from "pages/SignUp";
 import UploadFile from "pages/UploadFile";
 import PrimaryHeader from "shared/components/PrimaryHeader";
