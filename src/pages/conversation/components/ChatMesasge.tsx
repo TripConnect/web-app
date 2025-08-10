@@ -7,6 +7,7 @@ interface ChatMessageProps {
     id?: string;
     user: User;
     content: string;
+    sentTime?: string;
 }
 
 export default function ChatMessage(props: ChatMessageProps) {
@@ -24,7 +25,7 @@ export default function ChatMessage(props: ChatMessageProps) {
             sx={{ my: 1 }}
         >
             {!isMine && <Avatar sx={{ ...theme.avatar.sm }} />}
-            <Box>
+            <Box title={props.sentTime ? new Date(props.sentTime).toLocaleString() : "..."}>
                 <Paper
                     sx={{
                         p: 0.8,

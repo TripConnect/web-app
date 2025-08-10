@@ -29,6 +29,7 @@ const FETCH_MESSAGE_QUERY = graphql(`
               id
               content
               createdAt
+              sentTime
               fromUser {
                   id
                   displayName
@@ -86,11 +87,11 @@ export default function Conversation() {
     let msgList = response.data?.conversation.messages;
     if(!msgList || msgList.length === 0) return [];
 
-    return msgList.map((msg): Message => ({
+    return msgList.map(msg=> ({
       id: msg.id,
       fromUser: msg.fromUser,
       content: msg.content,
-      sentTime: msg.createdAt,
+      sentTime: msg.sentTime,
     })).reverse();
   }
 
@@ -101,9 +102,16 @@ export default function Conversation() {
 
     if(fetchMoreType === "before") {
       before = messages.length ?
-        new Date(Math.min(...messages.map(msg => +new Date(msg.sentTime)))) : new Date();
+        new Date(Math.min(...messages
+          // eslint-disable-next-line eqeqeq
+          .filter(msg => msg.sentTime)
+          .map(msg => +new Date(msg.sentTime as string)))) : new Date();
     } else {
-      after = new Date(Math.max(...messages.map(msg => +new Date(msg.sentTime))));
+      after = messages.length ?
+        new Date(Math.max(...messages
+          // eslint-disable-next-line eqeqeq
+          .filter(msg => msg.sentTime)
+          .map(msg => +new Date(msg.sentTime as string)))) : new Date();
     }
 
     let gqlMessages = await callFetchMore(conversationId, FETCH_LIMIT, before, after);
@@ -142,7 +150,15 @@ export default function Conversation() {
       socket.emit('listen', { conversationId: conversationId });
     });
     socket.on('new_message', event => {
-      console.log({event});
+      console.log("New message", event);
+      setMessages(prev => {
+        let pendingMessage = prev.find(msg => msg.correlationId === event.correlationId);
+        if(!pendingMessage) return [...prev];
+
+        pendingMessage.id = event.id as string;
+        pendingMessage.sentTime = event.sentTime as string;
+        return [...prev];
+      });
     });
 
     setSocket(socket);
@@ -152,14 +168,12 @@ export default function Conversation() {
   const handleSendMessage = (msg: string) => {
     sendMessage({variables: {conversationId: conversationId, content: msg}})
       .then(response => {
-        console.log(response);
         let pendingMessage: Message = {
           correlationId: response.data?.sendMessage.correlationId,
           content: msg,
           fromUser: {
             id: currentUser.userId as string,
           },
-          sentTime: new Date().toISOString(),
         }
         setMessages(prev => [pendingMessage, ...prev]);
       })

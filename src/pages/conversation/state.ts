@@ -12,7 +12,7 @@ export type Message = {
     correlationId?: string;
     fromUser: User;
     content: string;
-    sentTime: string; // ISO 8601
+    sentTime?: string; // ISO 8601
 };
 
 export type ScrollDirection = "up" | "down";
