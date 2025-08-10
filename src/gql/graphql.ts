@@ -62,6 +62,7 @@ export type Message = {
   createdAt: Scalars['DateTime']['output'];
   fromUser: User;
   id: Scalars['ID']['output'];
+  sentTime: Scalars['DateTime']['output'];
 };
 
 export type Mutation = {

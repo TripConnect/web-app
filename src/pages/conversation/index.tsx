@@ -76,48 +76,59 @@ export default function Conversation() {
   const [fetchMessage] = useLazyQuery(FETCH_MESSAGE_QUERY);
   const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION);
 
+  const callFetchMore = async (conversationId: string, limit: number, before?: Date, after?: Date): Promise<Message[]> => {
+    let response = await fetchMessage({variables: {
+        id: conversationId,
+        before: before,
+        after: after,
+        limit: limit
+      }});
+    let msgList = response.data?.conversation.messages;
+    if(!msgList || msgList.length === 0) return [];
+
+    return msgList.map((msg): Message => ({
+      id: msg.id,
+      fromUser: msg.fromUser,
+      content: msg.content,
+      sentTime: msg.createdAt,
+    })).reverse();
+  }
+
   // action definitions
-  const fetchMore = useCallback(() => {
-    let before, after: Date | null = null;
+  const fetchMore = useCallback(async () => {
+    let before: Date | undefined;
+    let after: Date | undefined;
+
     if(fetchMoreType === "before") {
       before = messages.length ?
         new Date(Math.min(...messages.map(msg => +new Date(msg.sentTime)))) : new Date();
     } else {
       after = new Date(Math.max(...messages.map(msg => +new Date(msg.sentTime))));
     }
-    fetchMessage({variables: {
-        id: conversationId,
-        before: before,
-        after: after,
-        limit: FETCH_LIMIT
-    }})
-      .then(response => {
-        let msgList = response.data?.conversation.messages;
-        if(!msgList || msgList.length === 0) {
-          setHasMore(false);
-          return;
-        }
 
-        let msgState = msgList.map((msg): Message => ({
-          id: msg.id,
-          fromUser: msg.fromUser,
-          content: msg.content,
-          sentTime: msg.createdAt,
-        })).reverse();
+    let gqlMessages = await callFetchMore(conversationId, FETCH_LIMIT, before, after);
+    if(gqlMessages.length < FETCH_LIMIT) {
+      setHasMore(false);
+      return;
+    }
 
-        if(fetchMoreType === "before") {
-          setMessages(prev => [...msgState, ...prev]);
-        } else {
-          setMessages(prev => [...prev, ...msgState]);
-        }
-
-        setHasMore(true);
-      })
+    if(fetchMoreType === "before") {
+      setMessages(prev => [...gqlMessages, ...prev]);
+    } else {
+      setMessages(prev => [...prev, ...gqlMessages]);
+    }
   }, []);
 
   // effect hook
   useEffect(() => {
-    fetchMore();
+    callFetchMore(conversationId, FETCH_LIMIT, new Date(), undefined)
+      .then(gqlMessages => {
+        if(gqlMessages.length < FETCH_LIMIT) {
+          setHasMore(false);
+          return;
+        }
+        setMessages(gqlMessages);
+      });
   }, []);
 
   // connect for socket.io related
