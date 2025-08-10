@@ -122,9 +122,9 @@ export function Conversation() {
     let gqlMessages = await callFetchMore(conversationId, FETCH_LIMIT, before, after);
 
     if (fetchMoreType === "before") {
-      setMessages(prev => [...gqlMessages, ...prev]);
+      setMessages(prev => [...gqlMessages.reverse(), ...prev]);
     } else {
-      setMessages(prev => [...prev, ...gqlMessages]);
+      setMessages(prev => [...prev, ...gqlMessages.reverse()]);
     }
 
     setHasMore(gqlMessages.length > FETCH_LIMIT);
@@ -134,7 +134,7 @@ export function Conversation() {
   useEffect(() => {
     callFetchMore(conversationId, FETCH_LIMIT, new Date(), undefined)
       .then(gqlMessages => {
-        setMessages(gqlMessages);
+        setMessages(gqlMessages.reverse());
         setHasMore(gqlMessages.length > FETCH_LIMIT);
       });
   }, [callFetchMore, conversationId]);
@@ -155,7 +155,20 @@ export function Conversation() {
       socket.emit('listen', {conversationId: conversationId});
     });
     socket.on('new_message', event => {
-      console.log("New message", event);
+      if(event.fromUserId !== currentUser.userId) {
+        let incomingMessage: Message = {
+          id: event.id,
+          correlationId: event.correlationId,
+          fromUser: {
+            id: event.fromUserIdm
+          },
+          content: event.content,
+          sentTime: event.sentTime,
+        }
+        setMessages(prev => [incomingMessage, ...prev]);
+        return;
+      }
+
       setMessages(prev => {
         let pendingMessage = prev.find(msg => msg.correlationId === event.correlationId);
         if (!pendingMessage) return [...prev];
@@ -170,7 +183,7 @@ export function Conversation() {
     return () => {
       socket.disconnect();
     };
-  }, [conversationId, currentUser.accessToken]);
+  }, [conversationId, currentUser.accessToken, currentUser.userId]);
 
   const handleSendMessage = (msg: string) => {
     sendMessage({variables: {conversationId: conversationId, content: msg}})
