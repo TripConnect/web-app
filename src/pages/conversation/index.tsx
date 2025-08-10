@@ -124,7 +124,7 @@ export default function Conversation() {
       setMessages(prev => [...prev, ...gqlMessages]);
     }
 
-    setHasMore(gqlMessages.length < FETCH_LIMIT);
+    setHasMore(gqlMessages.length > FETCH_LIMIT);
   }, [fetchMessageLoading, fetchMoreType, callFetchMore, conversationId, messages]);
 
   // effect hook
@@ -132,7 +132,7 @@ export default function Conversation() {
     callFetchMore(conversationId, FETCH_LIMIT, new Date(), undefined)
       .then(gqlMessages => {
         setMessages(gqlMessages);
-        setHasMore(gqlMessages.length < FETCH_LIMIT);
+        setHasMore(gqlMessages.length > FETCH_LIMIT);
       });
   }, []);
 
