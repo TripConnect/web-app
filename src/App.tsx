@@ -32,6 +32,7 @@ import LivestreamHost from "pages/LivestreamHost";
 
 const httpLink = createHttpLink({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
+  credentials: 'include',
 });
 
 const authLink = setContext((_, { headers }) => {
