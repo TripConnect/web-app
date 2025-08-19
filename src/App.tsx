@@ -12,7 +12,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { ThemeProvider } from '@mui/material/styles';
 import i18next from "i18next";
 import { I18nextProvider } from "react-i18next";
-
 import SignIn from 'pages/SignIn';
 import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
@@ -26,7 +25,6 @@ import viTranslation from 'locales/vi/translation.json';
 import Settings from "pages/Settings";
 import { SystemLanguage } from "constants/lang";
 import { setContext } from '@apollo/client/link/context';
-import { getCurrentUser } from "helpers/storeHelpers";
 import OtpValidation from "pages/OtpValidation";
 import LivestreamHost from "pages/LivestreamHost";
 
@@ -36,12 +34,9 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  let currentUser = getCurrentUser();
-  const token = currentUser.accessToken;
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : "",
     }
   }
 });
