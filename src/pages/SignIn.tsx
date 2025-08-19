@@ -38,7 +38,7 @@ export default function SignIn() {
         username: '',
         password: ''
     });
-    const [signIn, { data, loading, error }] = useMutation(SIGN_IN_MUTATION);
+    const [signIn] = useMutation(SIGN_IN_MUTATION);
 
     const currentUser = useSelector((state: any) => state.user);
     const isAuthenticated = Boolean(currentUser.accessToken);

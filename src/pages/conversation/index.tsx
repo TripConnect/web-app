@@ -143,9 +143,7 @@ export function Conversation() {
   useEffect(() => {
     let socket = io(`${process.env.REACT_APP_BASE_URL}/chat`, {
       transports: ['websocket'],
-      auth: {
-        token: currentUser.accessToken
-      }
+      withCredentials: true,
     });
 
     socket.on('connect', () => {
