@@ -1,30 +1,25 @@
-import { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate
-} from "react-router-dom";
-import { Provider, useSelector } from 'react-redux';
-import { persistor, store } from 'store';
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
-import { PersistGate } from 'redux-persist/integration/react';
-import { ThemeProvider } from '@mui/material/styles';
+import {useEffect} from "react";
+import {BrowserRouter as Router, Route, Routes, useNavigate} from "react-router-dom";
+import {Provider, useSelector} from 'react-redux';
+import {persistor, store} from 'store';
+import {ApolloClient, ApolloProvider, createHttpLink, InMemoryCache} from '@apollo/client';
+import {PersistGate} from 'redux-persist/integration/react';
+import {ThemeProvider} from '@mui/material/styles';
 import i18next from "i18next";
-import { I18nextProvider } from "react-i18next";
+import {I18nextProvider} from "react-i18next";
 import SignIn from 'pages/SignIn';
 import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
 import {Conversation} from "pages/conversation";
-import SignUp from "pages/SignUp";
+import {SignUp} from "./pages/sign-up";
 import UploadFile from "pages/UploadFile";
 import PrimaryHeader from "shared/components/PrimaryHeader";
 import theme from "theme";
 import enTranslation from 'locales/en/translation.json';
 import viTranslation from 'locales/vi/translation.json';
 import Settings from "pages/Settings";
-import { SystemLanguage } from "constants/lang";
-import { setContext } from '@apollo/client/link/context';
+import {SystemLanguage} from "constants/lang";
+import {setContext} from '@apollo/client/link/context';
 import OtpValidation from "pages/OtpValidation";
 import LivestreamHost from "pages/LivestreamHost";
 
@@ -33,7 +28,7 @@ const httpLink = createHttpLink({
   credentials: 'include',
 });
 
-const authLink = setContext((_, { headers }) => {
+const authLink = setContext((_, {headers}) => {
   return {
     headers: {
       ...headers,
@@ -59,15 +54,15 @@ const client = new ApolloClient({
 });
 
 i18next.init({
-  interpolation: { escapeValue: false }, // React already does escaping
+  interpolation: {escapeValue: false}, // React already does escaping
   lng: SystemLanguage.EN,
   resources: {
-    [SystemLanguage.EN]: { translation: enTranslation },
-    [SystemLanguage.VI]: { translation: viTranslation }
+    [SystemLanguage.EN]: {translation: enTranslation},
+    [SystemLanguage.VI]: {translation: viTranslation}
   }
 });
 
-const PrivateRoute = ({ component }: { component: any }) => {
+const PrivateRoute = ({component}: { component: any }) => {
   const currentUser = useSelector((state: any) => state.user);
   const navigate = useNavigate();
   const isAuthenticated = Boolean(currentUser.accessToken);
@@ -89,17 +84,17 @@ function App() {
           <ApolloProvider client={client}>
             <ThemeProvider theme={theme}>
               <Router>
-                <PrimaryHeader key="primary-header" />
+                <PrimaryHeader key="primary-header"/>
                 <Routes>
-                  <Route path="/signin" element={<SignIn />} />
-                  <Route path="/livestream/:id/host" element={<PrivateRoute component={<LivestreamHost />} />} />
-                  <Route path="/otp-validation" element={<OtpValidation />} />
-                  <Route path="/signup" element={<SignUp />} />
-                  <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile />} />} />
-                  <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation />} />} />
-                  <Route path="/settings" element={<PrivateRoute component={<Settings />} />} />
-                  <Route path="/upload" element={<UploadFile />} />
-                   <Route path="/" element={<PrivateRoute component={<Home />} />} />
+                  <Route path="/signup" element={<SignUp/>}/>
+                  <Route path="/signin" element={<SignIn/>}/>
+                  <Route path="/livestream/:id/host" element={<PrivateRoute component={<LivestreamHost/>}/>}/>
+                  <Route path="/otp-validation" element={<OtpValidation/>}/>
+                  <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile/>}/>}/>
+                  <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation/>}/>}/>
+                  <Route path="/settings" element={<PrivateRoute component={<Settings/>}/>}/>
+                  <Route path="/upload" element={<UploadFile/>}/>
+                  <Route path="/" element={<PrivateRoute component={<Home/>}/>}/>
                 </Routes>
               </Router>
             </ThemeProvider>

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import {useRef} from 'react';
+import {alpha, styled} from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,15 +13,14 @@ import Menu from '@mui/material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { useDispatch, useSelector } from 'react-redux';
-import { Avatar, Paper } from '@mui/material';
-import { gql, useLazyQuery } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
-import { useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { shortenFullName, stringToColor } from '../../../helpers/avatar';
+import {useDispatch, useSelector} from 'react-redux';
+import {Avatar, Paper} from '@mui/material';
+import {gql, useLazyQuery} from '@apollo/client';
+import {useNavigate} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
+import {shortenFullName, stringToColor} from '../../../helpers/avatar';
 
-const Search = styled('div')(({ theme }) => ({
+const Search = styled('div')(({theme}) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -36,7 +36,7 @@ const Search = styled('div')(({ theme }) => ({
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled('div')(({theme}) => ({
   padding: theme.spacing(0, 2),
   height: '100%',
   position: 'absolute',
@@ -46,7 +46,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
+const StyledInputBase = styled(InputBase)(({theme}) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
@@ -61,13 +61,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const SEARCH_USER_QUERY = gql`
-  query Users($searchTerm: String!) {
-    users(searchTerm: $searchTerm) {
-      id
-      displayName
-      avatar
+    query Users($searchTerm: String!) {
+        users(searchTerm: $searchTerm) {
+            id
+            displayName
+            avatar
+        }
     }
-  }
 `;
 
 export default function PrimaryHeader() {
@@ -75,15 +75,15 @@ export default function PrimaryHeader() {
   const [searchUsersEl, setSearchUsersEl] = React.useState(true);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const currentUser = useSelector((state: any) => state.user);
-  const [searchUser, { loading, error, data: userSearchedData }] = useLazyQuery(SEARCH_USER_QUERY);
+  const [searchUser, {loading, error, data: userSearchedData}] = useLazyQuery(SEARCH_USER_QUERY);
   const navigate = useNavigate();
   const searchUsersRef = useRef<any>();
   const searchScheduler = useRef<any>();
-  const dispatch = useDispatch();
+  useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const shouldSearchUsersOpen = Boolean(searchUsersEl);
-  const { t, i18n } = useTranslation();
+  const {t} = useTranslation();
 
   const handleProfileMenuOpen = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -107,7 +107,7 @@ export default function PrimaryHeader() {
     if (!searchTerm) return;
     clearTimeout(searchScheduler.current);
     searchScheduler.current = setTimeout(() => {
-      searchUser({ variables: { searchTerm } });
+      searchUser({variables: {searchTerm}});
       setSearchUsersEl(true);
     }, 1000);
   }
@@ -204,80 +204,87 @@ export default function PrimaryHeader() {
   );
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, height: "10vh" }}>
+    <Box component="main" sx={{flexGrow: 1, height: "10vh"}}>
       <AppBar position="sticky">
         <Toolbar>
           <Typography
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block', cursor: 'pointer' } }}
-            onClick={() => { navigate('/') }}
+            sx={{display: {xs: 'none', sm: 'block', cursor: 'pointer'}}}
+            onClick={() => {
+              navigate('/')
+            }}
           >
             TCONNECT
           </Typography>
 
           <Search>
             <SearchIconWrapper>
-              <SearchIcon />
+              <SearchIcon/>
             </SearchIconWrapper>
             <StyledInputBase
               key="header-search-bar"
               placeholder={t("SEARCH") + '...'}
-              inputProps={{ 'aria-label': 'search', name: 'searchTerm', onKeyUp: handleSearchTermChange, ref: searchUsersRef }}
+              inputProps={{
+                'aria-label': 'search',
+                name: 'searchTerm',
+                onKeyUp: handleSearchTermChange,
+                ref: searchUsersRef
+              }}
             />
             {
               (shouldSearchUsersOpen && userSearchedData?.users.length > 0) &&
-              <Paper
-                style={{
-                  padding: 8,
-                  position: 'fixed',
-                  width: '50vw',
-                  maxWidth: '500px',
-                }}>
-                {
-                  userSearchedData.users.map((user: any) => user.id !== currentUser.userId && (
-                    <div
-                      onClick={() => {
-                        searchUsersRef.current.value = '';
-                        setSearchUsersEl(false);
-                        navigate(`/profile/${user.id}`);
-                      }}
-                      style={{ display: "flex", alignItems: 'center', marginBottom: 10, cursor: 'pointer' }}
-                    >
-                      {
-                        user.avatar ?
-                          <Avatar
-                            src={process.env.REACT_APP_BASE_URL + user.avatar}
-                            style={{ marginRight: 10, objectFit: "cover", width: 30, height: 30 }}
-                          /> :
-                          <Avatar
-                            sx={{ bgcolor: stringToColor(user.id) }}
-                            children={shortenFullName(user.displayName)}
-                            style={{ fontSize: '1rem' }} />
-                      }
-                      <div style={{ marginLeft: 10 }}>{user.displayName}</div>
-                    </div>
-                  ))
-                }
-              </Paper>
+                <Paper
+                    style={{
+                      padding: 8,
+                      position: 'fixed',
+                      width: '50vw',
+                      maxWidth: '500px',
+                    }}>
+                  {
+                    userSearchedData.users.map((user: any) => user.id !== currentUser.userId && (
+                      <div
+                        onClick={() => {
+                          searchUsersRef.current.value = '';
+                          setSearchUsersEl(false);
+                          navigate(`/profile/${user.id}`);
+                        }}
+                        style={{display: "flex", alignItems: 'center', marginBottom: 10, cursor: 'pointer'}}
+                      >
+                        {
+                          user.avatar ?
+                            <Avatar
+                              src={process.env.REACT_APP_BASE_URL + user.avatar}
+                              style={{marginRight: 10, objectFit: "cover", width: 30, height: 30}}
+                            /> :
+                            <Avatar
+                              sx={{bgcolor: stringToColor(user.id)}}
+                              children={shortenFullName(user.displayName)}
+                              style={{fontSize: '1rem'}}/>
+                        }
+                        <div style={{marginLeft: 10}}>{user.displayName}</div>
+                      </div>
+                    ))
+                  }
+                </Paper>
             }
           </Search>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{flexGrow: 1}}/>
+          <Box sx={{display: {xs: 'none', md: 'flex'}}}>
             {/* Notification area */}
             {
               isAuthenticated && <>
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="error">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-              </>
+                    <IconButton
+                        size="large"
+                        aria-label="show 17 new notifications"
+                        color="inherit"
+                    >
+                        <Badge badgeContent={17} color="error">
+                            <NotificationsIcon/>
+                        </Badge>
+                    </IconButton>
+                </>
             }
             {/* Avatar area */}
             <IconButton
@@ -291,13 +298,13 @@ export default function PrimaryHeader() {
             >
               {
                 currentUser.accessToken && <Avatar
-                  sx={{ bgcolor: stringToColor(currentUser.userId) }}
-                  children={shortenFullName(currentUser.displayName)}
-                  style={{ fontSize: '1rem' }} />
+                      sx={{bgcolor: stringToColor(currentUser.userId)}}
+                      children={shortenFullName(currentUser.displayName)}
+                      style={{fontSize: '1rem'}}/>
               }
             </IconButton>
           </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{display: {xs: 'flex', md: 'none'}}}>
             <IconButton
               size="large"
               aria-label="show more"
@@ -306,7 +313,7 @@ export default function PrimaryHeader() {
               onClick={handleMobileMenuOpen}
               color="inherit"
             >
-              <MoreIcon />
+              <MoreIcon/>
             </IconButton>
           </Box>
         </Toolbar>
