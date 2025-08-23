@@ -1,7 +1,12 @@
 {
+  "SIGN_UP_PAGE": {
+    "CREATE_ACCOUNT": "Create account",
+    "SUBTITLE": "Join our community of travelers today",
+    "SIGN_IN_QUESTION": "Already have an account?"
+  },
   "SIGN_IN": "Sign In",
   "SIGN_OUT": "Sign out",
-  "SIGNUP": "signup",
+  "SIGN_UP": "Sign Up",
   "PROFILE": "Profile",
   "SETTING": "Settings",
   "TWO_FACTOR_AUTHENTICATION": "Two-factor authentication",

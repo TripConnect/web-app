@@ -5,7 +5,7 @@ import {gql, useMutation} from "@apollo/client";
 import {useDispatch} from "react-redux";
 
 import {updateInfo} from "slices/user";
-import {StatusCode} from "constants/graphql";
+import {StatusCode} from "../constants";
 import {OTP_INCORRECT, SIGN_IN_INCORRECT} from "constants/messages";
 
 const SIGNIN_MUTATION = gql`

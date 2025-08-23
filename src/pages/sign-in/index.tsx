@@ -2,12 +2,12 @@ import {SyntheticEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useMutation} from '@apollo/client';
 import {useDispatch, useSelector} from "react-redux";
-import {updateInfo} from "slices/user";
-import {OTP_INCORRECT, SIGN_IN_INCORRECT, SIGN_IN_INVALID} from "constants/messages";
+import {updateInfo} from "../../slices/user";
+import {OTP_INCORRECT, SIGN_IN_INCORRECT, SIGN_IN_INVALID} from "../../constants/messages";
 import {Box, Button, Container, Grid, TextField, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
-import {StatusCode} from "constants/graphql";
-import {graphql} from "../gql";
+import {StatusCode} from "../../constants";
+import {graphql} from "../../gql";
 import PublicIcon from '@mui/icons-material/Public';
 
 const SIGN_IN_MUTATION = graphql(`
@@ -22,16 +22,11 @@ const SIGN_IN_MUTATION = graphql(`
     }
 `);
 
-type SignInPayload = {
-  username: string;
-  password: string;
-}
-
-export default function SignIn() {
+export default function Index() {
   const {t} = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  let [signInPayload, setSignInPayload] = useState<SignInPayload>({
+  let [signInPayload, setSignInPayload] = useState({
     username: '',
     password: ''
   });
@@ -102,10 +97,10 @@ export default function SignIn() {
     <Container>
       <Grid container>
         <Grid item md={6} paddingRight={2}
-              display="flex" height="100vh" flexDirection="column" justifyContent="center" alignItems="center">
-          <Box id="sign-in-left" width={"100%"}>
-            <img id="sign-in-left__image" src="/sign-up-left-placeholder.jpg" alt="The discovery cover art"/>
-            <Box id="sign-in-left__floating-text">
+              display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+          <Box id="screen-left" width="100%" height="100vh" sx={{display: {xs: 'none', sm: 'none', md: 'block'}}}>
+            <img id="screen-left__image" src="/sign-up-left-placeholder.jpg" alt="The discovery cover art"/>
+            <Box id="screen-left__floating-text">
               <Typography variant="h4" component="p">Discover the world with us</Typography>
               <Typography variant="h5" component="p">
                 Join our community of travelers and share your adventures
@@ -114,7 +109,7 @@ export default function SignIn() {
           </Box>
         </Grid>
 
-        <Grid item md={6} paddingLeft={2}
+        <Grid item sm={12} md={6} paddingLeft={2}
               display="flex" height="100vh" flexDirection="column" justifyContent="center" alignItems="center">
           <Box width={"100%"}>
             <Typography variant="h1" component="h1" color="primary" fontSize={28} fontWeight={"bold"} gutterBottom>
@@ -177,7 +172,7 @@ export default function SignIn() {
               role="link"
               onClick={handleRegister}
             >
-              {t("SIGNUP")}
+              {t("SIGN_UP")}
               </span>
           </Box>
         </Grid>

@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import {TypedDocumentNode as DocumentNode} from '@graphql-typed-document-node/core';
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -176,7 +177,14 @@ export type SigninWithOtpMutationVariables = Exact<{
 }>;
 
 
-export type SigninWithOtpMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null, token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null } };
+export type SigninWithOtpMutation = {
+  __typename?: 'Mutation',
+  signIn: {
+    __typename?: 'AuthUser',
+    userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null,
+    token: { __typename?: 'Token', accessToken: string, refreshToken: string } | null
+  }
+};
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -186,7 +194,10 @@ export type MeQuery = { __typename?: 'Query', me: { __typename?: 'Self', enabled
 export type Generate2FaSecretMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Generate2FaSecretMutation = { __typename?: 'Mutation', generate2FASecret: { __typename?: 'Settings', secret: string, qrCode: string } };
+export type Generate2FaSecretMutation = {
+  __typename?: 'Mutation',
+  generate2FASecret: { __typename?: 'Settings', secret: string, qrCode: string }
+};
 
 export type Enable2FaMutationVariables = Exact<{
   secret: Scalars['String']['input'];
@@ -194,7 +205,10 @@ export type Enable2FaMutationVariables = Exact<{
 }>;
 
 
-export type Enable2FaMutation = { __typename?: 'Mutation', enable2FA: { __typename?: 'ResponseModel', success: boolean } };
+export type Enable2FaMutation = {
+  __typename?: 'Mutation',
+  enable2FA: { __typename?: 'ResponseModel', success: boolean }
+};
 
 export type SignInMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -202,28 +216,43 @@ export type SignInMutationVariables = Exact<{
 }>;
 
 
-export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null } };
+export type SignInMutation = {
+  __typename?: 'Mutation',
+  signIn: {
+    __typename?: 'AuthUser',
+    userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null
+  }
+};
 
 export type CreateConversationMutationVariables = Exact<{
   memberIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
-export type CreateConversationMutation = { __typename?: 'Mutation', createConversation: { __typename?: 'Conversation', id: string } };
+export type CreateConversationMutation = {
+  __typename?: 'Mutation',
+  createConversation: { __typename?: 'Conversation', id: string }
+};
 
 export type UserQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type UserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, avatar: string, displayName: string } };
+export type UserQuery = {
+  __typename?: 'Query',
+  user: { __typename?: 'User', id: string, avatar: string, displayName: string }
+};
 
 export type InitUiQueryQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type InitUiQueryQuery = { __typename?: 'Query', conversation: { __typename?: 'Conversation', name: string, type: ConversationType } };
+export type InitUiQueryQuery = {
+  __typename?: 'Query',
+  conversation: { __typename?: 'Conversation', name: string, type: ConversationType }
+};
 
 export type FetchMessageQueryQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -233,7 +262,20 @@ export type FetchMessageQueryQueryVariables = Exact<{
 }>;
 
 
-export type FetchMessageQueryQuery = { __typename?: 'Query', conversation: { __typename?: 'Conversation', messages: Array<{ __typename?: 'Message', id: string, content: string, createdAt: any, sentTime: any, fromUser: { __typename?: 'User', id: string, displayName: string, avatar: string } }> } };
+export type FetchMessageQueryQuery = {
+  __typename?: 'Query',
+  conversation: {
+    __typename?: 'Conversation',
+    messages: Array<{
+      __typename?: 'Message',
+      id: string,
+      content: string,
+      createdAt: any,
+      sentTime: any,
+      fromUser: { __typename?: 'User', id: string, displayName: string, avatar: string }
+    }>
+  }
+};
 
 export type SendMessageMutationMutationVariables = Exact<{
   conversationId: Scalars['ID']['input'];
@@ -241,7 +283,10 @@ export type SendMessageMutationMutationVariables = Exact<{
 }>;
 
 
-export type SendMessageMutationMutation = { __typename?: 'Mutation', sendMessage: { __typename?: 'SendMessageAck', correlationId: string } };
+export type SendMessageMutationMutation = {
+  __typename?: 'Mutation',
+  sendMessage: { __typename?: 'SendMessageAck', correlationId: string }
+};
 
 export type SignUpMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -249,25 +294,499 @@ export type SignUpMutationVariables = Exact<{
 }>;
 
 
-export type SignUpMutation = { __typename?: 'Mutation', signUp: { __typename?: 'AuthUser', userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null } };
+export type SignUpMutation = {
+  __typename?: 'Mutation',
+  signUp: {
+    __typename?: 'AuthUser',
+    userInfo: { __typename?: 'Self', id: string, displayName: string, avatar: string } | null
+  }
+};
 
 export type UsersQueryVariables = Exact<{
   searchTerm: Scalars['String']['input'];
 }>;
 
 
-export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, displayName: string, avatar: string }> };
+export type UsersQuery = {
+  __typename?: 'Query',
+  users: Array<{ __typename?: 'User', id: string, displayName: string, avatar: string }>
+};
 
 
-export const SigninWithOtpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SigninWithOTP"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"username"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"otp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signIn"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"username"},"value":{"kind":"Variable","name":{"kind":"Name","value":"username"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}},{"kind":"Argument","name":{"kind":"Name","value":"otp"},"value":{"kind":"Variable","name":{"kind":"Name","value":"otp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]}}]} as unknown as DocumentNode<SigninWithOtpMutation, SigninWithOtpMutationVariables>;
-export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enabledTwofa"}}]}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
-export const Generate2FaSecretDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Generate2FASecret"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generate2FASecret"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"secret"}},{"kind":"Field","name":{"kind":"Name","value":"qrCode"}}]}}]}}]} as unknown as DocumentNode<Generate2FaSecretMutation, Generate2FaSecretMutationVariables>;
-export const Enable2FaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Enable2FA"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"secret"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"otp"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enable2FA"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"secret"},"value":{"kind":"Variable","name":{"kind":"Name","value":"secret"}}},{"kind":"Argument","name":{"kind":"Name","value":"otp"},"value":{"kind":"Variable","name":{"kind":"Name","value":"otp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Enable2FaMutation, Enable2FaMutationVariables>;
-export const SignInDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SignIn"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"username"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signIn"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"username"},"value":{"kind":"Variable","name":{"kind":"Name","value":"username"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]} as unknown as DocumentNode<SignInMutation, SignInMutationVariables>;
-export const CreateConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"memberIds"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"PRIVATE"}},{"kind":"Argument","name":{"kind":"Name","value":"memberIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"memberIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateConversationMutation, CreateConversationMutationVariables>;
-export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"User"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
-export const InitUiQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InitUiQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"conversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<InitUiQueryQuery, InitUiQueryQueryVariables>;
-export const FetchMessageQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FetchMessageQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"conversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"messages"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"messageBefore"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"messageAfter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"messageLimit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"sentTime"}},{"kind":"Field","name":{"kind":"Name","value":"fromUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FetchMessageQueryQuery, FetchMessageQueryQueryVariables>;
-export const SendMessageMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendMessageMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conversationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"content"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendMessage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"conversation_id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conversationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"content"},"value":{"kind":"Variable","name":{"kind":"Name","value":"content"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"correlationId"}}]}}]}}]} as unknown as DocumentNode<SendMessageMutationMutation, SendMessageMutationMutationVariables>;
-export const SignUpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SignUp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"username"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signUp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"username"},"value":{"kind":"Variable","name":{"kind":"Name","value":"username"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]} as unknown as DocumentNode<SignUpMutation, SignUpMutationVariables>;
-export const UsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Users"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"searchTerm"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]} as unknown as DocumentNode<UsersQuery, UsersQueryVariables>;
+export const SigninWithOtpDocument = {
+  "kind": "Document", "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {"kind": "Name", "value": "SigninWithOTP"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "username"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "password"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "otp"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet", "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "signIn"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "username"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "username"}}
+        }, {
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "password"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "password"}}
+        }, {
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "otp"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "otp"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "userInfo"},
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}, {
+                "kind": "Field",
+                "name": {"kind": "Name", "value": "displayName"}
+              }, {"kind": "Field", "name": {"kind": "Name", "value": "avatar"}}]
+            }
+          }, {
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "token"},
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "accessToken"}}, {
+                "kind": "Field",
+                "name": {"kind": "Name", "value": "refreshToken"}
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<SigninWithOtpMutation, SigninWithOtpMutationVariables>;
+export const MeDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {"kind": "Name", "value": "Me"},
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "me"},
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "enabledTwofa"}}]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
+export const Generate2FaSecretDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {"kind": "Name", "value": "Generate2FASecret"},
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "generate2FASecret"},
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "secret"}}, {
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "qrCode"}
+          }]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<Generate2FaSecretMutation, Generate2FaSecretMutationVariables>;
+export const Enable2FaDocument = {
+  "kind": "Document", "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {"kind": "Name", "value": "Enable2FA"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "secret"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "otp"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "enable2FA"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "secret"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "secret"}}
+        }, {
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "otp"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "otp"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "success"}}]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<Enable2FaMutation, Enable2FaMutationVariables>;
+export const SignInDocument = {
+  "kind": "Document", "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {"kind": "Name", "value": "Index"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "username"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "password"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "signIn"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "username"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "username"}}
+        }, {
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "password"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "password"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "userInfo"},
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}, {
+                "kind": "Field",
+                "name": {"kind": "Name", "value": "displayName"}
+              }, {"kind": "Field", "name": {"kind": "Name", "value": "avatar"}}]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<SignInMutation, SignInMutationVariables>;
+export const CreateConversationDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {"kind": "Name", "value": "CreateConversation"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "memberIds"}},
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "ListType",
+          "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "createConversation"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "type"},
+          "value": {"kind": "EnumValue", "value": "PRIVATE"}
+        }, {
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "memberIds"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "memberIds"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<CreateConversationMutation, CreateConversationMutationVariables>;
+export const UserDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {"kind": "Name", "value": "User"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "id"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "ID"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "user"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "id"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "id"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}, {
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "avatar"}
+          }, {"kind": "Field", "name": {"kind": "Name", "value": "displayName"}}]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
+export const InitUiQueryDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {"kind": "Name", "value": "InitUiQuery"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "id"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "ID"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "conversation"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "id"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "id"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "name"}}, {
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "type"}
+          }]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<InitUiQueryQuery, InitUiQueryQueryVariables>;
+export const FetchMessageQueryDocument = {
+  "kind": "Document", "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {"kind": "Name", "value": "FetchMessageQuery"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "id"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "ID"}}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "before"}},
+      "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "DateTime"}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "after"}},
+      "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "DateTime"}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "limit"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "Int"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet", "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "conversation"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "id"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "id"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet", "selections": [{
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "messages"},
+            "arguments": [{
+              "kind": "Argument",
+              "name": {"kind": "Name", "value": "messageBefore"},
+              "value": {"kind": "Variable", "name": {"kind": "Name", "value": "before"}}
+            }, {
+              "kind": "Argument",
+              "name": {"kind": "Name", "value": "messageAfter"},
+              "value": {"kind": "Variable", "name": {"kind": "Name", "value": "after"}}
+            }, {
+              "kind": "Argument",
+              "name": {"kind": "Name", "value": "messageLimit"},
+              "value": {"kind": "Variable", "name": {"kind": "Name", "value": "limit"}}
+            }],
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}, {
+                "kind": "Field",
+                "name": {"kind": "Name", "value": "content"}
+              }, {"kind": "Field", "name": {"kind": "Name", "value": "createdAt"}}, {
+                "kind": "Field",
+                "name": {"kind": "Name", "value": "sentTime"}
+              }, {
+                "kind": "Field",
+                "name": {"kind": "Name", "value": "fromUser"},
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}, {
+                    "kind": "Field",
+                    "name": {"kind": "Name", "value": "displayName"}
+                  }, {"kind": "Field", "name": {"kind": "Name", "value": "avatar"}}]
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<FetchMessageQueryQuery, FetchMessageQueryQueryVariables>;
+export const SendMessageMutationDocument = {
+  "kind": "Document", "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {"kind": "Name", "value": "SendMessageMutation"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "conversationId"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "ID"}}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "content"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "sendMessage"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "conversation_id"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "conversationId"}}
+        }, {
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "content"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "content"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "correlationId"}}]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<SendMessageMutationMutation, SendMessageMutationMutationVariables>;
+export const SignUpDocument = {
+  "kind": "Document", "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {"kind": "Name", "value": "SignUp"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "username"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "password"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "signUp"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "username"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "username"}}
+        }, {
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "password"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "password"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "userInfo"},
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}, {
+                "kind": "Field",
+                "name": {"kind": "Name", "value": "displayName"}
+              }, {"kind": "Field", "name": {"kind": "Name", "value": "avatar"}}]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<SignUpMutation, SignUpMutationVariables>;
+export const UsersDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {"kind": "Name", "value": "Users"},
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {"kind": "Variable", "name": {"kind": "Name", "value": "searchTerm"}},
+      "type": {"kind": "NonNullType", "type": {"kind": "NamedType", "name": {"kind": "Name", "value": "String"}}}
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {"kind": "Name", "value": "users"},
+        "arguments": [{
+          "kind": "Argument",
+          "name": {"kind": "Name", "value": "searchTerm"},
+          "value": {"kind": "Variable", "name": {"kind": "Name", "value": "searchTerm"}}
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{"kind": "Field", "name": {"kind": "Name", "value": "id"}}, {
+            "kind": "Field",
+            "name": {"kind": "Name", "value": "displayName"}
+          }, {"kind": "Field", "name": {"kind": "Name", "value": "avatar"}}]
+        }
+      }]
+    }
+  }]
+} as unknown as DocumentNode<UsersQuery, UsersQueryVariables>;

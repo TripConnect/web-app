@@ -7,7 +7,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {ThemeProvider} from '@mui/material/styles';
 import i18next from "i18next";
 import {I18nextProvider} from "react-i18next";
-import SignIn from 'pages/SignIn';
+import Index from './pages/sign-in';
 import Home from "pages/Home";
 import UserProfile from "pages/UserProfile";
 import {Conversation} from "pages/conversation";
@@ -67,7 +67,7 @@ const AuthRoute = ({component}: { component: JSX.Element }) => {
   const navigate = useNavigate();
 
   const isAuthenticated = !!currentUser.userId;
-  
+
   useEffect(() => {
 
     if (!isAuthenticated) {
@@ -89,7 +89,7 @@ function App() {
                 <Header key="primary-header"/>
                 <Routes>
                   <Route path="/signup" element={<SignUp/>}/>
-                  <Route path="/signin" element={<SignIn/>}/>
+                  <Route path="/signin" element={<Index/>}/>
                   <Route path="/livestream/:id/host" element={<AuthRoute component={<LivestreamHost/>}/>}/>
                   <Route path="/otp-validation" element={<OtpValidation/>}/>
                   <Route path="/profile/:id" element={<AuthRoute component={<UserProfile/>}/>}/>
