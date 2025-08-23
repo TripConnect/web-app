@@ -4,10 +4,11 @@ import {useMutation} from '@apollo/client';
 import {useDispatch, useSelector} from "react-redux";
 import {updateInfo} from "slices/user";
 import {OTP_INCORRECT, SIGN_IN_INCORRECT, SIGN_IN_INVALID} from "constants/messages";
-import {Button, Paper, TextField, Typography} from "@mui/material";
+import {Box, Button, Container, Grid, TextField, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {StatusCode} from "constants/graphql";
 import {graphql} from "../gql";
+import PublicIcon from '@mui/icons-material/Public';
 
 const SIGN_IN_MUTATION = graphql(`
     mutation SignIn($username: String!, $password: String!) {
@@ -45,7 +46,7 @@ export default function SignIn() {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSignIn = (e: SyntheticEvent) => {
     e.preventDefault();
     if (!signInPayload.username || !signInPayload.password) {
       alert(SIGN_IN_INVALID);
@@ -82,7 +83,6 @@ export default function SignIn() {
           default:
             alert(SIGN_IN_INCORRECT);
         }
-
       });
   }
 
@@ -99,73 +99,89 @@ export default function SignIn() {
   }
 
   return (
-    <Paper style={{
-      maxWidth: 400,
-      margin: 'auto',
-      padding: 30,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-    }}>
-      <Typography variant="h5" component="div" color="primary" gutterBottom>
-        {t('SIGN_IN')}
-      </Typography>
-      <form
-        style={{
-          width: '100%',
-        }}
-        onSubmit={handleSubmit}
-      >
-        <TextField
-          name="username"
-          label={t("USERNAME")}
-          variant="outlined"
-          fullWidth
-          onChange={handleLoginChange}
-          value={signInPayload.username}
-          style={{marginBottom: '0.5rem'}}
-          autoComplete="off"
-          required
-        />
-        <TextField
-          name="password"
-          label={t("PASSWORD")}
-          variant="outlined"
-          type="password"
-          fullWidth
-          onChange={handleLoginChange}
-          value={signInPayload.password}
-          style={{marginBottom: '0.5rem'}}
-          required
-        />
-        <Button
-          type="button"
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleSubmit}
-        >
-          {t("LOGIN")}
-        </Button>
-      </form>
-      <div style={{
-        marginTop: 20,
-        width: "100%",
-        textAlign: "right",
-      }}>
-        <i>{t("NOW_HAVE_ACCOUNT_QUESTION")} </i>
-        <span
-          style={{cursor: "pointer", color: "darkblue"}}
-          role="link"
-          onClick={handleRegister}>
-            {t("SIGNUP")}
-        </span>
-      </div>
-    </Paper>
+    <Container>
+      <Grid container>
+        <Grid item md={6} paddingRight={2}
+              display="flex" height="100vh" flexDirection="column" justifyContent="center" alignItems="center">
+          <Box id="sign-in-left" width={"100%"}>
+            <img id="sign-in-left__image" src="/sign-up-left-placeholder.jpg" alt="The discovery cover art"/>
+            <Box id="sign-in-left__floating-text">
+              <Typography variant="h4" component="p">Discover the world with us</Typography>
+              <Typography variant="h5" component="p">
+                Join our community of travelers and share your adventures
+              </Typography>
+            </Box>
+          </Box>
+        </Grid>
+
+        <Grid item md={6} paddingLeft={2}
+              display="flex" height="100vh" flexDirection="column" justifyContent="center" alignItems="center">
+          <Box width={"100%"}>
+            <Typography variant="h1" component="h1" color="primary" fontSize={28} fontWeight={"bold"} gutterBottom>
+              <span style={{display: 'flex', alignItems: 'center', marginBottom: 40}}>
+                <PublicIcon fontSize={"large"} style={{marginRight: 8}}/>
+                TripConnect
+              </span>
+            </Typography>
+            <Typography variant="h2" component="h2" color="black" fontSize={24} fontWeight={"bold"} gutterBottom>
+              {t("SIGN_IN")}
+            </Typography>
+            <Typography variant="subtitle1" component="p" color="black" gutterBottom>
+              Welcome back! Please login to your account
+            </Typography>
+          </Box>
+
+          <Box width={"100%"}>
+            <TextField
+              name="username"
+              label="Enter your username"
+              variant="outlined"
+              onChange={handleLoginChange}
+              value={signInPayload.username}
+              style={{margin: '1rem 0'}}
+              autoComplete="off"
+              fullWidth
+              required
+            />
+            <TextField
+              name="password"
+              label="Enter your password"
+              variant="outlined"
+              type="password"
+              onChange={handleLoginChange}
+              value={signInPayload.password}
+              style={{marginBottom: '1.2rem'}}
+              fullWidth
+              required
+            />
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleSignIn}
+              fullWidth
+            >
+              {t("SIGN_IN")}
+            </Button>
+          </Box>
+
+          <Box style={{
+            marginTop: 20,
+            width: "100%",
+            textAlign: "right",
+          }}>
+            <i>{t("NOW_HAVE_ACCOUNT_QUESTION")} </i>
+            <span
+              style={{cursor: "pointer", color: "darkblue"}}
+              role="link"
+              onClick={handleRegister}
+            >
+              {t("SIGNUP")}
+              </span>
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
   )
 }

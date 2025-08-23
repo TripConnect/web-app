@@ -26,7 +26,6 @@ export default function Header() {
     {value: 'vi', label: 'vi', image: 'https://flagsapi.com/VN/flat/64.png'},
   ]
 
-
   return (
     <Box sx={{flexGrow: 1}}>
       <AppBar position="static" color={"default"}>
@@ -42,7 +41,7 @@ export default function Header() {
           </IconButton>
 
           <Typography variant="h6" component="div" fontWeight="bold" sx={{flexGrow: 1}}>
-            TripConnect
+            <span className="brand-gradient">TripConnect</span>
           </Typography>
 
           <Select
