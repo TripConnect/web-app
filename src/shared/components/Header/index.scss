@@ -1,0 +1,29 @@
+#header-logo {
+  width: 30px;
+  height: 30px;
+}
+
+.MuiAppBar-root {
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.14) !important;
+  -webkit-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.14) !important;
+  -moz-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.14) !important;
+}
+
+.MuiAppBar-root::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #3498db, #2ecc71);
+}
+
+.MuiAppBar-colorDefault {
+  background-color: #fff !important;
+}
+
+.MuiButton-root,
+.MuiInputBase-root {
+  border-radius: 24px !important;
+}

@@ -1,7 +1,7 @@
 import {useEffect} from "react";
 import {BrowserRouter as Router, Route, Routes, useNavigate} from "react-router-dom";
 import {Provider, useSelector} from 'react-redux';
-import {persistor, store} from 'store';
+import {persistor, RootState, store} from 'store';
 import {ApolloClient, ApolloProvider, createHttpLink, InMemoryCache} from '@apollo/client';
 import {PersistGate} from 'redux-persist/integration/react';
 import {ThemeProvider} from '@mui/material/styles';
@@ -13,7 +13,6 @@ import UserProfile from "pages/UserProfile";
 import {Conversation} from "pages/conversation";
 import {SignUp} from "./pages/sign-up";
 import UploadFile from "pages/UploadFile";
-import PrimaryHeader from "shared/components/PrimaryHeader";
 import theme from "theme";
 import enTranslation from 'locales/en/translation.json';
 import viTranslation from 'locales/vi/translation.json';
@@ -22,6 +21,7 @@ import {SystemLanguage} from "constants/lang";
 import {setContext} from '@apollo/client/link/context';
 import OtpValidation from "pages/OtpValidation";
 import LivestreamHost from "pages/LivestreamHost";
+import Header from "./shared/components/Header";
 
 const httpLink = createHttpLink({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
@@ -54,7 +54,7 @@ const client = new ApolloClient({
 });
 
 i18next.init({
-  interpolation: {escapeValue: false}, // React already does escaping
+  interpolation: {escapeValue: false}, // React already does escape
   lng: SystemLanguage.EN,
   resources: {
     [SystemLanguage.EN]: {translation: enTranslation},
@@ -62,12 +62,14 @@ i18next.init({
   }
 });
 
-const PrivateRoute = ({component}: { component: any }) => {
-  const currentUser = useSelector((state: any) => state.user);
+const AuthRoute = ({component}: { component: JSX.Element }) => {
+  const currentUser = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
-  const isAuthenticated = Boolean(currentUser.accessToken);
 
+  const isAuthenticated = !!currentUser.userId;
+  
   useEffect(() => {
+
     if (!isAuthenticated) {
       navigate("/signin");
     }
@@ -84,17 +86,17 @@ function App() {
           <ApolloProvider client={client}>
             <ThemeProvider theme={theme}>
               <Router>
-                <PrimaryHeader key="primary-header"/>
+                <Header key="primary-header"/>
                 <Routes>
                   <Route path="/signup" element={<SignUp/>}/>
                   <Route path="/signin" element={<SignIn/>}/>
-                  <Route path="/livestream/:id/host" element={<PrivateRoute component={<LivestreamHost/>}/>}/>
+                  <Route path="/livestream/:id/host" element={<AuthRoute component={<LivestreamHost/>}/>}/>
                   <Route path="/otp-validation" element={<OtpValidation/>}/>
-                  <Route path="/profile/:id" element={<PrivateRoute component={<UserProfile/>}/>}/>
-                  <Route path="/conversation/:id" element={<PrivateRoute component={<Conversation/>}/>}/>
-                  <Route path="/settings" element={<PrivateRoute component={<Settings/>}/>}/>
+                  <Route path="/profile/:id" element={<AuthRoute component={<UserProfile/>}/>}/>
+                  <Route path="/conversation/:id" element={<AuthRoute component={<Conversation/>}/>}/>
+                  <Route path="/settings" element={<AuthRoute component={<Settings/>}/>}/>
                   <Route path="/upload" element={<UploadFile/>}/>
-                  <Route path="/" element={<PrivateRoute component={<Home/>}/>}/>
+                  <Route path="/" element={<AuthRoute component={<Home/>}/>}/>
                 </Routes>
               </Router>
             </ThemeProvider>
