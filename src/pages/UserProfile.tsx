@@ -1,12 +1,13 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery} from '@apollo/client';
 import {useSelector} from "react-redux";
-import {Avatar, Box, Button, Container, Grid, Typography} from "@mui/material";
+import {Avatar, Box, Button, Container, Grid, IconButton, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {RootState} from "../store";
 import {graphql} from "../gql";
 import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 
 const PRIVATE_CONVERSATION_MUTATION = graphql(`
     mutation CreateConversation($memberIds: [String!]!) {
@@ -64,7 +65,7 @@ export default function UserProfile() {
             marginTop={6}
             marginBottom={20}
           >
-            <Avatar src={currentUser.avatar} style={{width: 180, height: 180, fontSize: '2.5rem'}}/>
+            <Avatar src={currentUser.avatar} style={{width: 170, height: 170, fontSize: '2.5rem'}}/>
             <Box marginLeft={6}>
               <Typography variant="subtitle1" fontSize={'2rem'} fontWeight={'bold'} marginBottom={2}>
                 {userProfile?.user.displayName}
@@ -83,7 +84,7 @@ export default function UserProfile() {
                       </span>
                     </Button>
                     <Button
-                      style={{textTransform: 'none'}}
+                      style={{textTransform: 'none', marginRight: 14}}
                       size={'medium'}
                       variant="outlined"
                       onClick={handleChat}
@@ -96,6 +97,11 @@ export default function UserProfile() {
                   </>
                 )
               }
+              <IconButton sx={{border: 'solid 0.6px #ccd'}} size={'small'} onClick={() => {
+                navigator.clipboard.writeText(`${document.location.origin}/profile/${userProfile?.user.id}`);
+              }}>
+                <ShareOutlinedIcon fontSize={'small'} sx={{fontSize: 20}}/>
+              </IconButton>
             </Box>
           </Box>
         </Grid>

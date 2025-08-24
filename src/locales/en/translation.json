@@ -8,6 +8,7 @@
     "MESSAGE_BUTTON": "Message",
     "FOLLOW_BUTTON": "Follow"
   },
+  "HEADER_SEARCH_PLACEHOLDER": "Search users, destinations, travelers, trips...",
   "USER": "User",
   "SIGN_IN": "Sign In",
   "SIGN_OUT": "Sign out",

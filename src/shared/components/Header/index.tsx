@@ -77,7 +77,7 @@ export default function Header() {
 
           <Box style={{flexBasis: '20%', display: 'flex'}}>
             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
-              <Avatar src={currentUser.avatar}/>
+              <Avatar src={currentUser.avatar} style={{width: 46, height: 46}}/>
             </IconButton>
             <Menu
               sx={{mt: '40px'}}

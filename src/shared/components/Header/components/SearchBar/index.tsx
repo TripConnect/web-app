@@ -51,7 +51,7 @@ export default function SearchBar() {
   return (
     <Box position='relative' width='100%'>
       <TextField
-        placeholder={"Search users, destinations, travelers, trips..."}
+        placeholder={t('HEADER_SEARCH_PLACEHOLDER')}
         InputProps={{
           className: "border-rounded",
           startAdornment: (
