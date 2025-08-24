@@ -155,6 +155,7 @@ export default function Index() {
               color="primary"
               size="large"
               onClick={handleSignIn}
+              disabled={!signInPayload.username || !signInPayload.password}
               fullWidth
             >
               {t("SIGN_IN")}

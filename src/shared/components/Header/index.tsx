@@ -1,5 +1,5 @@
 import './index.scss';
-import {Avatar, Box, IconButton, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
+import {Avatar, Box, Divider, IconButton, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import {useDispatch, useSelector} from "react-redux";
@@ -8,13 +8,30 @@ import {useTranslation} from "react-i18next";
 import {switchLanguage} from "../../../slices/language";
 import Menu from "@mui/material/Menu";
 import {MouseEvent, useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import SearchBar from "./components/SearchBar";
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import {graphql} from "../../../gql";
+import {useMutation} from "@apollo/client";
+import {signedOut} from "../../../slices/user";
+
+const SIGN_OUT_MUTATION = graphql(`
+    mutation SignOut {
+        signOut {
+            success
+        }
+    }
+`);
 
 export default function Header() {
-  const currentUser = useSelector((state: RootState) => state.user);
-  const {i18n} = useTranslation();
+  const {i18n, t} = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const currentUser = useSelector((state: RootState) => state.user);
+
+  const [signOut] = useMutation(SIGN_OUT_MUTATION);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const isAuth = !!currentUser.userId;
@@ -55,12 +72,13 @@ export default function Header() {
             <SearchBar/>
           </Box>
 
-          <Box sx={{flexBasis: '10%', paddingX: 6}}>
+          <Box sx={{flexBasis: '6%', marginX: 6, overflowX: 'hidden'}}>
             <Select
               className="border-rounded"
               size={"small"}
               defaultValue={"en"}
               onChange={changeLanguage}
+              fullWidth
             >
               {
                 languages.map(lang => (
@@ -75,36 +93,59 @@ export default function Header() {
             </Select>
           </Box>
 
-          <Box style={{flexBasis: '20%', display: 'flex'}}>
+          <Box style={{flexBasis: '26%', display: 'flex'}}>
             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
               <Avatar src={currentUser.avatar} style={{width: 46, height: 46}}/>
             </IconButton>
             <Menu
-              sx={{mt: '40px'}}
+              sx={{mt: '48px'}}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
               }}
-              keepMounted
               transformOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
               }}
+              keepMounted
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
               <MenuItem onClick={handleCloseUserMenu}>
-                <Typography component={Link}
-                            to={"/profile/" + currentUser.userId}
-                            sx={{textAlign: 'center', textDecoration: 'none'}}>
-                  Profile
+                <AccountCircleOutlinedIcon fontSize={'medium'}/>
+                <Typography
+                  sx={{textAlign: 'center', textDecoration: 'none', marginLeft: 0.8}}
+                  onClick={() => navigate(`/profile/${currentUser.userId}`)}
+                >
+                  {t('PROFILE')}
                 </Typography>
               </MenuItem>
               <MenuItem onClick={handleCloseUserMenu}>
-                <Typography component={Link} to={"/settings"} sx={{textAlign: 'center', textDecoration: 'none'}}>
-                  Settings
+                <SettingsOutlinedIcon fontSize={'medium'}/>
+                <Typography
+                  sx={{textAlign: 'center', textDecoration: 'none', marginLeft: 0.8}}
+                  onClick={() => navigate(`/settings`)}
+                >
+                  {t('SETTING')}
+                </Typography>
+              </MenuItem>
+              <Divider variant="middle" component="li"/>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <LogoutIcon fontSize={'small'} sx={{color: '#f44336'}}/>
+                <Typography
+                  sx={{textAlign: 'center', textDecoration: 'none', marginLeft: 0.8, color: '#f44336'}}
+                  onClick={async () => {
+                    let response = await signOut();
+                    if (response.data?.signOut.success) {
+                      navigate("/signin");
+                      dispatch(signedOut());
+                    }
+                    // TODO: Show error alert
+                  }}
+                >
+                  {t('SIGN_OUT')}
                 </Typography>
               </MenuItem>
             </Menu>

@@ -26,6 +26,7 @@ type Documents = {
     "\n    mutation SignIn($username: String!, $password: String!) {\n        signIn(username: $username, password: $password) {\n            userInfo {\n                id\n                displayName\n                avatar\n            }\n        }\n    }\n": typeof types.SignInDocument,
     "\n        mutation SignUp($username: String!, $password: String!) {\n            signUp(username: $username, password: $password) {\n                userInfo {\n                    id\n                    displayName\n                    avatar\n                }\n            }\n        }\n    ": typeof types.SignUpDocument,
     "\n    query Users($searchTerm: String!) {\n        users(searchTerm: $searchTerm) {\n            id\n            displayName\n            avatar\n        }\n    }\n": typeof types.UsersDocument,
+    "\n    mutation SignOut {\n        signOut {\n            success\n        }\n    }\n": typeof types.SignOutDocument,
 };
 const documents: Documents = {
     "\n    mutation SigninWithOTP($username: String!, $password: String!, $otp: String!) {\n        signIn(username: $username, password: $password, otp: $otp) {\n            userInfo {\n                id\n                displayName\n                avatar\n            }\n            token {\n                accessToken\n                refreshToken\n            }\n        }\n    }\n": types.SigninWithOtpDocument,
@@ -40,6 +41,7 @@ const documents: Documents = {
     "\n    mutation SignIn($username: String!, $password: String!) {\n        signIn(username: $username, password: $password) {\n            userInfo {\n                id\n                displayName\n                avatar\n            }\n        }\n    }\n": types.SignInDocument,
     "\n        mutation SignUp($username: String!, $password: String!) {\n            signUp(username: $username, password: $password) {\n                userInfo {\n                    id\n                    displayName\n                    avatar\n                }\n            }\n        }\n    ": types.SignUpDocument,
     "\n    query Users($searchTerm: String!) {\n        users(searchTerm: $searchTerm) {\n            id\n            displayName\n            avatar\n        }\n    }\n": types.UsersDocument,
+    "\n    mutation SignOut {\n        signOut {\n            success\n        }\n    }\n": types.SignOutDocument,
 };
 
 /**
@@ -104,6 +106,10 @@ export function graphql(source: "\n        mutation SignUp($username: String!, $
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query Users($searchTerm: String!) {\n        users(searchTerm: $searchTerm) {\n            id\n            displayName\n            avatar\n        }\n    }\n"): (typeof documents)["\n    query Users($searchTerm: String!) {\n        users(searchTerm: $searchTerm) {\n            id\n            displayName\n            avatar\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation SignOut {\n        signOut {\n            success\n        }\n    }\n"): (typeof documents)["\n    mutation SignOut {\n        signOut {\n            success\n        }\n    }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

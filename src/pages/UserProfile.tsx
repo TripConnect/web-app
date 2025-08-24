@@ -97,9 +97,12 @@ export default function UserProfile() {
                   </>
                 )
               }
-              <IconButton sx={{border: 'solid 0.6px #ccd'}} size={'small'} onClick={() => {
-                navigator.clipboard.writeText(`${document.location.origin}/profile/${userProfile?.user.id}`);
-              }}>
+              <IconButton title={`${document.location.origin}/profile/${userProfile?.user.id}`}
+                          sx={{border: 'solid 0.6px #ccd'}}
+                          size={'small'}
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${document.location.origin}/profile/${userProfile?.user.id}`);
+                          }}>
                 <ShareOutlinedIcon fontSize={'small'} sx={{fontSize: 20}}/>
               </IconButton>
             </Box>

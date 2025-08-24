@@ -17,10 +17,13 @@ export const userSlice = createSlice({
         ...state,
         ...action.payload,
       }
+    },
+    signedOut: (): UserState => {
+      return initialState;
     }
   },
 });
 
-export const {updateInfo} = userSlice.actions;
+export const {updateInfo, signedOut} = userSlice.actions;
 
 export default userSlice.reducer;
