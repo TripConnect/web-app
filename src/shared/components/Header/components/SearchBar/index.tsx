@@ -8,6 +8,7 @@ import {User} from "../../../../../gql/graphql";
 import {useLazyQuery} from "@apollo/client";
 import {graphql} from "../../../../../gql";
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const SEARCH_USER_QUERY = graphql(`
     query Users($searchTerm: String!) {
@@ -20,8 +21,9 @@ const SEARCH_USER_QUERY = graphql(`
 `);
 
 export default function SearchBar() {
-  const [matchedUsers, setMatchedUsers] = useState<User[]>([]);
   const navigate = useNavigate();
+  const {t} = useTranslation();
+  const [matchedUsers, setMatchedUsers] = useState<User[]>([]);
   const [searchUsers] = useLazyQuery(SEARCH_USER_QUERY);
 
   const debouncedSearch = useDebounceCallback(
@@ -56,6 +58,7 @@ export default function SearchBar() {
           ),
         }}
         onChange={handleSearchChange}
+        autoComplete='off'
         fullWidth
       />
       {!!matchedUsers.length &&
@@ -63,12 +66,17 @@ export default function SearchBar() {
                boxShadow={'0 4px 12px rgba(0, 0, 0, 0.15)'}
                sx={{backgroundColor: '#fff'}}>
             {matchedUsers.map((user: User) => (
-              <Box className="search-result-item" display='flex' alignItems='center' paddingX={2.4} paddingY={2.2}
+              <Box className="search-result-item" display='flex' alignItems='center' paddingX={2.4} paddingY={1.8}
                    role='button' onClick={() => navigate("/profile" + user.id)}>
-                <Avatar src={user.avatar} sx={{width: 30, height: 30, marginRight: 1.4}}/>
-                <Typography variant="body1">
-                  {user.displayName}
-                </Typography>
+                <Avatar src={user.avatar} sx={{width: 38, height: 38, marginRight: 1.4}}/>
+                <Box>
+                  <Typography variant="subtitle1">
+                    {user.displayName}
+                  </Typography>
+                  <Typography variant="subtitle2" color='#757575'>
+                    {t("USER")}
+                  </Typography>
+                </Box>
               </Box>
             ))}
           </Box>}

@@ -1,5 +1,10 @@
 {
-  "CREATE_ACCOUNT": "Tạo tài khoản",
+  "SIGN_UP_PAGE": {
+    "CREATE_ACCOUNT": "Tạo tài khoản",
+    "SUBTITLE": "Tham gia cộng đồng du lịch ngay hôm nay",
+    "SIGN_IN_QUESTION": "Bạn đã có tài khoản?"
+  },
+  "USER": "Người dùng",
   "SIGN_IN": "Đăng nhập",
   "SIGN_OUT": "Đăng xuất",
   "SIGN_UP": "đăng ký",
