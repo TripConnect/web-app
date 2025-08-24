@@ -23,20 +23,20 @@ const INIT_UI_QUERY = graphql(`
 `);
 
 const FETCH_MESSAGE_QUERY = graphql(`
-  query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {
-      conversation(id: $id) {
-          messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {
-              id
-              content
-              createdAt
-              sentTime
-              fromUser {
-                  id
-                  displayName
-                  avatar
-              }
-          }
-      }
+    query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {
+        conversation(id: $id) {
+            messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {
+                id
+                content
+                createdAt
+                sentTime
+                fromUser {
+                    id
+                    displayName
+                    avatar
+                }
+            }
+        }
     }
 `);
 
@@ -153,7 +153,7 @@ export function Conversation() {
       socket.emit('listen', {conversationId: conversationId});
     });
     socket.on('new_message', event => {
-      if(event.fromUserId !== currentUser.userId) {
+      if (event.fromUserId !== currentUser.userId) {
         let incomingMessage: Message = {
           id: event.id,
           correlationId: event.correlationId,
@@ -181,7 +181,7 @@ export function Conversation() {
     return () => {
       socket.disconnect();
     };
-  }, [conversationId, currentUser.accessToken, currentUser.userId]);
+  }, [conversationId, currentUser.userId]);
 
   const handleSendMessage = (msg: string) => {
     sendMessage({variables: {conversationId: conversationId, content: msg}})

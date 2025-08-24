@@ -1,20 +1,30 @@
 {
-    "SIGN_IN": "Đăng nhập",
-    "SIGN_OUT": "Đăng xuất",
-    "SIGNUP": "đăng ký",
-    "PROFILE": "Trang cá nhân",
-    "SETTING": "Cài đặt",
-    "TWO_FACTOR_AUTHENTICATION": "Xác thực 2 yếu tố",
-    "SETUP_2FA": "Cài đặt xác thực 2 yếu tố",
-    "USERNAME": "Tên đăng nhập",
-    "PASSWORD": "Mật khẩu",
-    "NOW_HAVE_ACCOUNT_QUESTION": "Bạn chưa có tài khoản?",
-    "SEARCH": "Tìm kiếm",
-    "CHAT_MESSAGE_HINT": "Tin nhắn...",
-    "CHAT_BUTTON_BODY": "Nhắn tin",
-    "LANG": "Ngôn ngữ",
-    "CLOSE": "Đóng",
-    "OTP": "Mã xác thực",
-    "CONFIRM": "Xác nhận",
-    "SETUP_2FA_SUBTITLE": "Vui lòng quét mã hoặc nhập dãy ký tự bên dưới để tiến hành cài đặt xác thực"
+  "SIGN_UP_PAGE": {
+    "CREATE_ACCOUNT": "Tạo tài khoản",
+    "SUBTITLE": "Tham gia cộng đồng du lịch ngay hôm nay",
+    "SIGN_IN_QUESTION": "Bạn đã có tài khoản?"
+  },
+  "USER_PROFILE": {
+    "MESSAGE_BUTTON": "Nhắn tin",
+    "FOLLOW_BUTTON": "Theo dõi"
+  },
+  "HEADER_SEARCH_PLACEHOLDER": "Tìm kiếm người dùng, điểm đến, hành trình...",
+  "USER": "Người dùng",
+  "SIGN_IN": "Đăng nhập",
+  "SIGN_OUT": "Đăng xuất",
+  "SIGN_UP": "đăng ký",
+  "PROFILE": "Trang cá nhân",
+  "SETTING": "Cài đặt",
+  "TWO_FACTOR_AUTHENTICATION": "Xác thực 2 yếu tố",
+  "SETUP_2FA": "Cài đặt xác thực 2 yếu tố",
+  "USERNAME": "Tên đăng nhập",
+  "PASSWORD": "Mật khẩu",
+  "NOW_HAVE_ACCOUNT_QUESTION": "Bạn chưa có tài khoản?",
+  "SEARCH": "Tìm kiếm",
+  "CHAT_MESSAGE_HINT": "Tin nhắn...",
+  "LANG": "Ngôn ngữ",
+  "CLOSE": "Đóng",
+  "OTP": "Mã xác thực",
+  "CONFIRM": "Xác nhận",
+  "SETUP_2FA_SUBTITLE": "Vui lòng quét mã hoặc nhập dãy ký tự bên dưới để tiến hành cài đặt xác thực"
 }

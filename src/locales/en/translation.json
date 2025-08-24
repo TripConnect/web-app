@@ -1,20 +1,30 @@
 {
-    "SIGN_IN": "Sign in",
-    "SIGN_OUT": "Sign out",
-    "SIGNUP": "signup",
-    "PROFILE": "Profile",
-    "SETTING": "Settings",
-    "TWO_FACTOR_AUTHENTICATION": "Two-factor authentication",
-    "SETUP_2FA": "Set up two-factor authentication",
-    "USERNAME": "Username",
-    "PASSWORD": "Password",
-    "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
-    "SEARCH": "Search",
-    "CHAT_MESSAGE_HINT": "Message...",
-    "CHAT_BUTTON_BODY": "Chat",
-    "LANG": "Language",
-    "CLOSE": "Close",
-    "OTP": "Verification code",
-    "CONFIRM": "Confirm",
-    "SETUP_2FA_SUBTITLE": "Please scan below QR or input the secret to your authenticator application for setup"
+  "SIGN_UP_PAGE": {
+    "CREATE_ACCOUNT": "Create account",
+    "SUBTITLE": "Join our community of travelers today",
+    "SIGN_IN_QUESTION": "Already have an account?"
+  },
+  "USER_PROFILE": {
+    "MESSAGE_BUTTON": "Message",
+    "FOLLOW_BUTTON": "Follow"
+  },
+  "HEADER_SEARCH_PLACEHOLDER": "Search users, destinations, travelers, trips...",
+  "USER": "User",
+  "SIGN_IN": "Sign In",
+  "SIGN_OUT": "Sign out",
+  "SIGN_UP": "Sign Up",
+  "PROFILE": "Profile",
+  "SETTING": "Settings",
+  "TWO_FACTOR_AUTHENTICATION": "Two-factor authentication",
+  "SETUP_2FA": "Set up two-factor authentication",
+  "USERNAME": "Username",
+  "PASSWORD": "Password",
+  "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
+  "SEARCH": "Search",
+  "CHAT_MESSAGE_HINT": "Message...",
+  "LANG": "Language",
+  "CLOSE": "Close",
+  "OTP": "Verification code",
+  "CONFIRM": "Confirm",
+  "SETUP_2FA_SUBTITLE": "Please scan below QR or input the secret to your authenticator application for setup"
 }
