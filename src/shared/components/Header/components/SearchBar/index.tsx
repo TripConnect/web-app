@@ -21,6 +21,7 @@ const SEARCH_USER_QUERY = graphql(`
 `);
 
 export default function SearchBar() {
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const {t} = useTranslation();
   const [matchedUsers, setMatchedUsers] = useState<User[]>([]);
@@ -39,6 +40,7 @@ export default function SearchBar() {
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     let searchText = e.target.value;
+    setSearchTerm(searchText);
     if (!searchText) {
       setMatchedUsers([]);
       return
@@ -57,17 +59,22 @@ export default function SearchBar() {
             </InputAdornment>
           ),
         }}
+        value={searchTerm}
         onChange={handleSearchChange}
         autoComplete='off'
         fullWidth
       />
       {!!matchedUsers.length &&
-          <Box position='absolute' width='100%' marginTop={0.8} borderRadius={2.4}
+          <Box position='absolute' width='100%' marginTop={0.8} borderRadius={2.4} zIndex={9999}
                boxShadow={'0 4px 12px rgba(0, 0, 0, 0.15)'}
                sx={{backgroundColor: '#fff'}}>
             {matchedUsers.map((user: User) => (
               <Box className="search-result-item" display='flex' alignItems='center' paddingX={2.4} paddingY={1.8}
-                   role='button' onClick={() => navigate("/profile" + user.id)}>
+                   role='button' onClick={() => {
+                setSearchTerm("");
+                setMatchedUsers([]);
+                navigate("/profile/" + user.id)
+              }}>
                 <Avatar src={user.avatar} sx={{width: 38, height: 38, marginRight: 1.4}}/>
                 <Box>
                   <Typography variant="subtitle1">
