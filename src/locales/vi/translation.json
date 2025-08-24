@@ -4,6 +4,10 @@
     "SUBTITLE": "Tham gia cộng đồng du lịch ngay hôm nay",
     "SIGN_IN_QUESTION": "Bạn đã có tài khoản?"
   },
+  "USER_PROFILE": {
+    "MESSAGE_BUTTON": "Nhắn tin",
+    "FOLLOW_BUTTON": "Theo dõi"
+  },
   "USER": "Người dùng",
   "SIGN_IN": "Đăng nhập",
   "SIGN_OUT": "Đăng xuất",
@@ -17,7 +21,6 @@
   "NOW_HAVE_ACCOUNT_QUESTION": "Bạn chưa có tài khoản?",
   "SEARCH": "Tìm kiếm",
   "CHAT_MESSAGE_HINT": "Tin nhắn...",
-  "CHAT_BUTTON_BODY": "Nhắn tin",
   "LANG": "Ngôn ngữ",
   "CLOSE": "Đóng",
   "OTP": "Mã xác thực",

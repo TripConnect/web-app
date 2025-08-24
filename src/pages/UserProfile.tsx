@@ -1,11 +1,12 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery} from '@apollo/client';
 import {useSelector} from "react-redux";
-import {Avatar, Button, Container, Grid, Typography} from "@mui/material";
-import ForumIcon from '@mui/icons-material/Forum';
+import {Avatar, Box, Button, Container, Grid, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {RootState} from "../store";
 import {graphql} from "../gql";
+import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 const PRIVATE_CONVERSATION_MUTATION = graphql(`
     mutation CreateConversation($memberIds: [String!]!) {
@@ -35,6 +36,7 @@ export default function UserProfile() {
   });
   const [createConversation] = useMutation(PRIVATE_CONVERSATION_MUTATION);
   const currentUser = useSelector((state: RootState) => state.user);
+  const isSelf = profileUserId !== currentUser.userId;
 
   if (profileLoading) return <center>Loading...</center>;
   if (profileError) return <center>Try again...</center>;
@@ -55,31 +57,47 @@ export default function UserProfile() {
     <Container>
       <Grid container>
         <Grid item xs={12}>
-          <section style={{
-            display: 'flex',
-            justifyContent: 'start',
-            alignItems: 'center',
-            marginTop: 10,
-            marginBottom: 20
-          }}>
-            <Avatar src={currentUser.avatar} style={{width: 120, height: 120, fontSize: '2.5rem'}}/>
-            <Typography variant="subtitle1" fontSize={'2rem'} fontWeight={'bold'} marginLeft={6}>
-              {userProfile?.user.displayName}
-            </Typography>
-          </section>
-
-          {
-            profileUserId !== currentUser.userId && <Button
-                  style={{textTransform: 'none'}}
-                  variant="contained"
-                  onClick={handleChat}
-              >
-                  <ForumIcon/>
-                  <span style={{display: 'inline-block', marginLeft: 5}}>
-                    {t('CHAT_BUTTON_BODY')}
-                  </span>
-              </Button>
-          }
+          <Box
+            display="flex"
+            justifyContent="start"
+            alignItems="center"
+            marginTop={6}
+            marginBottom={20}
+          >
+            <Avatar src={currentUser.avatar} style={{width: 180, height: 180, fontSize: '2.5rem'}}/>
+            <Box marginLeft={6}>
+              <Typography variant="subtitle1" fontSize={'2rem'} fontWeight={'bold'} marginBottom={2}>
+                {userProfile?.user.displayName}
+              </Typography>
+              {
+                isSelf && (
+                  <>
+                    <Button
+                      style={{textTransform: 'none', marginRight: 12}}
+                      size={'medium'}
+                      variant="contained"
+                    >
+                      <PersonAddAltIcon/>
+                      <span style={{display: 'inline-block', marginLeft: 8}}>
+                        {t('USER_PROFILE.FOLLOW_BUTTON')}
+                      </span>
+                    </Button>
+                    <Button
+                      style={{textTransform: 'none'}}
+                      size={'medium'}
+                      variant="outlined"
+                      onClick={handleChat}
+                    >
+                      <SmsOutlinedIcon/>
+                      <span style={{display: 'inline-block', marginLeft: 8}}>
+                        {t('USER_PROFILE.MESSAGE_BUTTON')}
+                      </span>
+                    </Button>
+                  </>
+                )
+              }
+            </Box>
+          </Box>
         </Grid>
       </Grid>
     </Container>

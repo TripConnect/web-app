@@ -4,6 +4,10 @@
     "SUBTITLE": "Join our community of travelers today",
     "SIGN_IN_QUESTION": "Already have an account?"
   },
+  "USER_PROFILE": {
+    "MESSAGE_BUTTON": "Message",
+    "FOLLOW_BUTTON": "Follow"
+  },
   "USER": "User",
   "SIGN_IN": "Sign In",
   "SIGN_OUT": "Sign out",
@@ -17,7 +21,6 @@
   "NOW_HAVE_ACCOUNT_QUESTION": "Now have account?",
   "SEARCH": "Search",
   "CHAT_MESSAGE_HINT": "Message...",
-  "CHAT_BUTTON_BODY": "Chat",
   "LANG": "Language",
   "CLOSE": "Close",
   "OTP": "Verification code",
