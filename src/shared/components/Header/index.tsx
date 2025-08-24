@@ -57,6 +57,7 @@ export default function Header() {
 
           <Box sx={{flexBasis: '10%', paddingX: 6}}>
             <Select
+              className="border-rounded"
               size={"small"}
               defaultValue={"en"}
               onChange={changeLanguage}

@@ -1,19 +1,21 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {gql, useMutation, useQuery} from '@apollo/client';
+import {useMutation, useQuery} from '@apollo/client';
 import {useSelector} from "react-redux";
 import {Avatar, Button, Container, Grid, Typography} from "@mui/material";
 import ForumIcon from '@mui/icons-material/Forum';
 import {useTranslation} from "react-i18next";
+import {RootState} from "../store";
+import {graphql} from "../gql";
 
-const PRIVATE_CONVERSATION_MUTATION = gql`
+const PRIVATE_CONVERSATION_MUTATION = graphql(`
     mutation CreateConversation($memberIds: [String!]!) {
         createConversation(type: PRIVATE, memberIds: $memberIds) {
             id
         }
     }
-`;
+`);
 
-const USER_QUERY = gql`
+const USER_QUERY = graphql(`
     query User($id: ID!) {
         user(id: $id) {
             id
@@ -21,25 +23,24 @@ const USER_QUERY = gql`
             displayName
         }
     }
-`;
+`);
 
 export default function UserProfile() {
   let navigate = useNavigate();
   const {t} = useTranslation();
   const {id: profileUserId} = useParams<{ id: string }>();
-  const {loading: profileLoading, error: profileError, data: profileUser} = useQuery(USER_QUERY, {
-    variables: {id: profileUserId},
+
+  const {loading: profileLoading, error: profileError, data: userProfile} = useQuery(USER_QUERY, {
+    variables: {id: profileUserId as string},
   });
   const [createConversation] = useMutation(PRIVATE_CONVERSATION_MUTATION);
-  const currentUser = useSelector((state: any) => state.user);
+  const currentUser = useSelector((state: RootState) => state.user);
 
   if (profileLoading) return <center>Loading...</center>;
   if (profileError) return <center>Try again...</center>;
 
-  let {displayName} = profileUser.user;
-
   const handleChat = () => {
-    createConversation({variables: {memberIds: [currentUser.userId, profileUserId]}})
+    createConversation({variables: {memberIds: [currentUser.userId as string, profileUserId as string]}})
       .then(response => {
         if (response?.data?.createConversation) {
           let {id} = response.data.createConversation;
@@ -61,13 +62,9 @@ export default function UserProfile() {
             marginTop: 10,
             marginBottom: 20
           }}>
-            <Avatar src={currentUser.avatar} style={{width: 100, height: 100, fontSize: '2.5rem'}}/>
-            <Typography variant="h1" style={{
-              marginLeft: 20,
-              fontWeight: 500,
-              fontSize: '2rem',
-            }}>
-              {displayName}
+            <Avatar src={currentUser.avatar} style={{width: 120, height: 120, fontSize: '2.5rem'}}/>
+            <Typography variant="subtitle1" fontSize={'2rem'} fontWeight={'bold'} marginLeft={6}>
+              {userProfile?.user.displayName}
             </Typography>
           </section>
 

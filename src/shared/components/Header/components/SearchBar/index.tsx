@@ -53,6 +53,7 @@ export default function SearchBar() {
       <TextField
         placeholder={"Search users, destinations, travelers, trips..."}
         InputProps={{
+          className: "border-rounded",
           startAdornment: (
             <InputAdornment position="start">
               <Search/>
