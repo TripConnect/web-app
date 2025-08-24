@@ -51,11 +51,11 @@ export default function Header() {
             </Typography>
           </Box>
 
-          <Box sx={{flexBasis: '50%', paddingRight: 5}}>
+          <Box sx={{flexBasis: '50%'}}>
             <SearchBar/>
           </Box>
 
-          <Box sx={{flexBasis: '5%'}}>
+          <Box sx={{flexBasis: '10%', paddingX: 6}}>
             <Select
               size={"small"}
               defaultValue={"en"}
@@ -74,12 +74,12 @@ export default function Header() {
             </Select>
           </Box>
 
-          <Box style={{flexBasis: '30%', marginLeft: 28, display: 'flex', alignItems: 'center'}}>
+          <Box style={{flexBasis: '20%', display: 'flex'}}>
             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
               <Avatar src={currentUser.avatar}/>
             </IconButton>
             <Menu
-              sx={{mt: '45px'}}
+              sx={{mt: '40px'}}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
