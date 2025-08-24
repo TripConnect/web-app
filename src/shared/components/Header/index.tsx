@@ -9,6 +9,7 @@ import {switchLanguage} from "../../../slices/language";
 import Menu from "@mui/material/Menu";
 import {MouseEvent, useState} from "react";
 import {Link} from "react-router-dom";
+import SearchBar from "./components/SearchBar";
 
 export default function Header() {
   const currentUser = useSelector((state: RootState) => state.user);
@@ -39,41 +40,41 @@ export default function Header() {
   };
 
   return (
-    <Box sx={{flexGrow: 1}}>
-      <AppBar position="static" color={"default"}>
+    <Box>
+      <AppBar position="static" color="default"
+              sx={{paddingY: 1.2, paddingX: 8, display: 'flex', justifyContent: 'baseline'}}>
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{mr: 2}}
-          >
-            <img id="header-logo" src="/logo512.png" alt="Trip Connect logo"/>
-          </IconButton>
+          <Box sx={{flexBasis: '15%'}}>
+            <Typography variant="h6" fontWeight="bold" fontSize={28} component={Link} to={"/"}
+                        sx={{flexGrow: 1, textDecoration: 'none'}}>
+              <span style={{color: "#1976D2"}}>Trip</span><span style={{color: "#4CAF50"}}>Connect</span>
+            </Typography>
+          </Box>
 
-          <Typography variant="h6" component="div" fontWeight="bold" sx={{flexGrow: 1}}>
-            <span className="brand-gradient">TripConnect</span>
-          </Typography>
+          <Box sx={{flexBasis: '50%', paddingRight: 5}}>
+            <SearchBar/>
+          </Box>
 
-          <Select
-            size={"small"}
-            defaultValue={"en"}
-            onChange={changeLanguage}
-          >
-            {
-              languages.map(lang => (
-                <MenuItem key={"lang-" + lang.value} value={lang.value}>
-                  <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                    <img src={lang.image} alt={"flag"} width={20} height={20}/>
-                    {lang.label}
-                  </Box>
-                </MenuItem>
-              ))
-            }
-          </Select>
+          <Box sx={{flexBasis: '5%'}}>
+            <Select
+              size={"small"}
+              defaultValue={"en"}
+              onChange={changeLanguage}
+            >
+              {
+                languages.map(lang => (
+                  <MenuItem key={"lang-" + lang.value} value={lang.value}>
+                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                      <img src={lang.image} alt={"flag"} width={20} height={20}/>
+                      {lang.label}
+                    </Box>
+                  </MenuItem>
+                ))
+              }
+            </Select>
+          </Box>
 
-          <Box style={{marginLeft: 10, display: 'flex', alignItems: 'center', gap: 5}}>
+          <Box style={{flexBasis: '30%', marginLeft: 28, display: 'flex', alignItems: 'center'}}>
             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
               <Avatar src={currentUser.avatar}/>
             </IconButton>
