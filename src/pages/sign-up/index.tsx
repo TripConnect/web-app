@@ -11,8 +11,8 @@ export function SignUp() {
   const navigate = useNavigate();
 
     const SIGN_UP_MUTATION = graphql(`
-        mutation SignUp($username: String!, $password: String!) {
-            signUp(username: $username, password: $password) {
+        mutation SignUp($username: String!, $password: String!, $displayName: String!) {
+            signUp(username: $username, password: $password, displayName: $displayName) {
                 userInfo {
                     id
                     displayName
@@ -26,7 +26,8 @@ export function SignUp() {
 
   let [signUpPayload, setSignUpPayload] = useState({
     username: '',
-    password: ''
+    password: '',
+    displayName: '',
   });
 
   const handleFormChange = (e: ChangeEvent) => {
@@ -39,7 +40,13 @@ export function SignUp() {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    signUp({variables: {username: signUpPayload.username, password: signUpPayload.password}})
+    signUp({
+      variables: {
+        username: signUpPayload.username,
+        password: signUpPayload.password,
+        displayName: signUpPayload.displayName,
+      }
+    })
       .then(() => {
         navigate('/signin');
       })
@@ -83,12 +90,23 @@ export function SignUp() {
 
           <Box width={"100%"}>
             <TextField
+              name="displayName"
+              label="Enter your display name"
+              variant="outlined"
+              onChange={handleFormChange}
+              value={signUpPayload.displayName}
+              style={{marginTop: 20}}
+              autoComplete="off"
+              fullWidth
+              required
+            />
+            <TextField
               name="username"
               label="Enter your username"
               variant="outlined"
               onChange={handleFormChange}
               value={signUpPayload.username}
-              style={{margin: '1rem 0'}}
+              style={{marginTop: 14}}
               autoComplete="off"
               fullWidth
               required
@@ -100,7 +118,7 @@ export function SignUp() {
               type="password"
               onChange={handleFormChange}
               value={signUpPayload.password}
-              style={{marginBottom: '1.2rem'}}
+              style={{marginTop: 14, marginBottom: '1.2rem'}}
               fullWidth
               required
             />
@@ -109,7 +127,7 @@ export function SignUp() {
               variant="contained"
               color="primary"
               size="large"
-              disabled={!signUpPayload.username || !signUpPayload.password}
+              disabled={!signUpPayload.username || !signUpPayload.password || !signUpPayload.displayName}
               onClick={handleSubmit}
               fullWidth
             >
