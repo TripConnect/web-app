@@ -1,5 +1,15 @@
 import './index.scss';
-import {Avatar, Box, Divider, IconButton, MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography
+} from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import {useDispatch, useSelector} from "react-redux";
@@ -11,11 +21,10 @@ import {MouseEvent, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import SearchBar from "./components/SearchBar";
 import LogoutIcon from '@mui/icons-material/Logout';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import {graphql} from "../../../gql";
 import {useMutation} from "@apollo/client";
 import {signedOut} from "../../../slices/user";
+import {Settings} from "@mui/icons-material";
 
 const SIGN_OUT_MUTATION = graphql(`
     mutation SignOut {
@@ -113,29 +122,27 @@ export default function Header() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={handleCloseUserMenu}>
-                <AccountCircleOutlinedIcon fontSize={'medium'}/>
-                <Typography
-                  sx={{textAlign: 'center', textDecoration: 'none', marginLeft: 0.8}}
-                  onClick={() => navigate(`/profile/${currentUser.userId}`)}
-                >
-                  {t('PROFILE')}
+              <MenuItem onClick={handleCloseUserMenu} sx={{py: 1.2}}>
+                <Avatar src={currentUser.avatar} sx={{width: 30, height: 30, mr: 1.2}}/>
+                <Typography onClick={() => navigate(`/profile/${currentUser.userId}`)}>
+                  {currentUser.displayName}
                 </Typography>
               </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>
-                <SettingsOutlinedIcon fontSize={'medium'}/>
-                <Typography
-                  sx={{textAlign: 'center', textDecoration: 'none', marginLeft: 0.8}}
-                  onClick={() => navigate(`/settings`)}
-                >
+              <Divider/>
+              <MenuItem onClick={handleCloseUserMenu} sx={{py: 1.2}}>
+                <ListItemIcon>
+                  <Settings fontSize="medium"/>
+                </ListItemIcon>
+                <Typography onClick={() => navigate(`/settings`)}>
                   {t('SETTING')}
                 </Typography>
               </MenuItem>
-              <Divider variant="middle" component="li"/>
-              <MenuItem onClick={handleCloseUserMenu}>
-                <LogoutIcon fontSize={'small'} sx={{color: '#f44336'}}/>
+              <MenuItem onClick={handleCloseUserMenu} sx={{py: 1.2}}>
+                <ListItemIcon>
+                  <LogoutIcon fontSize={'medium'} sx={{ml: 0.4, color: '#f44336'}}/>
+                </ListItemIcon>
                 <Typography
-                  sx={{textAlign: 'center', textDecoration: 'none', marginLeft: 0.8, color: '#f44336'}}
+                  sx={{color: '#f44336'}}
                   onClick={async () => {
                     let response = await signOut();
                     if (response.data?.signOut.success) {
