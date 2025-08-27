@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import MessageList from "./components/MessageList";
 import {Message, ScrollDirection} from "./state";
 import {graphql} from "../../gql";
@@ -57,7 +57,8 @@ export function Conversation() {
   const [fetchMoreType, setFetchMoreType] = useState<"before" | "after">("before");
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [socket, setSocket] = useState<Socket>();
+
+  const socketRef = useRef<Socket>();
 
   // debounce hooks
   const changeScrollDirection = useCallback((direction: ScrollDirection) => {
@@ -177,9 +178,9 @@ export function Conversation() {
       });
     });
 
-    setSocket(socket);
+    socketRef.current = socket;
     return () => {
-      socket.disconnect();
+      socketRef.current?.disconnect();
     };
   }, [conversationId, currentUser.userId]);
 

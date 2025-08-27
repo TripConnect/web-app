@@ -1,113 +1,70 @@
-import {useEffect, useRef, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {useParams} from 'react-router-dom';
-import {io, Socket} from "socket.io-client";
+import React, {useEffect, useRef, useState} from 'react';
+import {Alert, Box, Button, Card, Typography} from '@mui/material';
+import axios from 'axios';
 
-import {RootState} from 'store';
-
-export default function LivestreamHost() {
-  const {id: roomId} = useParams<{ id: string }>();
-
-  const [mediaConstraints, setMediaConstraints] = useState({video: true, audio: false});
-  const currentUser = useSelector((state: RootState) => state.user);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const [livesSocket, setLivesSocket] = useState<Socket | null>(null);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
+const LivestreamHost: React.FC = () => {
+  const [livestreamId, setLivestreamId] = useState('');
+  const [isLive, setIsLive] = useState(false);
+  const [error, setError] = useState('');
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    console.log('Initiating Livestream resources');
-    const livestreamSocket = io(`${process.env.REACT_APP_BASE_URL}/livestream`, {
-      transports: ['websocket'],
-    });
-    livestreamSocket.on('connect', () => {
-      setTimeout(async () => {
-        // console.log('Livestream socket connected');
-        if (!mediaStreamRef.current) {
-          console.log('Apply media stream');
-          mediaStreamRef.current = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-        }
-
-        if (videoRef.current && !videoRef.current?.srcObject) {
-          console.log('Apply video source');
-          videoRef.current.srcObject = mediaStreamRef.current;
-          livestreamSocket?.emit(
-            "start",
-            {roomId},
-            (ack: { status: 'SUCCESS' | 'FAILED' }) => {
-              console.log("Start livestream: " + ack.status);
-            }
-          );
-        }
-
-        if (!recorderRef.current) {
-          console.log('Apply video recorder');
-          recorderRef.current = new MediaRecorder(mediaStreamRef.current);
-          recorderRef.current.addEventListener('dataavailable', event => {
-            console.log('Recorder data available');
-            if (event.data.size > 0) {
-              console.log('Send segment: ' + event.data.size);
-
-              livestreamSocket?.emit(
-                "segment",
-                {
-                  roomId,
-                  segment: event.data
-                },
-                (ack: { status: 'SUCCESS' | 'FAILED' }) => {
-                  console.log("Record: " + ack.status);
-                }
-              );
-            }
-          });
-          recorderRef.current.addEventListener('error', event => {
-            console.error("Livestream record error: " + event);
-          });
-          recorderRef.current.addEventListener('stop', event => {
-            console.warn('Video recorder stopped');
-          });
-          recorderRef.current.start(10_000);
-        }
-      }, 1000);
-    });
-    livestreamSocket.on('disconnect', (reason) => {
-      console.log('Livestream socket disconnected: ' + reason);
-    });
-    livestreamSocket.on('connect_error', error => {
-      console.error(error);
-    });
-
-    setLivesSocket(livestreamSocket);
-
-    return () => {
-      console.log('Clean up useEffect resources');
-      livestreamSocket?.disconnect();
-      recorderRef.current?.stop();
-      mediaStreamRef.current?.getTracks().forEach(track => track.stop());
-
-      recorderRef.current = null;
-      mediaStreamRef.current = null;
-    };
+    // Fetch stream key after login (assume JWT in localStorage)
+    axios.post(`${process.env.REACT_APP_BASE_URL}/livestreams`)
+      .then((res: any) => setLivestreamId(res.data.livestreamId))
+      .catch(() => setError('Failed create livestream'));
   }, []);
 
-  console.log('Re-rendering');
+  const startPreview = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (err) {
+      setError('Camera access denied');
+    }
+  };
+
+  const startStream = () => {
+    // For OBS: User manually starts in OBS.
+    // For browser: Implement MediaRecorder here (example below, but needs backend WebSocket for chunk upload)
+    setIsLive(true);
+    // Placeholder: Poll backend for status every 10s
+    const interval = setInterval(() => {
+      axios.get(`${process.env.REACT_APP_BASE_URL}/livestreams/${livestreamId}/status`)
+        .then(res => setIsLive(res.data.isLive));
+    }, 10000);
+    return () => clearInterval(interval);
+  };
+
+  const startBrowserStream = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+    const recorder = new MediaRecorder(stream, {mimeType: 'video/webm'});
+    recorder.ondataavailable = async (e) => {
+      if (e.data.size > 0) {
+        const formData = new FormData();
+        formData.append('chunk', e.data);
+        formData.append('streamKey', livestreamId);
+        await axios.post(`${process.env.REACT_APP_BASE_URL}/livestreams/segment`, formData);
+      }
+    };
+    recorder.start(1000); // Chunk every 1s
+  };
 
   return (
-    <section>
-      <video
-        key='livestream-video'
-        ref={videoRef}
-        style={{
-          display: 'block',
-          objectFit: 'contain',
-          margin: '0 auto',
-          width: '50vw',
-          height: '50vh',
-        }}
-        autoPlay
-      >
-        Your browser does not support the video tag.
-      </video>
-    </section>
+    <Box sx={{p: 4}}>
+      <Typography variant="h4">Host Dashboard</Typography>
+      {error && <Alert severity="error">{error}</Alert>}
+      <Card sx={{mt: 2, p: 2}}>
+        <Typography>Your Stream Key: {livestreamId}</Typography>
+        <Typography>RTMP URL: rtmp://localhost/live/{livestreamId}</Typography>
+        <Button variant="contained" onClick={startPreview} sx={{mt: 2}}>Preview Camera</Button>
+        <video ref={videoRef} autoPlay muted width="100%"/>
+        <Button variant="contained" color="primary" onClick={startStream} disabled={isLive}>Go Live (OBS)</Button>
+        <Button variant="outlined" onClick={startBrowserStream}>Go Live (Browser - Experimental)</Button>
+        {isLive && <Alert severity="success">You are live!</Alert>}
+      </Card>
+    </Box>
   );
 };
+
+export default LivestreamHost;
