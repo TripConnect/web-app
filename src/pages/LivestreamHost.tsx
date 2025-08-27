@@ -42,8 +42,8 @@ const LivestreamHost: React.FC = () => {
     recorder.ondataavailable = async (e) => {
       if (e.data.size > 0) {
         const formData = new FormData();
-        formData.append('chunk', e.data);
-        formData.append('streamKey', livestreamId);
+        formData.append('segment', e.data);
+        formData.append('livestreamId', livestreamId);
         await axios.post(`${process.env.REACT_APP_BASE_URL}/livestreams/segment`, formData);
       }
     };
