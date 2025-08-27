@@ -123,7 +123,7 @@ export default function Header() {
               onClose={handleCloseUserMenu}
             >
               <MenuItem onClick={handleCloseUserMenu} sx={{py: 1.2}}>
-                <Avatar src={currentUser.avatar} sx={{width: 30, height: 30, mr: 1.2}}/>
+                <Avatar src={currentUser.avatar} sx={{width: 30, height: 30, mr: 1.2, ml: -0.36}}/>
                 <Typography onClick={() => navigate(`/profile/${currentUser.userId}`)}>
                   {currentUser.displayName}
                 </Typography>
