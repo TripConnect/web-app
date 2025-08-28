@@ -8,8 +8,7 @@ export default function LivestreamViewer() {
   const {id: livestreamId} = useParams<{ id: string }>();
   const playerRef = useRef<HTMLVideoElement>(null);
 
-
-  const streamUrl = `${process.env.REACT_APP_BASE_URL}/livestream/${livestreamId}/index.m3u8`;
+  const streamUrl = `${process.env.REACT_APP_BASE_URL}/livestreams/${livestreamId}/index.m3u8`;
 
   return (
     <Container maxWidth="md" sx={{py: 4}}>

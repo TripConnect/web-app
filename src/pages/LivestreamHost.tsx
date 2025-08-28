@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Alert, Box, Button, Card, Typography} from '@mui/material';
+import {Alert, Box, Button, Typography} from '@mui/material';
 import axios from 'axios';
 
 const LivestreamHost: React.FC = () => {
@@ -24,19 +24,9 @@ const LivestreamHost: React.FC = () => {
     }
   };
 
-  const startStream = () => {
-    // For OBS: User manually starts in OBS.
-    // For browser: Implement MediaRecorder here (example below, but needs backend WebSocket for chunk upload)
-    setIsLive(true);
-    // Placeholder: Poll backend for status every 10s
-    const interval = setInterval(() => {
-      axios.get(`${process.env.REACT_APP_BASE_URL}/livestreams/${livestreamId}/status`)
-        .then(res => setIsLive(res.data.isLive));
-    }, 10000);
-    return () => clearInterval(interval);
-  };
-
   const startBrowserStream = async () => {
+    setIsLive(true);
+    await startPreview();
     const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
     const recorder = new MediaRecorder(stream, {mimeType: 'video/webm'});
     recorder.ondataavailable = async (e) => {
@@ -51,18 +41,21 @@ const LivestreamHost: React.FC = () => {
   };
 
   return (
-    <Box sx={{p: 4}}>
+    <Box width={'100vw'} height={'auto'}>
       <Typography variant="h4">Host Dashboard</Typography>
       {error && <Alert severity="error">{error}</Alert>}
-      <Card sx={{mt: 2, p: 2}}>
-        <Typography>Your Stream Key: {livestreamId}</Typography>
-        <Typography>RTMP URL: rtmp://localhost/live/{livestreamId}</Typography>
-        <Button variant="contained" onClick={startPreview} sx={{mt: 2}}>Preview Camera</Button>
-        <video ref={videoRef} autoPlay muted width="100%"/>
-        <Button variant="contained" color="primary" onClick={startStream} disabled={isLive}>Go Live (OBS)</Button>
-        <Button variant="outlined" onClick={startBrowserStream}>Go Live (Browser - Experimental)</Button>
-        {isLive && <Alert severity="success">You are live!</Alert>}
-      </Card>
+      <Typography>
+        <b>Share link:</b>
+        {`${document.location.origin}/livestream/${livestreamId}/view`}
+      </Typography>
+      <Box>
+        <video ref={videoRef} autoPlay muted height="500px" style={{background: 'red'}}/>
+      </Box>
+      <Box>
+        {isLive ?
+          <Alert severity="success">You are live!</Alert> :
+          <Button variant="outlined" onClick={startBrowserStream}>Go Live</Button>}
+      </Box>
     </Box>
   );
 };
