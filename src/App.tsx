@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import {BrowserRouter as Router, Route, Routes, useNavigate} from "react-router-dom";
 import {Provider, useSelector} from 'react-redux';
 import {persistor, RootState, store} from 'store';
@@ -80,6 +80,12 @@ const AuthRoute = ({component}: { component: JSX.Element }) => {
 };
 
 function App() {
+  const [value, setValue] = useState('1');
+
+  const handleChange = (event: SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
+
   return (
     <I18nextProvider i18n={i18next}>
       <Provider store={store}>
