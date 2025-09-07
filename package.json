@@ -8,6 +8,7 @@
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
     "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
     "@parcel/watcher": "^2.5.1",
@@ -31,6 +32,7 @@
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
     "redux-persist": "^6.0.0",
+    "resolve-url-loader": "4.0.0",
     "sass": "^1.89.0",
     "socket.io-client": "^4.7.1",
     "socket.io-msgpack-parser": "^3.0.2",
@@ -65,6 +67,7 @@
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.14.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/node": "^24.3.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "graphql": "^16.11.0",
