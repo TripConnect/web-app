@@ -2,7 +2,8 @@
   "SIGN_UP_PAGE": {
     "CREATE_ACCOUNT": "Create account",
     "SUBTITLE": "Join our community of travelers today",
-    "SIGN_IN_QUESTION": "Already have an account?"
+    "SIGN_IN_QUESTION": "Already have an account?",
+    "SUGGEST_OTHERS_LOGIN_METHOD": "Or login with"
   },
   "USER_PROFILE": {
     "MESSAGE_BUTTON": "Message",

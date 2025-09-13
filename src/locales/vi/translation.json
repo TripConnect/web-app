@@ -2,7 +2,8 @@
   "SIGN_UP_PAGE": {
     "CREATE_ACCOUNT": "Tạo tài khoản",
     "SUBTITLE": "Tham gia cộng đồng du lịch ngay hôm nay",
-    "SIGN_IN_QUESTION": "Bạn đã có tài khoản?"
+    "SIGN_IN_QUESTION": "Bạn đã có tài khoản?",
+    "SUGGEST_OTHERS_LOGIN_METHOD": "Hoặc đăng nhập với"
   },
   "USER_PROFILE": {
     "MESSAGE_BUTTON": "Nhắn tin",

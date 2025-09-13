@@ -4,7 +4,7 @@ import {useMutation} from '@apollo/client';
 import {useDispatch, useSelector} from "react-redux";
 import {updateInfo} from "../../slices/user";
 import {OTP_INCORRECT, SIGN_IN_INCORRECT, SIGN_IN_INVALID} from "../../constants/messages";
-import {Box, Button, Container, Grid, TextField, Typography} from "@mui/material";
+import {Box, Button, Container, Divider, Grid, TextField, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {StatusCode} from "../../constants";
 import {graphql} from "../../gql";
@@ -79,6 +79,10 @@ export default function Index() {
             alert(SIGN_IN_INCORRECT);
         }
       });
+  }
+
+  const signInWithApple = () => {
+    console.log("signInWithApple");
   }
 
   const handleRegister = () => {
@@ -162,11 +166,27 @@ export default function Index() {
             </Button>
           </Box>
 
-          <Box style={{
-            marginTop: 20,
-            width: "100%",
-            textAlign: "right",
-          }}>
+          <Box width={"100%"} marginTop={2}>
+            <Divider>{t("SIGN_UP_PAGE.SUGGEST_OTHERS_LOGIN_METHOD")}</Divider>
+          </Box>
+
+          <Box width={"100%"} marginTop={2.2}>
+            <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
+              <Box borderRadius={1.8} width={100} display="flex" justifyContent="center" alignItems={"center"}
+                   padding={1.2} marginRight={1.2}
+                   style={{userSelect: 'none', cursor: "pointer", backgroundColor: "black"}}
+                   onClick={signInWithApple}>
+                <img width={30} src="/apple-logo.png" alt="Apple logo"/>
+              </Box>
+              <Box borderRadius={1.8} width={100} display="flex" justifyContent="center"
+                   alignItems={"center"} padding={1.2}
+                   style={{userSelect: 'none', cursor: "pointer", backgroundColor: "#eee"}}>
+                <img width={30} src="/google-logo.png" alt="Google logo"/>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box width={'100%'} textAlign={'right'} marginTop={2}>
             <i>{t("NOW_HAVE_ACCOUNT_QUESTION")} </i>
             <span
               style={{cursor: "pointer", color: "darkblue"}}
@@ -176,6 +196,7 @@ export default function Index() {
               {t("SIGN_UP")}
               </span>
           </Box>
+
         </Grid>
       </Grid>
     </Container>
