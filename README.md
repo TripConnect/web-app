@@ -1,11 +1,11 @@
 # Overview
 
-The client UI in web platform implemented by `ReactJS` and `Redux toolkit`.
+The web app of the TripConnect project
 
 # Start develop application
 
 ```
-npm install --legacy-peer-deps
+pnpm install
 npm start
 ```
 
