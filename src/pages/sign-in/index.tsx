@@ -9,6 +9,8 @@ import {useTranslation} from "react-i18next";
 import {StatusCode} from "../../constants";
 import {graphql} from "../../gql";
 import PublicIcon from '@mui/icons-material/Public';
+import {getAuth, OAuthProvider, signInWithPopup} from "@firebase/auth";
+import {RootState} from "../../store";
 
 const SIGN_IN_MUTATION = graphql(`
     mutation SignIn($username: String!, $password: String!) {
@@ -32,8 +34,9 @@ export default function Index() {
   });
   const [signIn] = useMutation(SIGN_IN_MUTATION);
 
-  const currentUser = useSelector((state: any) => state.user);
-  const isAuthenticated = Boolean(currentUser.accessToken);
+  const currentUser = useSelector((state: RootState) => state.user);
+  const currentLanguage = useSelector((state: RootState) => state.language);
+  const isAuthenticated = Boolean(currentUser.userId);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -83,6 +86,37 @@ export default function Index() {
 
   const signInWithApple = () => {
     console.log("signInWithApple");
+    const provider = new OAuthProvider('apple.com');
+    provider.addScope('email');
+    provider.addScope('name');
+    provider.setCustomParameters({
+      locale: currentLanguage.currentLanguage
+    });
+
+    const auth = getAuth();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // The signed-in user info.
+        const user = result.user;
+
+        // Apple credential
+        const credential = OAuthProvider.credentialFromResult(result);
+        const accessToken = credential?.accessToken;
+        const idToken = credential?.idToken;
+
+        console.log(credential);
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The credential that was used.
+        const credential = OAuthProvider.credentialFromError(error);
+
+        // ...
+      });
   }
 
   const handleRegister = () => {

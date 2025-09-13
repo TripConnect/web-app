@@ -23,6 +23,7 @@ import OtpValidation from "pages/OtpValidation";
 import LivestreamHost from "pages/LivestreamHost";
 import Header from "./shared/components/Header";
 import LivestreamViewer from "./pages/LivestreamViewer";
+import './firebase/config';
 
 const httpLink = createHttpLink({
   uri: `${process.env.REACT_APP_BASE_URL}/graphql`,
