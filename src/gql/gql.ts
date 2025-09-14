@@ -14,6 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n    query GetLivestreamDetail($id: ID!) {\n        livestream(id: $id) {\n            id\n            hlsLink\n        }\n    }\n": typeof types.GetLivestreamDetailDocument,
     "\n    mutation SigninWithOTP($username: String!, $password: String!, $otp: String!) {\n        signIn(username: $username, password: $password, otp: $otp) {\n            userInfo {\n                id\n                displayName\n                avatar\n            }\n            token {\n                accessToken\n                refreshToken\n            }\n        }\n    }\n": typeof types.SigninWithOtpDocument,
     "\n    query Me {\n        me {\n            enabledTwofa\n        }\n    }\n": typeof types.MeDocument,
     "\n    mutation Generate2FASecret {\n        generate2FASecret {\n            secret\n            qrCode\n        }\n    }\n": typeof types.Generate2FaSecretDocument,
@@ -23,7 +24,7 @@ type Documents = {
     "\n    query InitUiQuery($id: ID!) {\n        conversation(id: $id) {\n            name\n            type\n        }\n    }\n": typeof types.InitUiQueryDocument,
     "\n    query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {\n        conversation(id: $id) {\n            messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {\n                id\n                content\n                createdAt\n                sentTime\n                fromUser {\n                    id\n                    displayName\n                    avatar\n                }\n            }\n        }\n    }\n": typeof types.FetchMessageQueryDocument,
     "\n    mutation SendMessageMutation($conversationId: ID!, $content: String!) {\n        sendMessage(conversation_id: $conversationId, content: $content) {\n            correlationId\n        }\n    }\n": typeof types.SendMessageMutationDocument,
-    "\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize) {\n            id\n            hlsLink\n        }\n    }\n": typeof types.GetActiveLivesDocument,
+    "\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!, $status: String) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize, status: $status) {\n            id\n            hlsLink\n        }\n    }\n": typeof types.GetActiveLivesDocument,
     "\n    mutation CreateLives {\n        createLivestream {\n            id\n            hlsLink\n        }\n    }\n": typeof types.CreateLivesDocument,
     "\n    mutation SignIn($username: String!, $password: String!) {\n        signIn(username: $username, password: $password) {\n            userInfo {\n                id\n                displayName\n                avatar\n            }\n        }\n    }\n": typeof types.SignInDocument,
     "\n        mutation SignUp($username: String!, $password: String!, $displayName: String!) {\n            signUp(username: $username, password: $password, displayName: $displayName) {\n                userInfo {\n                    id\n                    displayName\n                    avatar\n                }\n            }\n        }\n    ": typeof types.SignUpDocument,
@@ -31,6 +32,7 @@ type Documents = {
     "\n    mutation SignOut {\n        signOut {\n            success\n        }\n    }\n": typeof types.SignOutDocument,
 };
 const documents: Documents = {
+    "\n    query GetLivestreamDetail($id: ID!) {\n        livestream(id: $id) {\n            id\n            hlsLink\n        }\n    }\n": types.GetLivestreamDetailDocument,
     "\n    mutation SigninWithOTP($username: String!, $password: String!, $otp: String!) {\n        signIn(username: $username, password: $password, otp: $otp) {\n            userInfo {\n                id\n                displayName\n                avatar\n            }\n            token {\n                accessToken\n                refreshToken\n            }\n        }\n    }\n": types.SigninWithOtpDocument,
     "\n    query Me {\n        me {\n            enabledTwofa\n        }\n    }\n": types.MeDocument,
     "\n    mutation Generate2FASecret {\n        generate2FASecret {\n            secret\n            qrCode\n        }\n    }\n": types.Generate2FaSecretDocument,
@@ -40,7 +42,7 @@ const documents: Documents = {
     "\n    query InitUiQuery($id: ID!) {\n        conversation(id: $id) {\n            name\n            type\n        }\n    }\n": types.InitUiQueryDocument,
     "\n    query FetchMessageQuery($id: ID!, $before: DateTime, $after: DateTime, $limit: Int!) {\n        conversation(id: $id) {\n            messages(messageBefore: $before, messageAfter: $after, messageLimit: $limit) {\n                id\n                content\n                createdAt\n                sentTime\n                fromUser {\n                    id\n                    displayName\n                    avatar\n                }\n            }\n        }\n    }\n": types.FetchMessageQueryDocument,
     "\n    mutation SendMessageMutation($conversationId: ID!, $content: String!) {\n        sendMessage(conversation_id: $conversationId, content: $content) {\n            correlationId\n        }\n    }\n": types.SendMessageMutationDocument,
-    "\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize) {\n            id\n            hlsLink\n        }\n    }\n": types.GetActiveLivesDocument,
+    "\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!, $status: String) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize, status: $status) {\n            id\n            hlsLink\n        }\n    }\n": types.GetActiveLivesDocument,
     "\n    mutation CreateLives {\n        createLivestream {\n            id\n            hlsLink\n        }\n    }\n": types.CreateLivesDocument,
     "\n    mutation SignIn($username: String!, $password: String!) {\n        signIn(username: $username, password: $password) {\n            userInfo {\n                id\n                displayName\n                avatar\n            }\n        }\n    }\n": types.SignInDocument,
     "\n        mutation SignUp($username: String!, $password: String!, $displayName: String!) {\n            signUp(username: $username, password: $password, displayName: $displayName) {\n                userInfo {\n                    id\n                    displayName\n                    avatar\n                }\n            }\n        }\n    ": types.SignUpDocument,
@@ -62,6 +64,10 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query GetLivestreamDetail($id: ID!) {\n        livestream(id: $id) {\n            id\n            hlsLink\n        }\n    }\n"): (typeof documents)["\n    query GetLivestreamDetail($id: ID!) {\n        livestream(id: $id) {\n            id\n            hlsLink\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -101,7 +107,7 @@ export function graphql(source: "\n    mutation SendMessageMutation($conversatio
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize) {\n            id\n            hlsLink\n        }\n    }\n"): (typeof documents)["\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize) {\n            id\n            hlsLink\n        }\n    }\n"];
+export function graphql(source: "\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!, $status: String) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize, status: $status) {\n            id\n            hlsLink\n        }\n    }\n"): (typeof documents)["\n    query GetActiveLives($pageNumber: Int!, $pageSize: Int!, $status: String) {\n        livestreams(pageNumber: $pageNumber, pageSize: $pageSize, status: $status) {\n            id\n            hlsLink\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

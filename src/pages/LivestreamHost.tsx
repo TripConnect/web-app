@@ -1,19 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Alert, Box, Button, Typography} from '@mui/material';
 import axios from 'axios';
+import {useParams} from "react-router-dom";
 
-const LivestreamHost: React.FC = () => {
-  const [livestreamId, setLivestreamId] = useState('');
+export default function LivestreamHost() {
+  const {id} = useParams<{ id: string }>();
   const [isLive, setIsLive] = useState(false);
   const [error, setError] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    // Fetch stream key after login (assume JWT in localStorage)
-    axios.post(`${process.env.REACT_APP_BASE_URL}/livestreams`)
-      .then((res: any) => setLivestreamId(res.data.livestreamId))
-      .catch(() => setError('Failed create livestream'));
-  }, []);
+  const livestreamId = id as string;
 
   const startPreview = async () => {
     try {
@@ -58,6 +54,4 @@ const LivestreamHost: React.FC = () => {
       </Box>
     </Box>
   );
-};
-
-export default LivestreamHost;
+}
