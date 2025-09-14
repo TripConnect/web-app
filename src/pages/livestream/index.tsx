@@ -7,8 +7,8 @@ import {useLazyQuery, useMutation} from "@apollo/client";
 import {graphql} from "../../gql";
 
 const ACTIVE_LIVESTREAMS_QUERY = graphql(`
-    query GetActiveLives($pageNumber: Int!, $pageSize: Int!) {
-        livestreams(pageNumber: $pageNumber, pageSize: $pageSize) {
+    query GetActiveLives($pageNumber: Int!, $pageSize: Int!, $status: String) {
+        livestreams(pageNumber: $pageNumber, pageSize: $pageSize, status: $status) {
             id
             hlsLink
         }
@@ -34,6 +34,7 @@ export default function ActiveLivestreamList() {
   useEffect(() => {
     getActiveLives({
       variables: {
+        status: 'CREATED',
         pageNumber: 0,
         pageSize: 10,
       }
@@ -70,7 +71,10 @@ export default function ActiveLivestreamList() {
           <Box>
             {activeLivestreams.length ?
               activeLivestreams.map(livestream => (
-                <Button href={`/livestream/${livestream.id}/view`}>View {livestream.id}</Button>)) :
+                <Button key={livestream.id} variant='contained'
+                        href={`/livestream/${livestream.id}/view`}>
+                  View {livestream.id}
+                </Button>)) :
               <div>No any active lives</div>}
           </Box>
         </Grid>
