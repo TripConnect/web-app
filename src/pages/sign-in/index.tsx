@@ -99,12 +99,17 @@ export default function Index() {
         // The signed-in user info.
         const user = result.user;
 
+        user.getIdToken().then(firebaseIdToken => {
+          console.log({firebaseIdToken});
+        });
+
+        console.log(user);
         // Apple credential
         const credential = OAuthProvider.credentialFromResult(result);
         const accessToken = credential?.accessToken;
         const idToken = credential?.idToken;
 
-        console.log(credential);
+        console.log({appleIdToken: idToken});
       })
       .catch((error) => {
         // Handle Errors here.

@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {LivestreamState} from "./state";
 import {useLazyQuery, useMutation} from "@apollo/client";
 import {graphql} from "../../gql";
+import LivePreview from "./components/LivePreview";
 
 const ACTIVE_LIVESTREAMS_QUERY = graphql(`
     query GetActiveLives($pageNumber: Int!, $pageSize: Int!, $status: String) {
@@ -68,13 +69,16 @@ export default function ActiveLivestreamList() {
           <Typography variant="h1" fontSize={'2rem'} fontWeight={'bold'} marginBottom={2}>
             Active livestreams
           </Typography>
-          <Box>
+          <Box display='flex' justifyContent='space-between' alignItems='center'>
             {activeLivestreams.length ?
               activeLivestreams.map(livestream => (
-                <Button key={livestream.id} variant='contained'
-                        href={`/livestream/${livestream.id}/view`}>
-                  View {livestream.id}
-                </Button>)) :
+                <LivePreview
+                  key={livestream.id}
+                  title={"Sample title"}
+                  livestreamId={livestream.id}
+                  thumbnail={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzXSkO2kmGinfN9u6xGdJn_PvbokXq7iEgvw&s'}
+                  // mediaUrl={`/livestream/${livestream.id}/view`}
+                />)) :
               <div>No any active lives</div>}
           </Box>
         </Grid>
