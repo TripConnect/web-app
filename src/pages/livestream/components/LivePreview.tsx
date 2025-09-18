@@ -1,7 +1,10 @@
-import {Avatar, Box, Card, CardContent, CardMedia, Typography} from "@mui/material";
+import {Avatar, Box, Card, CardContent, CardMedia, Chip, Typography} from "@mui/material";
 import {Link} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../store";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import SensorsIcon from '@mui/icons-material/Sensors';
+
 
 type Props = {
   livestreamId: string;
@@ -18,7 +21,13 @@ export default function LivePreview(props: Props) {
     <Card sx={{width: 480}}
           component={Link}
           to={`/livestream/${livestreamId}/view`}
-          style={{textDecoration: 'none'}}>
+          style={{textDecoration: 'none', position: 'relative'}}>
+
+      <Chip icon={<SensorsIcon fontSize='small'/>} label="Live" color='error'
+            style={{position: "absolute", top: 10, left: 10}}/>
+      <Chip icon={<VisibilityIcon fontSize='small'/>} label="123" color='info'
+            style={{position: "absolute", top: 10, right: 10}}/>
+
       <CardMedia
         component="img"
         alt="livestream thumbnail"
@@ -28,11 +37,11 @@ export default function LivePreview(props: Props) {
       <CardContent>
         <Box marginBottom={0.8}>
           <Typography variant={"h5"}>
-            Let livestream with me
+            {title}
           </Typography>
         </Box>
         <Box display="flex" justifyContent="start" alignItems="center">
-          <Avatar src={currentUser.avatar} style={{width: 38, height: 38}}/>
+          <Avatar src={currentUser.avatar} style={{width: 32, height: 32}}/>
           <Typography
             variant="subtitle1"
             component="div"
