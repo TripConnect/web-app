@@ -1,18 +1,18 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import {Message, ScrollDirection} from "../state";
 import {useEffect, useRef} from "react";
-import { useDebounceCallback } from 'usehooks-ts';
+import {useDebounceCallback} from 'usehooks-ts';
 import ChatMessage from "./ChatMesasge";
 
 type MessageListProps = {
-    changeScrollDirection: (direction: ScrollDirection) => void;
-    fetchMore: () => void;
-    hasMore: boolean;
-    messages: Message[];
+  changeScrollDirection: (direction: ScrollDirection) => void;
+  fetchMore: () => void;
+  hasMore: boolean;
+  messages: Message[];
 };
 
 export default function MessageList(props: MessageListProps) {
-  const { fetchMore, hasMore, messages, changeScrollDirection } = props;
+  const {fetchMore, hasMore, messages, changeScrollDirection} = props;
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -53,18 +53,18 @@ export default function MessageList(props: MessageListProps) {
         dataLength={messages.length}
         next={fetchMore}
         hasMore={hasMore}
-        loader={<p style={{ textAlign: "center" }}>Loading...</p>}
+        loader={<p style={{textAlign: "center"}}>Loading...</p>}
         inverse={true}
         scrollThreshold={50}
         scrollableTarget="chatDiv"
-        style={{ display: "flex", flexDirection: "column-reverse" }}
+        style={{display: "flex", flexDirection: "column-reverse"}}
       >
         {messages.map((msg, idx) => <ChatMessage
-          key={`${msg.id || msg.correlationId}`}
+          key={`${msg.id}`}
           id={msg.id}
           user={msg.fromUser}
           content={msg.content}
-          sentTime={msg.sentTime} />)}
+          sentTime={msg.sentTime}/>)}
       </InfiniteScroll>
     </div>
   );

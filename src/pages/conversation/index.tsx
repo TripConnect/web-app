@@ -43,7 +43,7 @@ const FETCH_MESSAGE_QUERY = graphql(`
 const SEND_MESSAGE_MUTATION = graphql(`
     mutation SendMessageMutation($conversationId: ID!, $content: String!) {
         sendMessage(conversation_id: $conversationId, content: $content) {
-            correlationId
+            messageId
         }
     }
 `);
@@ -91,12 +91,15 @@ export function Conversation() {
     let msgList = response.data?.conversation.messages;
     if (!msgList || msgList.length === 0) return [];
 
-    return msgList.map(msg => ({
-      id: msg.id,
-      fromUser: msg.fromUser,
-      content: msg.content,
-      sentTime: msg.sentTime,
-    })).reverse();
+    return msgList
+      .map((msg): Message => ({
+        id: msg.id,
+        status: 'SENT',
+        fromUser: msg.fromUser,
+        content: msg.content,
+        sentTime: msg.sentTime,
+      }))
+      .reverse();
   }, [fetchMessage]);
 
   // action definitions
@@ -157,9 +160,9 @@ export function Conversation() {
       if (event.fromUserId !== currentUser.userId) {
         let incomingMessage: Message = {
           id: event.id,
-          correlationId: event.correlationId,
+          status: 'SENT',
           fromUser: {
-            id: event.fromUserIdm
+            id: event.fromUserId,
           },
           content: event.content,
           sentTime: event.sentTime,
@@ -169,11 +172,11 @@ export function Conversation() {
       }
 
       setMessages(prev => {
-        let pendingMessage = prev.find(msg => msg.correlationId === event.correlationId);
-        if (!pendingMessage) return [...prev];
-
-        pendingMessage.id = event.id as string;
-        pendingMessage.sentTime = event.sentTime as string;
+        let pendingMessage = prev.find(msg => msg.id === event.id);
+        if (pendingMessage) {
+          pendingMessage.sentTime = event.sentTime as string;
+          pendingMessage.status = 'SENT';
+        }
         return [...prev];
       });
     });
@@ -188,11 +191,13 @@ export function Conversation() {
     sendMessage({variables: {conversationId: conversationId, content: msg}})
       .then(response => {
         let pendingMessage: Message = {
-          correlationId: response.data?.sendMessage.correlationId,
+          id: response.data?.sendMessage.messageId as string,
+          status: 'PENDING',
           content: msg,
           fromUser: {
             id: currentUser.userId as string,
           },
+          sentTime: new Date().toISOString(),
         }
         setMessages(prev => [pendingMessage, ...prev]);
       })
