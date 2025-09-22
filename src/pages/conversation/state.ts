@@ -6,7 +6,6 @@ export type Conversation = {
   id: string;
 };
 
-// MUST have either correlationId or id
 export type Message = {
   id: string;
   status: 'PENDING' | 'SENT';
