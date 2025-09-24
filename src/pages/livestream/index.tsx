@@ -56,29 +56,28 @@ export default function ActiveLivestreamList() {
   return (
     <Container>
       <Grid container>
-        <Grid item xs={12}>
-          <Box sx={{display: 'flex', gap: 2, flexWrap: 'wrap', textDecoration: 'none'}}>
-            <Button color={'primary'} variant={"contained"} size={'large'} onClick={handleGoLives}>
-              <VideocamIcon sx={{marginRight: 0.6}}/>
+        <Grid item xs={12} marginTop={4}>
+          <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems={"center"}>
+            <Typography variant="h1" fontSize={'2rem'} fontWeight={'bold'} marginBottom={2}>
+              Active livestreams
+            </Typography>
+            <Button color={'primary'} variant={"contained"} size={'medium'} onClick={handleGoLives}>
+              <VideocamIcon sx={{marginRight: 0.6}} fontSize={'small'}/>
               Go lives
             </Button>
           </Box>
         </Grid>
-
-        <Grid item xs={12}>
-          <Typography variant="h1" fontSize={'2rem'} fontWeight={'bold'} marginBottom={2}>
-            Active livestreams
-          </Typography>
-          <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Grid item xs={12} marginTop={2}>
+          <Box display='flex' justifyContent='start' alignItems='center' gap={2}>
             {activeLivestreams.length ?
               activeLivestreams.map(livestream => (
                 <LivePreview
                   key={livestream.id}
                   title={"Sample title"}
                   livestreamId={livestream.id}
-                  thumbnail={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzXSkO2kmGinfN9u6xGdJn_PvbokXq7iEgvw&s'}
-                  // mediaUrl={`/livestream/${livestream.id}/view`}
-                />)) :
+                  thumbnail={'https://img.freepik.com/free-vector/travel-youtube-thumbnail_23-2148561450.jpg'}
+                />
+              )) :
               <div>No any active lives</div>}
           </Box>
         </Grid>

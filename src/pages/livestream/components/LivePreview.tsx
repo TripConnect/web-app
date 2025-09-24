@@ -24,9 +24,9 @@ export default function LivePreview(props: Props) {
           style={{textDecoration: 'none', position: 'relative'}}>
 
       <Chip icon={<SensorsIcon fontSize='small'/>} label="Live" color='error'
-            style={{position: "absolute", top: 10, left: 10}}/>
+            style={{position: "absolute", top: 238, right: 10, borderRadius: 4}}/>
       <Chip icon={<VisibilityIcon fontSize='small'/>} label="123" color='info'
-            style={{position: "absolute", top: 10, right: 10}}/>
+            style={{position: "absolute", top: 10, right: 10, borderRadius: 4}}/>
 
       <CardMedia
         component="img"
@@ -36,11 +36,11 @@ export default function LivePreview(props: Props) {
       />
       <CardContent>
         <Box marginBottom={0.8}>
-          <Typography variant={"h5"}>
+          <Typography variant={"h5"} sx={{textDecoration: 'none'}}>
             {title}
           </Typography>
         </Box>
-        <Box display="flex" justifyContent="start" alignItems="center">
+        <Box display="flex" justifyContent="start" alignItems="center" height={30}>
           <Avatar src={currentUser.avatar} style={{width: 32, height: 32}}/>
           <Typography
             variant="subtitle1"
