@@ -9,6 +9,10 @@
     "MESSAGE_BUTTON": "Nhắn tin",
     "FOLLOW_BUTTON": "Theo dõi"
   },
+  "LIVESTREAM": {
+    "LIVE": "Trực tiếp",
+    "VIEWER": "người đang xem"
+  },
   "HEADER_SEARCH_PLACEHOLDER": "Tìm kiếm người dùng, điểm đến, hành trình...",
   "USER": "Người dùng",
   "SIGN_IN": "Đăng nhập",

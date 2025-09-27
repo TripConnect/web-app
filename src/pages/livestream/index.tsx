@@ -68,17 +68,25 @@ export default function ActiveLivestreamList() {
           </Box>
         </Grid>
         <Grid item xs={12} marginTop={2}>
+          {/*<Box display='flex' justifyContent='start' alignItems='center' gap={2}>*/}
+          {/*  {activeLivestreams.length ?*/}
+          {/*    activeLivestreams.map(livestream => (*/}
+          {/*      <LivePreview*/}
+          {/*        key={livestream.id}*/}
+          {/*        title={"Sample title"}*/}
+          {/*        livestreamId={livestream.id}*/}
+          {/*        thumbnail={'https://img.freepik.com/free-vector/travel-youtube-thumbnail_23-2148561450.jpg'}*/}
+          {/*      />*/}
+          {/*    )) :*/}
+          {/*    <div>No any active lives</div>}*/}
+          {/*</Box>*/}
           <Box display='flex' justifyContent='start' alignItems='center' gap={2}>
-            {activeLivestreams.length ?
-              activeLivestreams.map(livestream => (
-                <LivePreview
-                  key={livestream.id}
-                  title={"Sample title"}
-                  livestreamId={livestream.id}
-                  thumbnail={'https://img.freepik.com/free-vector/travel-youtube-thumbnail_23-2148561450.jpg'}
-                />
-              )) :
-              <div>No any active lives</div>}
+            <LivePreview
+              key={"livestream.id"}
+              title={"The wild wolf | Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock"}
+              livestreamId={"livestream.id"}
+              thumbnail={'https://img.freepik.com/free-vector/travel-youtube-thumbnail_23-2148561450.jpg'}
+            />
           </Box>
         </Grid>
       </Grid>

@@ -1,10 +1,9 @@
-import {Avatar, Box, Card, CardContent, CardMedia, Chip, Typography} from "@mui/material";
+import {Avatar, Badge, Box, Card, CardContent, CardMedia, Chip, Typography} from "@mui/material";
 import {Link} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../store";
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import SensorsIcon from '@mui/icons-material/Sensors';
-
+import {useTranslation} from "react-i18next";
 
 type Props = {
   livestreamId: string;
@@ -13,20 +12,26 @@ type Props = {
 };
 
 export default function LivePreview(props: Props) {
+  const {t} = useTranslation();
   const {livestreamId, title, thumbnail} = props;
 
   const currentUser = useSelector((state: RootState) => state.user);
 
   return (
-    <Card sx={{width: 480}}
+    <Card sx={{minWidth: 480, boxShadow: 'none', width: '45%'}}
           component={Link}
           to={`/livestream/${livestreamId}/view`}
           style={{textDecoration: 'none', position: 'relative'}}>
 
-      <Chip icon={<SensorsIcon fontSize='small'/>} label="Live" color='error'
-            style={{position: "absolute", top: 238, right: 10, borderRadius: 4}}/>
-      <Chip icon={<VisibilityIcon fontSize='small'/>} label="123" color='info'
-            style={{position: "absolute", top: 10, right: 10, borderRadius: 4}}/>
+      <Chip icon={<SensorsIcon fontSize='small'/>} label={t('LIVESTREAM.LIVE')} color='error'
+            style={{
+              position: "absolute",
+              top: 238,
+              right: 10,
+              borderRadius: 4,
+              textTransform: 'uppercase',
+              transform: 'scale(0.95)'
+            }}/>
 
       <CardMedia
         component="img"
@@ -34,21 +39,42 @@ export default function LivePreview(props: Props) {
         height="280"
         image={thumbnail}
       />
-      <CardContent>
-        <Box marginBottom={0.8}>
-          <Typography variant={"h5"} sx={{textDecoration: 'none'}}>
-            {title}
-          </Typography>
-        </Box>
-        <Box display="flex" justifyContent="start" alignItems="center" height={30}>
-          <Avatar src={currentUser.avatar} style={{width: 32, height: 32}}/>
-          <Typography
-            variant="subtitle1"
-            component="div"
-            sx={{color: 'grey', marginLeft: 1.2}}
-          >
-            Display name
-          </Typography>
+      <CardContent style={{padding: 10, paddingLeft: 0}}>
+        <Box display='flex' justifyContent='start' alignItems='start' gap={1.2}>
+          <Box display='flex' justifyContent='start' alignItems='center'>
+            <Badge
+              badgeContent={
+                <Chip size={'small'}
+                      icon={<SensorsIcon fontSize='small' style={{transform: 'translateX(25%) scale(1.2)'}}/>}
+                      color='error'
+                      style={{
+                        borderRadius: 4,
+                        transform: 'translateX(68%) translateY(-42%) scale(0.55)',
+                      }}/>
+              }
+              color="default"
+              anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+              style={{color: 'red'}}
+            >
+              <Avatar src={currentUser.avatar} style={{width: 46, height: 46, border: 'solid 4px #e1002d'}}></Avatar>
+            </Badge>
+          </Box>
+          <Box display='flex' flexDirection={'column'} justifyContent='center' alignItems='start'>
+            <Typography variant={"h6"} title={title} maxWidth={400} whiteSpace={'nowrap'} overflow={'hidden'}
+                        textOverflow={'ellipsis'}>
+              {title}
+            </Typography>
+            <Typography
+              variant="body2"
+              component="div"
+              sx={{color: 'grey'}}
+            >
+              Display name
+            </Typography>
+            <Typography variant={"body2"} sx={{color: 'grey'}}>
+              123 <span>{t('LIVESTREAM.VIEWER')}</span>
+            </Typography>
+          </Box>
         </Box>
       </CardContent>
     </Card>

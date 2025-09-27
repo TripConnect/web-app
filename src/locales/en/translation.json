@@ -9,6 +9,10 @@
     "MESSAGE_BUTTON": "Message",
     "FOLLOW_BUTTON": "Follow"
   },
+  "LIVESTREAM": {
+    "LIVE": "Live",
+    "VIEWER": "viewers"
+  },
   "HEADER_SEARCH_PLACEHOLDER": "Search users, destinations, travelers, trips...",
   "USER": "User",
   "SIGN_IN": "Sign In",
