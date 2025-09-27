@@ -30,7 +30,7 @@ export default function LivePreview(props: Props) {
               right: 10,
               borderRadius: 4,
               textTransform: 'uppercase',
-              transform: 'scale(0.95)'
+              transform: 'scale(0.95)',
             }}/>
 
       <CardMedia
@@ -41,22 +41,33 @@ export default function LivePreview(props: Props) {
       />
       <CardContent style={{padding: 10, paddingLeft: 0}}>
         <Box display='flex' justifyContent='start' alignItems='start' gap={1.2}>
-          <Box display='flex' justifyContent='start' alignItems='center'>
+          <Box sx={{position: 'relative', display: 'inline-flex'}}>
             <Badge
               badgeContent={
-                <Chip size={'small'}
-                      icon={<SensorsIcon fontSize='small' style={{transform: 'translateX(25%) scale(1.2)'}}/>}
-                      color='error'
-                      style={{
-                        borderRadius: 4,
-                        transform: 'translateX(68%) translateY(-42%) scale(0.55)',
-                      }}/>
+                <Chip
+                  size="small"
+                  icon={<SensorsIcon sx={{fontSize: '1rem', transform: 'translateX(25%) scale(1.2)'}}/>}
+                  color="error"
+                  sx={{
+                    borderRadius: '4px',
+                    transform: 'translate(60%, -40%) scale(0.55)',
+                    height: 'auto',
+                    padding: '2px',
+                  }}
+                />
               }
-              color="default"
               anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-              style={{color: 'red'}}
+              sx={{'--badge-color': '#e1002d'}}
             >
-              <Avatar src={currentUser.avatar} style={{width: 46, height: 46, border: 'solid 4px #e1002d'}}></Avatar>
+              <Avatar
+                src={currentUser.avatar}
+                sx={{
+                  objectFit: 'cover',
+                  width: 46,
+                  height: 46,
+                  border: '4px solid var(--badge-color)',
+                }}
+              />
             </Badge>
           </Box>
           <Box display='flex' flexDirection={'column'} justifyContent='center' alignItems='start'>
